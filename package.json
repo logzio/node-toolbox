@@ -1,0 +1,47 @@
+{
+  "name": "perfect-node-template",
+  "version": "1.0.0",
+  "description": "the perfect node template",
+  "main": "src/index.js",
+  "private": true,
+  "scripts": {
+    "clean": "rimraf node_modules",
+    "test": "jest",
+    "lint": "eslint --quiet --color .",
+    "update-packages": "ncu"
+  },
+  "author": "Nir Winkler",
+  "dependencies": {
+    "@godaddy/terminus": "4.4.1",
+    "async-retry": "1.3.1",
+    "axios": "0.19.2",
+    "deepmerge":"4.2.2",
+    "jaeger-client": "3.18.2",
+    "deep-compare-any-order": "^1.0.2",
+    "json-colorizer": "^2.2.2",
+    "json-stringify-safe": "5.0.1",
+    "lodash": "4.17.15",
+    "logzio-nodejs-metrics": "^0.0.1",
+    "node-os-utils": "^1.3.0",
+    "rough-object-size": "1.0.1",
+    "serialize-error": "^7.0.1",
+    "dateformat": "3.0.3",
+    "memory-cacher": "1.0.6",
+    "logzio-nodejs": "2.0.1"
+  },
+  "devDependencies": {
+    "npm-check-updates": "7.0.1",
+    "chalk": "4.1.0",
+    "husky": "4.2.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint && yarn test",
+      "pre-push": "yarn update-packages"
+    }
+  },
+  "engines": {
+    "node": "14.5.0",
+    "yarn": "1.22.4"
+  }
+}
