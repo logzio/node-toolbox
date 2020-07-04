@@ -1,7 +1,6 @@
 {
   "name": "@mad/logger",
   "version": "1.0.0",
-  "private": true,
   "description": "multi-functional logger",
   "main": "src/logger.js",
   "type": "module",
