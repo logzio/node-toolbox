@@ -1,5 +1,5 @@
 {
-  "name": "mad-tools",
+  "name": "mad-node-tools",
   "version": "1.0.0",
   "description": "the perfect node template & tools",
   "main": "src/index.js",
