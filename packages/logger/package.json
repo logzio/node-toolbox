@@ -5,6 +5,9 @@
   "main": "src/logger.js",
   "type": "module",
   "author": "Nir winkler <madvinking@gmail.com>",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "clean": "rm -rf node_modules"
   },
