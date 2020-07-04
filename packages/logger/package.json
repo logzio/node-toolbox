@@ -1,11 +1,14 @@
 {
   "name": "@madvinking/logger",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "multi-functional logger",
   "main": "src/logger.js",
   "type": "module",
   "private": true,
   "author": "Nir winkler <madvinking@gmail.com>",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "clean": "rm -rf node_modules"
   },
