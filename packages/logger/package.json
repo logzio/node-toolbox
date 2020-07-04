@@ -4,7 +4,6 @@
   "description": "multi-functional logger",
   "main": "src/logger.js",
   "type": "module",
-  "private": true,
   "author": "Nir winkler <madvinking@gmail.com>",
   "publishConfig": {
     "access": "public"
