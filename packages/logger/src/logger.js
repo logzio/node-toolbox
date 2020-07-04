@@ -9,7 +9,6 @@ export function createLogger({ transports = [], metaData = {}, formatters = [], 
     else if (typeof message === 'object' || message instanceof Object) data = { ...message, ...data };
 
     const timestamp = datePattern ? { timestamp: dateFormat(new Date(), datePattern) } : null;
-
     const formattedData = formatters.reduce((transformData, formatter) => formatter(transformData), {
       ...metaData,
       ...data,
