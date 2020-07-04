@@ -1,7 +1,10 @@
 {
-  "version": "2.0.0",
+  "version": "independent",
   "npmClient": "yarn",
   "useWorkspaces": true,
+  "publishConfig": {
+    "access": "public"
+  },
   "packages": [
     "packages/logger"
   ]
