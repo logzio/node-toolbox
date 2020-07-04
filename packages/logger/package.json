@@ -1,5 +1,5 @@
 {
-  "name": "@mad/logger",
+  "name": "@madvinking/logger",
   "version": "1.0.0",
   "description": "multi-functional logger",
   "main": "src/logger.js",
