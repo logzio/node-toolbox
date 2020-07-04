@@ -13,7 +13,7 @@ export function logzioTransport({
 }) {
   if (!token) throw new Error('must include logz0io token');
 
-  const transport = new Transport({ name, logLevel });
+  const transport = new Transport({ name, logLevel, formatters });
 
   let logzIoLogger, currentToken;
 
@@ -31,8 +31,7 @@ export function logzioTransport({
   logzIoLogger = _startLogzLogger(token);
 
   transport.log = function ({ timestamp, ...data }) {
-    const formattedData = formatters.reduce((newData, formatter) => formatter(newData), data);
-    logzIoLogger.log({ ...formattedData, ...metaData });
+    logzIoLogger.log({ ...data, ...metaData });
   };
 
   transport.close = function close() {

@@ -19,7 +19,7 @@ export function createLogger({ transports = [], metaData = {}, formatters = [], 
     transports.forEach(transport => {
       let shouldLogByWeight = LogLevels.metaData[formattedData.logLevel].weight <= LogLevels.metaData[transport.logLevel].weight;
 
-      if (transport.isOpen && shouldLogByWeight) transport.log(formattedData);
+      if (transport.isOpen && shouldLogByWeight) transport.log(transport._format(formattedData));
     });
   }
 

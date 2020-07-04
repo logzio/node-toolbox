@@ -33,13 +33,11 @@ export function consoleTransport({
   logLevel = LogLevels.levels.INFO,
   name = 'console',
 } = {}) {
-  const transport = new Transport({ name, logLevel });
+  const transport = new Transport({ name, logLevel, formatters });
   const print = printJSON(colorizeLog);
 
-  transport.log = function ({ ...data }) {
-    const formattedData = formatters.reduce((newData, formatter) => formatter(newData), data);
-
-    console.log(print(formattedData));
+  transport.log = function (data) {
+    console.log(print(data));
   };
 
   return transport;
