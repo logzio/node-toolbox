@@ -10,13 +10,13 @@
   },
   "dependencies": {
     "chalk": "4.1.0",
+    "dateformat": "3.0.3",
     "json-colorizer": "^2.2.2",
     "json-stringify-safe": "5.0.1",
     "lodash": "4.17.15",
+    "logzio-nodejs": "2.0.1",
     "rough-object-size": "1.0.1",
-    "serialize-error": "^7.0.1",
-    "dateformat": "3.0.3",
-    "logzio-nodejs": "2.0.1"
+    "serialize-error": "^7.0.1"
   },
   "husky": {
     "hooks": {
