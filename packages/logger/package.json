@@ -4,10 +4,8 @@
   "description": "multi-functional logger",
   "main": "src/logger.js",
   "type": "module",
+  "private": true,
   "author": "Nir winkler <madvinking@gmail.com>",
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "clean": "rm -rf node_modules"
   },
@@ -30,5 +28,6 @@
   "engines": {
     "node": "<=14.5.0",
     "npm": "<=6.14.5"
-  }
+  },
+  "gitHead": "9efe72b4e977a855f4e4d0d09fa653bed8b6bdb0"
 }
