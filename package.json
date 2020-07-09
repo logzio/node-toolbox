@@ -13,7 +13,7 @@
   },
   "author": "Nir Winkler",
   "workspaces": [
-    "packages/logger"
+    "packages/*"
   ],
   "devDependencies": {
     "@babel/core": "^7.10.4",

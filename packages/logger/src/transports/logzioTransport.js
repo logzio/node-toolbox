@@ -1,4 +1,4 @@
-import logzioLogger from 'logzio-nodejs';
+import LogzioLogger from 'logzio-nodejs';
 import { LogLevels } from '../LogLevels.js';
 import { Transport } from './Transport.js';
 
@@ -18,7 +18,7 @@ export function logzioTransport({
   let logzIoLogger, currentToken;
 
   function _startLogzLogger(token) {
-    logzIoLogger = logzioLogger.createLogger({
+    logzIoLogger = LogzioLogger.createLogger({
       host,
       token,
       name: type,
@@ -28,7 +28,7 @@ export function logzioTransport({
     transport.isOpen = true;
   }
 
-  logzIoLogger = _startLogzLogger(token);
+  _startLogzLogger(token);
 
   transport.log = function ({ timestamp, ...data }) {
     logzIoLogger.log({ ...data, ...metaData });
