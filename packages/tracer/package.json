@@ -1,0 +1,23 @@
+{
+  "name": "@madvinking/tracer",
+  "version": "1.0.0",
+  "description": "multi-functional trace",
+  "main": "src/index.js",
+  "type": "module",
+  "author": "Nir winkler <madvinking@gmail.com>",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules"
+  },
+  "dependencies": {
+    "@opentelemetry/core": "^0.9.0",
+    "@opentelemetry/api": "^0.9.0",
+    "@opentelemetry/node": "^0.9.0",
+    "@opentelemetry/tracing": "^0.9.0",
+    "@opentelemetry/plugin-express": "^0.8.0",
+    "@opentelemetry/plugin-http": "^0.9.0",
+    "@opentelemetry/exporter-jaeger": "^0.9.0"
+  }
+}

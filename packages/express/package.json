@@ -1,0 +1,19 @@
+{
+  "name": "@madvinking/epxress",
+  "version": "1.0.0",
+  "description": "template express server",
+  "main": "src/express.js",
+  "type": "module",
+  "author": "Nir winkler <madvinking@gmail.com>",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "helmet": "^3.23.3"
+
+  }
+}
