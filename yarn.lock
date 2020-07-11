@@ -2019,7 +2019,7 @@
     require-in-the-middle "^5.0.0"
     semver "^7.1.3"
 
-"@opentelemetry/plugin-express@^0.9.0":
+"@opentelemetry/plugin-express@^0.8.0":
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/@opentelemetry/plugin-express/-/plugin-express-0.8.0.tgz#fbe6a6b6bef919a71daa9e77ab09e7e997138384"
   integrity sha512-ph5NOM1g6jlKXHKgFcWAqQ4xDWu4gtgGf3Epa9LQLkeRGYu7fR8hOFfzQW7R4bU+Ciwi/ibscEdNHj/EstUiqw==
