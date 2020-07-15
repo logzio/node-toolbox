@@ -27,18 +27,13 @@ function printJSON(colorizeLog = false) {
   };
 }
 
-export function consoleTransport({
-  colorizeLog = true,
-  formatters = [],
-  logLevel = LogLevels.levels.INFO,
-  name = 'console',
-} = {}) {
-  const transport = new Transport({ name, logLevel, formatters });
-  const print = printJSON(colorizeLog);
+export class ConsoleTransport extends Transport {
+  constructor({ colorizeLog = true, formatters = [], logLevel = null, name = 'console' } = {}) {
+    super({ name, logLevel, formatters });
+    this.print = printJSON(colorizeLog);
+  }
 
-  transport.log = function (data) {
-    console.log(print(data));
-  };
-
-  return transport;
+  log(data) {
+    console.log(this.print(data));
+  }
 }

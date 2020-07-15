@@ -1,2 +1,3 @@
-export { consoleTransport } from './consoleTransport.js';
-export { logzioTransport } from './logzioTransport.js';
+export { Transport } from './Transport.js';
+export { ConsoleTransport } from './ConsoleTransport.js';
+export { LogzioTransport } from './LogzioTransport.js';

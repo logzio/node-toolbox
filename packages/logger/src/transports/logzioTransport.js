@@ -1,55 +1,45 @@
 import LogzioLogger from 'logzio-nodejs';
-import { LogLevels } from '../LogLevels.js';
 import { Transport } from './Transport.js';
 
-export function logzioTransport({
-  host,
-  type,
-  token,
-  metaData,
-  name = 'logzio',
-  formatters = [],
-  logLevel = LogLevels.levels.INFO,
-}) {
-  if (!token) throw new Error('must include logz0io token');
+export class LogzioTransport extends Transport {
+  constructor({ host, type, token, metaData = {}, name = 'logzio', formatters = [], logLevel = null, ...moreOptions }) {
+    super({ name, formatters, logLevel });
+    if (!token) throw new Error('must include logz.io token');
 
-  const transport = new Transport({ name, logLevel, formatters });
-
-  let logzIoLogger, currentToken;
-
-  function _startLogzLogger(token) {
-    logzIoLogger = LogzioLogger.createLogger({
-      host,
-      token,
-      name: type,
-    });
-
-    currentToken = token;
-    transport.isOpen = true;
+    this.host = host;
+    this.token = token;
+    this.name = type;
+    this.name = type;
+    this.extraFields = metaData;
+    this.moreOptions = moreOptions;
+    this._createLogger();
   }
 
-  _startLogzLogger(token);
+  _createLogger() {
+    const { host, token, name, extraFields, moreOptions } = this;
+    this.logzIoLogger = LogzioLogger.createLogger({ host, token, name, extraFields, moreOptions });
+    this.isOpen = true;
+  }
 
-  transport.log = function ({ timestamp, ...data }) {
-    logzIoLogger.log({ ...data, ...metaData });
-  };
+  log({ timestamp, ...data }) {
+    this.logzIoLogger.log(data);
+  }
 
-  transport.close = function close() {
+  close() {
     return new Promise(resolve => {
-      if (!logzIoLogger) resolve();
+      if (!this.logzIoLogger) resolve();
 
-      logzIoLogger.sendAndClose(() => {
-        transport.isOpen = false;
+      this.logzIoLogger.sendAndClose(() => {
+        this.isOpen = false;
         resolve();
       });
     });
-  };
+  }
 
-  transport.replaceToken = async function replaceToken(newToken) {
-    if (!currentToken || !newToken || currentToken === newToken) return;
-    await transport.close();
-    _startLogzLogger(newToken);
-  };
-
-  return transport;
+  async replaceToken(newToken) {
+    if (!this.token || !newToken || this.token === newToken) return;
+    await this.close();
+    this.token = newToken;
+    this._createLogger();
+  }
 }
