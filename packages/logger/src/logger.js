@@ -10,7 +10,7 @@ export class Logger {
     logLevel = LogLevels.levels.INFO,
   } = {}) {
     if (transports.length === 0) console.warn('LOGGER: HAVE NO TRANSPORTS');
-
+    this._transports = transports;
     this.transports = transports.reduce((acc, transporter) => {
       acc[transporter.name] = transporter;
       return acc;
@@ -34,7 +34,7 @@ export class Logger {
       ...timestamp,
     });
 
-    this.transports.forEach(transport => {
+    this._transports.forEach(transport => {
       let currentLevel = transport.logLevel || this._logLevel;
       let shouldLog = LogLevels.metaData[formattedData.logLevel].weight <= LogLevels.metaData[currentLevel].weight;
 
@@ -71,7 +71,7 @@ export class Logger {
   }
 
   close() {
-    return Promise.all(this.transports.map(transporter => transporter.close()));
+    return Promise.all(this._transports.map(transporter => transporter.close()));
   }
 
   logLevel(level) {
