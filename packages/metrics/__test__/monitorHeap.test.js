@@ -17,12 +17,12 @@ describe('metrics - monitorHeap', () => {
 
   it('should take snapshot if percentage is max', async () => {
     const monitor = monitorHeap({ minPercentage: 10, repeats: 4, maxPercentage: 20 });
-
+    monitor(20);
     for (let i = 2; i <= 9; i++) {
       monitor(i);
     }
 
     monitor(20);
-    expect(heapdump.writeSnapshot).toHaveBeenCalledTimes(1);
+    expect(heapdump.writeSnapshot).toHaveBeenCalledTimes(2);
   });
 });

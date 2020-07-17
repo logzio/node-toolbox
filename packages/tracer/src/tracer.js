@@ -18,19 +18,19 @@ export function createTracer({
   applyCustomAttributesOnSpan,
   probability = 1,
 } = {}) {
-  const smapler = {};
-  if (!debug) smapler.smapler = new core.ProbabilitySampler(probability);
+  const sampler = {};
+  if (!debug) sampler.sampler = new core.ProbabilitySampler(probability);
 
   const provider = new node.NodeTracerProvider({
     logLevel: debug ? core.LogLevel.DEBUG : core.LogLevel.ERROR,
-    ...{ smapler },
+    ...{ sampler },
     plugins: {
       http: {
         ignoreOutgoingUrls,
         ignoreIncomingPaths,
+        applyCustomAttributesOnSpan,
         requestHook,
         responseHook,
-        applyCustomAttributesOnSpan,
       },
     },
   });
