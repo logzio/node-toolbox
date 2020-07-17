@@ -9,7 +9,8 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rm -rf node_modules"
+    "clean": "rm -rf node_modules",
+    "upkg": "ncu --packageFile ./package.json"
   },
   "dependencies": {
     "express": "^4.17.1",

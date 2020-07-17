@@ -9,7 +9,8 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rm -rf node_modules"
+    "clean": "rm -rf node_modules",
+    "upkg": "ncu --packageFile ./package.json"
   },
   "dependencies": {
     "@opentelemetry/api": "^0.9.0",
