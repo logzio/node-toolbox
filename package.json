@@ -8,6 +8,8 @@
   "scripts": {
     "clean": "lerna clean && rm -rf node_modules",
     "test": "jest --config jest.config.cjs",
+    "test:watch": "jest --watch --config jest.config.cjs",
+    "test:debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --config jest.config.cjs",
     "lint": "eslint -c .eslintrc.cjs  --quiet --color packages/**/*.js",
     "update-packages": "lerna run update-packages && ncu"
   },

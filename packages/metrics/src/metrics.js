@@ -1,45 +1,42 @@
 import { getUsages } from './getUsages.js';
 
-export async function createMetrics({ metaData: globalMetaData = {}, interval = 5000 } = {}) {
-  let intervalId;
+export class Metrics {
+  constructor({ metaData = {}, interval = 5000 } = {}) {
+    this._intervalId;
+    this._interval = interval;
+    this._metaData = metaData;
+    this._listeners = [];
+  }
 
-  const subscribers = [];
-
-  async function send({ data: newMetrics, metaData } = {}) {
+  async send({ data: newMetrics, metaData } = {}) {
     const currentUsage = await getUsages();
 
     const data = { ...currentUsage, ...newMetrics };
     const sendMetaData = {
-      ...globalMetaData,
+      ...this._metaData,
       ...metaData,
     };
 
-    subscribers.forEach(subscriber => subscriber(data, sendMetaData));
+    this._listeners.forEach(subscriber => subscriber(data, sendMetaData));
   }
 
-  function start(newInterval = interval) {
-    if (!intervalId) intervalId = setInterval(send, newInterval);
+  start(newInterval = this._interval) {
+    if (!this._intervalId) this._intervalId = setInterval(this.send.bind(this), newInterval);
   }
 
-  function stop() {
-    if (intervalId) clearInterval(intervalId);
+  stop() {
+    if (this._intervalId) clearInterval(this._intervalId);
   }
 
-  function close() {
+  close() {
     stop();
   }
 
-  function subscribe(onChange) {
-    if (onChange in subscribers) return;
-
-    subscribers.push(onChange);
+  subscribe(onChange) {
+    if (onChange in this._listeners) return;
+    this._listeners.push(onChange);
+    return () => {
+      this._listeners = this._listeners.filter(l => l !== onChange);
+    };
   }
-
-  return {
-    subscribe,
-    send,
-    start,
-    stop,
-    close,
-  };
 }
