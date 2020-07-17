@@ -4,20 +4,24 @@ import deepMerge from 'deepmerge';
 import { validateAndGetJoiSchema } from './helpers.js';
 
 export class Config {
-  constructor({ schema, defaults = {} } = {}) {
+  constructor({ schema, defaults = {}, overrides = {} } = {}) {
     if (!schema) throw new Error('must pass Joi type schema');
 
     this.schema = validateAndGetJoiSchema(schema);
-    this.listeners = [];
-    this.observables = {};
     this.config = {};
+    this.observables = {};
+    this.overrides = _.pickBy(overrides);
     this.observable = new Observable(this.config);
-
     this._merge({ value: defaults });
   }
 
+  _isValidate(data) {
+    const { error } = this.schema.validate(data, { abortEarly: false });
+    return error ? false : true;
+  }
+
   _merge({ value, onError } = {}) {
-    const curVales = deepMerge(this.config, value);
+    const curVales = deepMerge.all([this.config, value, this.overrides]);
     const { error, value: validated } = this.schema.validate(curVales, { abortEarly: false });
 
     if (!error) {
@@ -48,6 +52,7 @@ export class Config {
     if (!value) return;
     if (key) value = _.set({}, key, value);
     this._merge({ value, onError });
+
     Object.entries(this.observables).forEach(([key, obs]) => {
       obs.set(this.get(key));
     });

@@ -44,6 +44,37 @@ describe('Config - create config with schema', () => {
     });
   });
 
+  it('overrides cant be changed', () => {
+    const schema = {
+      teams: Joi.object({
+        name: Joi.string().default('first name'),
+        last: Joi.string().default('last name'),
+      }).default(),
+    };
+
+    const defaults = {
+      teams: {
+        name: 'first name default',
+      },
+    };
+
+    const overrides = {
+      teams: {
+        name: 'overrides are the strongest',
+      },
+    };
+
+    const config = new Config({ schema, defaults, overrides });
+    config.set({ key: 'teams.name', value: 'set config name' });
+
+    expect(config.get()).toEqual({
+      teams: {
+        name: 'overrides are the strongest',
+        last: 'last name',
+      },
+    });
+  });
+
   it('should throw error if defaults are not valid', () => {
     const schema = {
       teams: Joi.object({
