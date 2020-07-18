@@ -19,7 +19,4 @@ export class Transport {
   open() {
     this.isOpen = true;
   }
-
-  log() {}
-  close() {}
 }

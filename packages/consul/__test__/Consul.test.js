@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { registerData, connectionOptions, passedConnectOptions } from './Consul.mock.js';
 
 let logger = {};

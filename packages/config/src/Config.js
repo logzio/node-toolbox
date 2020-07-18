@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { Observable } from './Observable.js';
+import { Observable } from '@madvinking/utils';
 import deepMerge from 'deepmerge';
 import { validateAndGetJoiSchema } from './helpers.js';
 

@@ -1,4 +1,4 @@
-export function createSingletonInstance(name = 'instance') {
+export function ExportAsync(name = 'instance') {
   let instance = null;
   let __set__ = false;
   const instanceProxy = new Proxy(

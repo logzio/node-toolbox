@@ -104,7 +104,6 @@ const f = formatters.renameFields({'path.to.field.to.rename': 'name.to.rename.to
 const f = formatters.sliceFields(['path.to.field.to.slice'], 1000);
 // will slice the given list of fields if are bigger the the value
 
-
 ```
 
 

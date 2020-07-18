@@ -1,7 +1,7 @@
 {
-  "name": "@madvinking/config",
+  "name": "@madvinking/utils",
   "version": "1.0.0",
-  "description": "config manager based on Joi schema with subscription capabilities",
+  "description": "collection of nice utils",
   "main": "src/index.js",
   "type": "module",
   "author": "Nir winkler <madvinking@gmail.com>",
@@ -13,9 +13,5 @@
     "upkg": "ncu --packageFile ./package.json"
   },
   "dependencies": {
-    "@madvinking/utils": "1.0.0",
-    "@hapi/joi": "17.1.1",
-    "deepmerge": "4.2.2"
-
   }
 }

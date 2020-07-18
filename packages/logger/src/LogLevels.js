@@ -28,5 +28,5 @@ export default {
 };
 
 export function changeLogLevelColor({ logLevel, color }) {
-  if (metaData[logLevel] && /^#.{6}$/.test(color)) metaData[logLevel] = color;
+  if (levelsMetaData[logLevel] && /^#.{6}$/.test(color)) levelsMetaData[logLevel] = color;
 }
