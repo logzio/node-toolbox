@@ -38,9 +38,8 @@ if key is empty will watch all config
 return unSubscribe method
 
 ```javascript
-const unSubscribe = config.subscribe({ key: 'path.to.value.to.watch', onChange: (err) => {
-  console.log(err)
-  return true;
+const unSubscribe = config.subscribe({ key: 'path.to.value.to.watch', onChange: (value) => {
+  console.log("new value:", value);
 }})
 
 unSubscribe(); // stop watching value
