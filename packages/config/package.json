@@ -1,7 +1,7 @@
 {
   "name": "@madvinking/config",
   "version": "1.0.0",
-  "description": "config manager on schema",
+  "description": "config manager based on Joi schema with subscription capabilities",
   "main": "src/index.js",
   "type": "module",
   "author": "Nir winkler <madvinking@gmail.com>",
