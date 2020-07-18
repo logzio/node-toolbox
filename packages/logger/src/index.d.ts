@@ -26,7 +26,7 @@ export interface LoggerOptions {
 }
 
 export declare class Logger {
-  public constructor(loggerOptions?: LoggerOptions);
+  public constructor(loggerOptions: LoggerOptions);
   public debug(): void;
   public log(): void;
   public info(): void;

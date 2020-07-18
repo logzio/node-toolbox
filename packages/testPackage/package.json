@@ -13,6 +13,7 @@
     "upkg": "ncu --packageFile ./package.json"
   },
   "dependencies": {
-    "@madvinking/logger": "1.0.0"
+    "@madvinking/logger": "1.0.0",
+    "@madvinking/config": "1.0.0"
   }
 }

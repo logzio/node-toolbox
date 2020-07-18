@@ -4,36 +4,37 @@ import deepMerge from 'deepmerge';
 import { validateAndGetJoiSchema } from './helpers.js';
 
 export class Config {
+  #config;
+  #schema;
+  #observable;
+  #observables;
+  #overrides;
+
   constructor({ schema, defaults = {}, overrides = {} } = {}) {
     if (!schema) throw new Error('must pass Joi type schema');
 
-    this.schema = validateAndGetJoiSchema(schema);
-    this.config = {};
-    this.observables = {};
-    this.overrides = _.pickBy(overrides);
-    this.observable = new Observable(this.config);
+    this.#config = {};
+    this.#observables = {};
+    this.#schema = validateAndGetJoiSchema(schema);
+    this.#overrides = _.pickBy(overrides);
+    this.#observable = new Observable(this.#config);
     this._merge({ value: defaults });
   }
 
-  _isValidate(data) {
-    const { error } = this.schema.validate(data, { abortEarly: false });
-    return error ? false : true;
-  }
-
   _merge({ value, onError } = {}) {
-    const curVales = deepMerge.all([this.config, value, this.overrides]);
-    const { error, value: validated } = this.schema.validate(curVales, { abortEarly: false });
+    const curVales = deepMerge.all([this.#config, value, this.#overrides]);
+    const { error, value: validated } = this.#schema.validate(curVales, { abortEarly: false });
 
     if (!error) {
-      this.config = validated;
+      this.#config = validated;
     } else if (onError) {
       if (onError(error)) {
-        const { value: newValidated } = this.schema.validate(curVales, {
+        const { value: newValidated } = this.#schema.validate(curVales, {
           allowUnknown: true,
           abortEarly: false,
         });
 
-        this.config = newValidated;
+        this.#config = newValidated;
       }
     } else throw error;
   }
@@ -41,11 +42,11 @@ export class Config {
   subscribe({ key = null, onChange }) {
     if (!onChange) return;
     if (!key) {
-      return this.observable.subscribe(onChange);
-    } else if (!this.observables[key]) {
-      this.observables[key] = new Observable(this.get(key));
+      return this.#observable.subscribe(onChange);
+    } else if (!this.#observables[key]) {
+      this.#observables[key] = new Observable(this.get(key));
     }
-    return this.observables[key].subscribe(onChange);
+    return this.#observables[key].subscribe(onChange);
   }
 
   set({ value, key, onError }) {
@@ -53,14 +54,14 @@ export class Config {
     if (key) value = _.set({}, key, value);
     this._merge({ value, onError });
 
-    Object.entries(this.observables).forEach(([key, obs]) => {
+    Object.entries(this.#observables).forEach(([key, obs]) => {
       obs.set(this.get(key));
     });
-    this.observable.set(this.config);
+    this.#observable.set(this.#config);
   }
 
   get(key) {
-    if (!key) return this.config;
-    return _.get(this.config, key);
+    if (!key) return this.#config;
+    return _.get(this.#config, key);
   }
 }
