@@ -2,7 +2,7 @@ import LogzioLogger from 'logzio-nodejs';
 import { Transport } from './Transport.js';
 
 export class LogzioTransport extends Transport {
-  constructor({ host, type, token, metaData = {}, name = 'logzio', formatters = [], logLevel = null, ...moreOptions }) {
+  constructor({ host, type, token, metaData = {}, name = 'logzio', formatters = [], logLevel = null, ...moreOptions } = {}) {
     super({ name, formatters, logLevel });
     if (!token) throw new Error('must include logz.io token');
 

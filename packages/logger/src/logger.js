@@ -2,16 +2,15 @@ import _ from 'lodash';
 import LogLevel, { levelsMetaData } from './LogLevels.js';
 import dateFormat from 'dateformat';
 
-const isOnlyObject = a => !_.isArray(a) && _.isObject(a)
+const isOnlyObject = a => !_.isArray(a) && _.isObject(a);
 
-/** Class representing a logger. */
 export class Logger {
-  #transports
-  #formatters
-  #metaData
-  #datePattern
-  #logLevel
-  #_log
+  #transports;
+  #formatters;
+  #metaData;
+  #datePattern;
+  #logLevel;
+  #_log;
 
   constructor({
     transports = [],
@@ -20,7 +19,6 @@ export class Logger {
     datePattern = 'dd/mm/yyyy hh:mm:ss.l',
     logLevel = LogLevel.INFO,
   } = {}) {
-
     if (transports.length === 0) console.warn('LOGGER: HAVE NO TRANSPORTS');
     this.#transports = transports;
     this.transports = transports.reduce((acc, transport) => {
@@ -32,13 +30,13 @@ export class Logger {
     this.#metaData = metaData;
     this.#formatters = formatters;
     this.#datePattern = datePattern;
-    this.#_log = function _log(logLevel = LogLevel.INFO, [message = null, ...rest ] = []) {
-      const data ={
-        ...rest.reduce((cur, arg ) => {
+    this.#_log = function _log(logLevel = LogLevel.INFO, [message = null, ...rest] = []) {
+      const data = {
+        ...rest.reduce((cur, arg) => {
           if (isOnlyObject(arg)) {
             cur = {
               ...cur,
-              ...arg
+              ...arg,
             };
           } else {
             if (!cur._logArgs_) cur._logArgs_ = [];
@@ -46,8 +44,8 @@ export class Logger {
           }
           return cur;
         }, {}),
-        ...isOnlyObject(message) ? message : { message }
-      }
+        ...(isOnlyObject(message) ? message : { message }),
+      };
 
       const timestamp = this.#datePattern ? { timestamp: dateFormat(new Date(), this.#datePattern) } : null;
       const formattedData = this.#formatters.reduce((transformData, formatter) => formatter(transformData), {
@@ -63,8 +61,7 @@ export class Logger {
 
         if (transport.isOpen && shouldLog) transport.log(transport.format(formattedData));
       });
-    }
-
+    };
   }
   debug() {
     this.#_log(LogLevel.DEBUG, arguments);
