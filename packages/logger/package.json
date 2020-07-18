@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "multi-functional logger",
   "main": "src/index.js",
+  "types": "src/index.d.ts",
   "type": "module",
   "author": "Nir winkler <madvinking@gmail.com>",
   "publishConfig": {

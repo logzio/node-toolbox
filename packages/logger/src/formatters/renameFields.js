@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 export function renameFields(fieldsToRename = {}) {
-  return function normalizeLog({ ...data }) {
+  return function renameFieldsLog({ ...data }) {
     Object.entries(fieldsToRename).forEach(([from, to]) => {
       const fieldValue = _.get(data, from);
 

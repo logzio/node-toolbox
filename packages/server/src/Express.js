@@ -1,13 +1,15 @@
 import _ from 'lodash';
 import bodyParser from 'body-parser';
 import helmet from 'helmet';
+import http from 'http';
 export class Express {
-  constructor({ port = 3000, middlewares = [], routes = [], beforeAll = null, onError = null } = {}) {
+  constructor({ port = 3000, middlewares = [], routes = [], beforeAll = null, afterAll = null, errorHandler = null } = {}) {
     this.port = port;
     this.middlewares = middlewares;
     this.routes = routes;
     this.beforeAll = beforeAll;
-    this.onError = onError;
+    this.afterAll = afterAll;
+    this.errorHandler = errorHandler;
   }
 
   async start() {
@@ -35,10 +37,13 @@ export class Express {
       } else if (r instanceof express.Router) app.use(r);
     });
 
-    app.use(this.onError);
+    app.use(this.errorHandler);
+    const server = http.createServer(app);
+
+    if (this.afterAll) this.afterAll({ app, server });
 
     return new Promise(resolve => {
-      const server = app.listen(this.port, () => resolve({ app, server }));
+      app.listen(this.port, () => resolve({ app, server }));
     });
   }
 }

@@ -1,0 +1,18 @@
+{
+  "name": "@madvinking/tests",
+  "version": "1.0.0",
+  "description": "Consul easy use for json configs and service discovery",
+  "main": "src/index.js",
+  "type": "module",
+  "author": "Nir winkler <madvinking@gmail.com>",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules",
+    "upkg": "ncu --packageFile ./package.json"
+  },
+  "dependencies": {
+    "@madvinking/logger": "1.0.0"
+  }
+}

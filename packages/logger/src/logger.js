@@ -1,65 +1,89 @@
-import { LogLevels } from './LogLevels.js';
+import _ from 'lodash';
+import LogLevel, { levelsMetaData } from './LogLevels.js';
 import dateFormat from 'dateformat';
 
+const isOnlyObject = a => !_.isArray(a) && _.isObject(a)
+
+/** Class representing a logger. */
 export class Logger {
+  #transports
+  #formatters
+  #metaData
+  #datePattern
+  #logLevel
+  #_log
+
   constructor({
     transports = [],
     metaData = {},
     formatters = [],
     datePattern = 'dd/mm/yyyy hh:mm:ss.l',
-    logLevel = LogLevels.levels.INFO,
+    logLevel = LogLevel.INFO,
   } = {}) {
+
     if (transports.length === 0) console.warn('LOGGER: HAVE NO TRANSPORTS');
-    this._transports = transports;
-    this.transports = transports.reduce((acc, transporter) => {
-      acc[transporter.name] = transporter;
+    this.#transports = transports;
+    this.transports = transports.reduce((acc, transport) => {
+      acc[transport.name] = transport;
       return acc;
     }, {});
 
-    this._logLevel = logLevel;
-    this.metaData = metaData;
-    this.formatters = formatters;
-    this.datePattern = datePattern;
+    this.#logLevel = logLevel;
+    this.#metaData = metaData;
+    this.#formatters = formatters;
+    this.#datePattern = datePattern;
+    this.#_log = function _log(logLevel = LogLevel.INFO, [message = null, ...rest ] = []) {
+      const data ={
+        ...rest.reduce((cur, arg ) => {
+          if (isOnlyObject(arg)) {
+            cur = {
+              ...cur,
+              ...arg
+            };
+          } else {
+            if (!cur._logArgs_) cur._logArgs_ = [];
+            cur._logArgs_.push(arg);
+          }
+          return cur;
+        }, {}),
+        ...isOnlyObject(message) ? message : { message }
+      }
+
+      const timestamp = this.#datePattern ? { timestamp: dateFormat(new Date(), this.#datePattern) } : null;
+      const formattedData = this.#formatters.reduce((transformData, formatter) => formatter(transformData), {
+        ...this.#metaData,
+        ...data,
+        logLevel,
+        ...timestamp,
+      });
+
+      this.#transports.forEach(transport => {
+        let currentLevel = transport.logLevel || this.#logLevel;
+        let shouldLog = levelsMetaData[formattedData.logLevel].weight <= levelsMetaData[currentLevel].weight;
+
+        if (transport.isOpen && shouldLog) transport.log(transport.format(formattedData));
+      });
+    }
+
   }
-
-  _log(logLevel = LogLevels.levels.INFO, [message = null, data = {}] = []) {
-    if (typeof message === 'string') data.message = message;
-    else if (typeof message === 'object' || message instanceof Object) data = { ...message, ...data };
-
-    const timestamp = this.datePattern ? { timestamp: dateFormat(new Date(), this.datePattern) } : null;
-    const formattedData = this.formatters.reduce((transformData, formatter) => formatter(transformData), {
-      ...this.metaData,
-      ...data,
-      logLevel,
-      ...timestamp,
-    });
-
-    this._transports.forEach(transport => {
-      let currentLevel = transport.logLevel || this._logLevel;
-      let shouldLog = LogLevels.metaData[formattedData.logLevel].weight <= LogLevels.metaData[currentLevel].weight;
-
-      if (transport.isOpen && shouldLog) transport.log(transport.format(formattedData));
-    });
-  }
-
   debug() {
-    this._log(LogLevels.levels.DEBUG, arguments);
+    this.#_log(LogLevel.DEBUG, arguments);
   }
 
   log() {
-    this._log(LogLevels.levels.INFO, arguments);
+    this.#_log(LogLevel.INFO, arguments);
   }
 
   info() {
-    this._log(LogLevels.levels.INFO, arguments);
+    this.#_log(LogLevel.INFO, arguments);
   }
 
   warn() {
-    this._log(LogLevels.levels.WARN, arguments);
+    this.#_log(LogLevel.WARN, arguments);
   }
 
   error() {
-    this._log(LogLevels.levels.ERROR, arguments);
+    this.#_log(LogLevel.ERROR, arguments);
   }
 
   beautify() {
@@ -67,14 +91,33 @@ export class Logger {
 
     data.__makeLogPrettyJSON__ = true;
 
-    this._log(LogLevels.levels.INFO, [message, data]);
+    this.#_log(LogLevel.INFO, [message, data]);
+  }
+  addTransport(transport) {
+    this.#transports.push(transport);
+    this.transports[transport.name] = transport;
+  }
+
+  async removeTransport(name) {
+    if (this.transports[name]) {
+      await this.transports[name].close();
+      _.unset(this.transports, name);
+      this.#transports = this.#transports.filter(t => t.name !== name);
+    }
+  }
+
+  addFormatter(formatter) {
+    this.#formatters = this.#formatters.push(formatter);
+  }
+  removeFormatter(formatter) {
+    this.#formatters = this.#formatters.filter(f => f !== formatter);
   }
 
   close() {
-    return Promise.all(this._transports.map(transporter => transporter.close()));
+    return Promise.all(this.#transports.map(transporter => transporter.close()));
   }
 
   logLevel(level) {
-    if (LogLevels.levels[level]) this._logLevel = level;
+    if (LogLevel[level]) this.#logLevel = level;
   }
 }

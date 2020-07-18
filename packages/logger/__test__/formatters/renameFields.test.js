@@ -1,4 +1,4 @@
-import { renameFields } from '../../src/formatters/renameFields';
+import { renameFields } from '../../src/formatters/renameFields.js';
 
 describe('formatter - renameFields', () => {
   it('should rename fields', () => {

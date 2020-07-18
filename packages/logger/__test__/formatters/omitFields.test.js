@@ -1,4 +1,4 @@
-import { omitFields } from '../../src/formatters/omitFields';
+import { omitFields } from '../../src/formatters/omitFields.js';
 
 describe('formatter - omitFields', () => {
   it('should remove fields', () => {

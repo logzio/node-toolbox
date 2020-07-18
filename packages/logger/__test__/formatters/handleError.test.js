@@ -1,4 +1,4 @@
-import { handleError } from '../../src/formatters/handleError';
+import { handleError } from '../../src/formatters/handleError.js';
 import { serializeError } from 'serialize-error';
 describe('formatter - handleError', () => {
   it('should serialized error but keep all the other fields', () => {

@@ -1,4 +1,4 @@
-import { pickFieldsOfProperty } from '../../src/formatters/pickFieldsOfProperty';
+import { pickFieldsOfProperty } from '../../src/formatters/pickFieldsOfProperty.js';
 
 describe('formatter - pickFieldsOfProperty', () => {
   it('should filter request fields and flatten to log', () => {

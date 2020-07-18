@@ -1,4 +1,4 @@
-import { logSize } from '../../src/formatters/logSize';
+import { logSize } from '../../src/formatters/logSize.js';
 
 describe('formatter - logSize', () => {
   it('should add log size to each log', () => {

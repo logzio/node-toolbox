@@ -1,6 +1,6 @@
 import _ from 'lodash';
-
-export function removeCircularFields(log) {
+export function removeCircularFields() {
+  return function removeCircularFieldsLog(log) {
   const map = new WeakMap();
   const noCirculars = v => {
     if (_.isArray(v)) return v.map(noCirculars);
@@ -20,6 +20,6 @@ export function removeCircularFields(log) {
 
     return v;
   };
-
-  return noCirculars(log);
+    return noCirculars(log);
+  }
 }

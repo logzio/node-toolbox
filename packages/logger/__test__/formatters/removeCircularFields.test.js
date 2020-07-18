@@ -1,4 +1,4 @@
-import { removeCircularFields } from '../../src/formatters/removeCircularFields';
+import { removeCircularFields } from '../../src/formatters/removeCircularFields.js';
 
 describe('formatter - removeCircularFields', () => {
   it('should remove circular fields', () => {
@@ -14,7 +14,7 @@ describe('formatter - removeCircularFields', () => {
       array: ['1', log, { circular3: log }],
     };
 
-    const modifiedLog = removeCircularFields(log);
+    const modifiedLog = removeCircularFields()(log);
 
     expect(modifiedLog).toEqual({
       nestedLevel1: {

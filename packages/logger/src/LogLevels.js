@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 const { magenta, white, yellow, red } = chalk;
 
-const metaData = {
+export const levelsMetaData = {
   DEBUG: {
     weight: 5,
     color: magenta,
@@ -20,15 +20,13 @@ const metaData = {
   },
 };
 
-const levels = {
+export default {
   DEBUG: 'DEBUG',
   INFO: 'INFO',
   WARN: 'WARN',
   ERROR: 'ERROR',
 };
 
-function changeColor(logLevel, color) {
+export function changeLogLevelColor({ logLevel, color }) {
   if (metaData[logLevel] && /^#.{6}$/.test(color)) metaData[logLevel] = color;
 }
-
-export const LogLevels = { levels, metaData, changeColor };

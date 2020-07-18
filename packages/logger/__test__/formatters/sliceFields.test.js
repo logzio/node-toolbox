@@ -1,4 +1,4 @@
-import { sliceFields } from '../../src/formatters/sliceFields';
+import { sliceFields } from '../../src/formatters/sliceFields.js';
 
 describe('formatter - sliceFields', () => {
   it('should slice field', () => {

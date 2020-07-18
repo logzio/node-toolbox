@@ -1,4 +1,4 @@
-import { LogLevels } from '../LogLevels.js';
+import LogLevel from '../LogLevels.js';
 
 export class Transport {
   constructor({ name, logLevel = null, formatters = [] }) {
@@ -13,7 +13,7 @@ export class Transport {
   }
 
   logLevel(level) {
-    if (LogLevels.levels[level]) this.logLevel = level;
+    if (LogLevel[level]) this.logLevel = level;
   }
 
   open() {

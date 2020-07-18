@@ -1,4 +1,4 @@
-import { maskFields } from '../../src/formatters/maskFields';
+import { maskFields } from '../../src/formatters/maskFields.js';
 
 describe('formatter - maskFields', () => {
   it('should mask filed from log if it is a string type', () => {

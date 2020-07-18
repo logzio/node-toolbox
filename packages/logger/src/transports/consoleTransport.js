@@ -1,4 +1,4 @@
-import { LogLevels } from '../LogLevels.js';
+import { levelsMetaData } from '../LogLevels.js';
 import { Transport } from './Transport.js';
 import stringify from 'json-stringify-safe';
 import colorize from 'json-colorizer';
@@ -19,7 +19,7 @@ function printJSON(colorizeLog = false) {
     if (keys) rest = stringify(rest, null, __makeLogPrettyJSON__ ? 4 : 0);
 
     if (colorizeLog)
-      return `${LogLevels.metaData[logLevel].color(logLevel)}: ${chalk.blue(timestamp)} ${message ? message : ''}${
+      return `${levelsMetaData[logLevel].color(logLevel)}: ${chalk.blue(timestamp)} ${message ? message : ''}${
         keys ? ` ${colorize(rest)}` : ''
       }`;
 

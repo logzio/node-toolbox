@@ -2,10 +2,11 @@ import objectSize from 'rough-object-size';
 import { removeCircularFields } from './removeCircularFields.js';
 import _ from 'lodash';
 
+const rmCircular = removeCircularFields();
 export function sliceFields(fieldsToSlice = [], maxFieldByteSize = 10000) {
   const maxFieldLength = maxFieldByteSize / 2;
 
-  function sliceObject(log, obj, key) {
+  function _sliceObject(log, obj, key) {
     const size = objectSize.roughObjectSize(obj);
 
     if (size >= maxFieldByteSize) {
@@ -15,11 +16,11 @@ export function sliceFields(fieldsToSlice = [], maxFieldByteSize = 10000) {
 
       _.set(log, `overSizedField-${key}.keysLengths`, keysLengths);
       _.set(log, `overSizedField-${key}.size`, size);
-      sliceStringField(log, JSON.stringify(removeCircularFields(obj)), key);
+      sliceStringField(log, JSON.stringify(rmCircular(obj)), key);
     }
   }
 
-  function addToSlicedObject(log, fieldPath, fieldLength) {
+  function _addToSlicedObject(log, fieldPath, fieldLength) {
     if (!log.slicedFields) log.slicedFields = {};
 
     log.slicedFields[fieldPath] = fieldLength;
@@ -28,7 +29,7 @@ export function sliceFields(fieldsToSlice = [], maxFieldByteSize = 10000) {
   function sliceStringField(log, value, fieldToSlice) {
     if (typeof value === 'string' && value.length > maxFieldLength) {
       _.set(log, `stringify-${fieldToSlice}`, `${value.slice(0, maxFieldLength)} ...`);
-      addToSlicedObject(log, fieldToSlice, value.length);
+      _addToSlicedObject(log, fieldToSlice, value.length);
     }
   }
 
@@ -39,7 +40,7 @@ export function sliceFields(fieldsToSlice = [], maxFieldByteSize = 10000) {
       if (!value) return;
 
       if (typeof value === 'string') sliceStringField(log, value, filedToSlice);
-      else if (typeof value === 'object') sliceObject(log, value, filedToSlice);
+      else if (typeof value === 'object') _sliceObject(log, value, filedToSlice);
     });
 
     return log;
