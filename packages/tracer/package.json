@@ -1,5 +1,5 @@
 {
-  "name": "@madvinking/tracer",
+  "name": "@logzio-node-toolbox/tracer",
   "version": "1.0.0",
   "description": "multi-functional trace",
   "main": "src/index.js",

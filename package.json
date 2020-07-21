@@ -1,7 +1,7 @@
 {
-  "name": "madvinking-node-tools",
+  "name": "logzio-node-tools",
   "version": "0.0.0",
-  "description": "the perfect node template & tools",
+  "description": "the perfect node templates & tools",
   "main": "src/index.js",
   "private": true,
   "type": "module",

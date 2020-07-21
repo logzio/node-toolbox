@@ -9,7 +9,7 @@ formatters - mappers function to pass the log data throw to add/remove/change th
 
 
 ```javascript
-import { Logger, transports, formatters, LogLevel } from '@madvinking/logger';
+import { Logger, transports, formatters, LogLevel } from '@logzio-node-toolbox/logger';
 
 const logSizeFormatter = formatters.LogSize();
 
@@ -54,7 +54,7 @@ await logger.close() // will wait for all transports to close
 
 ## current formatters
 ```javascript
-import { formatters } from '@madvinking/logger';
+import { formatters } from '@logzio-node-toolbox/logger';
 
 
 const f = formatters.omitFields(['path.to.omit']);

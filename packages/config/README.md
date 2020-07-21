@@ -3,7 +3,7 @@ an efficient config manager based on Joi schema for better manage
 
 ## Usage
 ```javascript
-import { Config } from '@madvinking/config';
+import { Config } from '@logzio-node-toolbox/config';
 
 const schema = {}; // Joi schema or array of Joi schemas (in case or array will merge the schemas)
 

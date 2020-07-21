@@ -1,5 +1,5 @@
 {
-  "name": "@madvinking/logger",
+  "name": "@logzio-node-toolbox/logger",
   "version": "1.0.0",
   "description": "multi-functional logger",
   "main": "src/index.js",

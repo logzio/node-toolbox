@@ -1,5 +1,5 @@
 {
-  "name": "@madvinking/metrics",
+  "name": "@logzio-node-toolbox/metrics",
   "version": "1.0.1",
   "description": "simple metrics reporter",
   "main": "src/index.js",

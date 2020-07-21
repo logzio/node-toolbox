@@ -1,5 +1,5 @@
 {
-  "name": "@madvinking/utils",
+  "name": "@logzio-node-toolbox/utils",
   "version": "1.0.0",
   "description": "collection of nice utils",
   "main": "src/index.js",

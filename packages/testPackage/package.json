@@ -1,5 +1,5 @@
 {
-  "name": "@madvinking/tests",
+  "name": "@logzio-node-toolbox/tests",
   "version": "1.0.0",
   "description": "Consul easy use for json configs and service discovery",
   "main": "src/index.js",
@@ -13,7 +13,7 @@
     "upkg": "ncu --packageFile ./package.json"
   },
   "dependencies": {
-    "@madvinking/logger": "1.0.0",
-    "@madvinking/config": "1.0.0"
+    "@logzio-node-toolbox/logger": "1.0.0",
+    "@logzio-node-toolbox/config": "1.0.0"
   }
 }

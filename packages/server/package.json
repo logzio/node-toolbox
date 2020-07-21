@@ -1,5 +1,5 @@
 {
-  "name": "@madvinking/server",
+  "name": "@logzio-node-toolbox/server",
   "version": "1.0.0",
   "description": "server utils and frameworks templates",
   "main": "src/index.js",

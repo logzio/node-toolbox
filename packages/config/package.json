@@ -1,5 +1,5 @@
 {
-  "name": "@madvinking/config",
+  "name": "@logzio-node-toolbox/config",
   "version": "1.0.0",
   "description": "config manager based on Joi schema with subscription capabilities",
   "main": "src/index.js",
@@ -13,7 +13,7 @@
     "upkg": "ncu --packageFile ./package.json"
   },
   "dependencies": {
-    "@madvinking/utils": "1.0.0",
+    "@logzio-node-toolbox/utils": "1.0.0",
     "@hapi/joi": "17.1.1",
     "deepmerge": "4.2.2"
 

@@ -1,5 +1,5 @@
 {
-  "name": "@madvinking/consul",
+  "name": "@logzio-node-toolbox/consul",
   "version": "1.0.0",
   "description": "Consul easy use for json configs and service discovery",
   "main": "src/index.js",
