@@ -3,13 +3,13 @@ import { Consul } from './Consul.js';
 
 export class MultiConsul extends Consul {
   #paths;
-  #values;
+
   #mergedValues;
   constructor({ paths = [], ...consulOptions } = {}) {
     super(consulOptions);
     this.#paths = paths;
     let p = 1;
-    this.#values = paths.reduce((acc, path) => {
+    this.values = paths.reduce((acc, path) => {
       acc[path] = { p, value: {} };
       p++;
       return acc;
@@ -19,7 +19,7 @@ export class MultiConsul extends Consul {
   }
 
   _mergeAll() {
-    const values = Object.values(this.#values)
+    const values = Object.values(this.values)
       .sort((a, b) => a.p - b.p)
       .map(({ value }) => value);
 
@@ -30,7 +30,7 @@ export class MultiConsul extends Consul {
   async _loadAll() {
     const data = await Promise.allSettled(this.#paths.map(path => this.get(path)));
     data.forEach(({ value: { value, key } = {} }) => {
-      if (key && value) this.#values[key].value = value;
+      if (key && value) this.values[key].value = value;
     });
 
     return this._mergeAll();
@@ -43,7 +43,7 @@ export class MultiConsul extends Consul {
   }
 
   async _onOneChange({ key, value }) {
-    this.#values[key].value = value;
+    this.values[key].value = value;
     return this._mergeAll();
   }
 
@@ -59,13 +59,3 @@ export class MultiConsul extends Consul {
     );
   }
 }
-
-// const multiConsul = new MultiConsul({ port: 18500, paths: ['config1.json', 'config2.json', 'config3.json'] });
-
-// async function init() {
-//   multiConsul.watchAll(({ key, changedValue, value }) => {
-//     console.log('init -> key, changedValue, value', key, changedValue, value);
-//   });
-// }
-
-// init();

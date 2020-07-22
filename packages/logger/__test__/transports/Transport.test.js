@@ -27,7 +27,9 @@ describe('transports - Transport - create default transport', () => {
     );
 
     t.logLevel = 'DEBUG';
-
+    t.close();
+    logger.debug('hello');
+    t.open();
     logger.debug('hello');
     expect(t.log).toBeCalledTimes(2);
   });
