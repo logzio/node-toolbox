@@ -4,6 +4,7 @@
   "description": "the perfect node templates & tools",
   "main": "src/index.js",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "clean": "lerna clean && rm -rf node_modules",
@@ -11,7 +12,8 @@
     "test:watch": "jest --watch --config jest.config.cjs",
     "test:debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --config jest.config.cjs",
     "lint": "eslint -c .eslintrc.cjs  --quiet --color packages/**/*.js",
-    "upkg": "lerna run upkg && ncu"
+    "upkg": "lerna run upkg && ncu",
+    "checkLicense": "license-checker | grep 'licenses:' | sort -u"
   },
   "author": "Nir Winkler",
   "workspaces": [
@@ -24,6 +26,7 @@
     "@typescript-eslint/parser": "^3.7.0",
     "babel-jest": "^26.1.0",
     "eslint": "^7.5.0",
+    "license-checker": "25.0.1",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
     "husky": "4.2.5",
@@ -35,8 +38,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint && yarn test && yarn upkg",
-      "pre-push": ""
+      "pre-commit": "yarn lint && yarn test",
+      "pre-push": "yarn upkg && yarn checkLicense"
     }
   },
   "engines": {

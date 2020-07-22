@@ -4,6 +4,7 @@
   "description": "config manager based on Joi schema with subscription capabilities",
   "main": "src/index.js",
   "type": "module",
+  "license": "MIT",
   "author": "Nir winkler <madvinking@gmail.com>",
   "publishConfig": {
     "access": "public"

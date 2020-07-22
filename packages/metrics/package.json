@@ -4,6 +4,7 @@
   "description": "simple metrics reporter",
   "main": "src/index.js",
   "type": "module",
+  "license": "MIT",
   "author": "Nir winkler <madvinking@gmail.com>",
   "publishConfig": {
     "access": "public"
