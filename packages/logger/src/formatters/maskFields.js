@@ -1,4 +1,5 @@
 import _ from 'lodash';
+
 export function maskFields(list = [], defaultLengthToMask = 7) {
   return function maskFieldsLog(log) {
     list.forEach(({ field, length = null }) => {

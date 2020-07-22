@@ -5,4 +5,4 @@ export { sliceFields } from './sliceFields.js';
 export { renameFields } from './renameFields.js';
 export { removeCircularFields } from './removeCircularFields.js';
 export { handleError } from './handleError.js';
-export { pickFieldsOfProperty } from './pickFieldsOfProperty.js';
+export { pickFields } from './pickFields.js';

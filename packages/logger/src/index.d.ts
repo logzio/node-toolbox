@@ -99,7 +99,7 @@ export declare namespace formatters {
   function logSize(maxLogSizeBytes: number): ReceiveLog;
   function maskFields(fields: MaskField[]): ReceiveLog;
   function omitFields(fields: string[]): ReceiveLog;
-  function pickFieldsOfProperty(name: string, list: string[], shouldFlat?: boolean): ReceiveLog;
+  function pickFields(name: string, list: string[], shouldFlat?: boolean): ReceiveLog;
   function removeCircularFields(): ReceiveLog;
   function renameFields(fields: RenameField[]): ReceiveLog;
   function sliceFields(fields: string[], maxFieldByteSize: number): ReceiveLog;

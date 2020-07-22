@@ -90,8 +90,8 @@ logger.log({
 ```
 
 ### handleError
-will look for err || error || message. err fields make sure they are objects,
-will serialize it and make sure logLevel is error.
+1. look for err || error || message. err fields make sure they are objects.
+2. serialize the error and make sure logLevel is error.
 ```javascript
 import { formatters } from '@logzio-node-toolbox/logger';
 
@@ -105,8 +105,8 @@ logger.log({
 ```
 
 ### logSize
-will add logSize field to the log.
-will make sure log is not bigger than the value pass in bytes.
+1. add logSize field to the log.
+2. validate log is size with value pass in bytes.
 ```javascript
 import { formatters } from '@logzio-node-toolbox/logger';
 
@@ -115,7 +115,6 @@ const logger = new Logger(formatters: [f]);
 logger.log('message with log size', { field: 'random' });
 // output: INFO: 18/07/2020 04:07:19.079 message with log size { logSize: 40 }
 
-
 const f = formatters.logSize(30);
 const logger = new Logger(formatters: [f]);
 logger.log('message with log size', { field: 'random' });
@@ -123,54 +122,76 @@ logger.log('message with log size', { field: 'random' });
 ```
 
 ### maskFields
-will add logSize field to the log.
-will make sure log is not bigger than the value pass in bytes.
+mask fields by the length was received with *
+ @param list - {{ field: string, length?: number  }}
+ @param length - number (default 7)
 ```javascript
 import { formatters } from '@logzio-node-toolbox/logger';
 
 const f = formatters.maskFields([{field: 'password', length: 6 }], 10);
 const logger = new Logger(formatters: [f]);
-logger.log('message with log size', { field: 'random' });
-// output: INFO: 18/07/2020 04:07:19.079 message with log size { logSize: 40 }
-
-
-
+logger.log({
+  field: 'random',
+  password: '12345678',
+  ip: '123.123.123.123',
+  });
+// output: INFO: 18/07/2020 04:07:19.079 message with log size { field: 'random', password: '**345678', ip: '****23.123.123' }
 ```
 
+### pickFields
+will omit all object property except the given array
+ @param fieldName - string
+ @param list - array if strings
+ @param flatten - will flat the omit fields to the root of the log |  default false
+```javascript
+import { formatters } from '@logzio-node-toolbox/logger';
 
-
-
-const f = formatters.maskFields([{field: 'password', length: 6 }], 10);
-/*
-mask passed fields with each length mention,
-if length == 0 will mask all
-if length not define will use the default (10 in this example)
-*/
-
-
-const f = formatters.pickFieldsOfProperty('req', ['port', 'host'], false);
+const f = formatters.pickFields('req', ['port', 'host'], true);
+const logger = new Logger(formatters: [f]);
 logger.info("incoming" ,{req: {port: '3000', host: 'localhost', ip: "127.0.0.1" }});
 // INFO: 18/07/2020 04:07:19.079 {"message":"incoming", "port": "3000", host: "localhost"}
-const f = formatters.pickFieldsOfProperty('req', ['port', 'host'], true);
+
+const f = formatters.pickFields('req', ['port', 'host'], false);
 logger.info("incoming" ,{req: { port: '3000', host: 'localhost', ip: "127.0.0.1" }});
 // INFO: 18/07/2020 04:07:19.079 {"message":"incoming", req: { "port": "3000", host: "localhost"} }
-/*
-revest to omit choose only fields u need from type of fields
-param1 - name of the field
-param2 - array of properties to keep
-param3 - should flat the left properties the main root of the log
-*/
-
-const f = formatters.removeCircularFields();
-// will iterate over the log and remove all circular fields
-
-const f = formatters.renameFields({'path.to.field.to.rename': 'name.to.rename.to' });
-// will rename fields from to
-
-const f = formatters.sliceFields(['path.to.field.to.slice'], 1000);
-// will slice the given list of fields if are bigger the the value
-
 ```
 
+### removeCircularFields
+iterate over the log and remove all circular fields
+```javascript
+import { formatters } from '@logzio-node-toolbox/logger';
 
+const f = formatters.removeCircularFields();
+const logger = new Logger(formatters: [f]);
 
+const a = {name : 'name'};
+a.b = a;
+logger.info(a);
+// INFO: 18/07/2020 04:07:19.079 {"name":"name", "b": [Circular] }
+```
+
+### renameFields
+rename fields from to path to path
+```javascript
+import { formatters } from '@logzio-node-toolbox/logger';
+
+const f = formatters.renameFields({'path.to.field.rename': 'name.to.field. newName' });
+const logger = new Logger(formatters: [f]);
+
+logger.info({ path: { to : {field : { rename: "some value"}}}});
+// INFO: 18/07/2020 04:07:19.079 { path: { to : {field : { newName: "some value"}}}}
+```
+
+### sliceFields
+@param list - array of paths to slice  (if field is object will stringify it before slice)
+@param size - size to slice .
+
+```javascript
+import { formatters } from '@logzio-node-toolbox/logger';
+
+const f = formatters.sliceFields(['path.to.field.slice'], 10);
+const logger = new Logger(formatters: [f]);
+
+logger.info({ path: { to : { slice : { rename: "some value" }}}});
+// INFO: 18/07/2020 04:07:19.079 { path: { to : {field : { newName: "some value"}}}}
+```
