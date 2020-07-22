@@ -6,6 +6,11 @@
   "type": "module",
   "license": "MIT",
   "author": "Nir winkler <madvinking@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/logzio/node-toolbox.git",
+    "directory": "packages/metrics"
+  },
   "publishConfig": {
     "access": "public"
   },

@@ -6,6 +6,10 @@
   "private": true,
   "license": "MIT",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/logzio/node-toolbox.git"
+  },
   "scripts": {
     "clean": "lerna clean && rm -rf node_modules",
     "test": "jest --config jest.config.cjs",
