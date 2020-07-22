@@ -3,15 +3,15 @@ const { magenta, white, yellow, red } = chalk;
 
 export const levelsMetaData = {
   DEBUG: {
-    weight: 5,
+    weight: 8,
     color: magenta,
   },
   INFO: {
-    weight: 4,
+    weight: 6,
     color: white,
   },
   WARN: {
-    weight: 3,
+    weight: 4,
     color: yellow,
   },
   ERROR: {

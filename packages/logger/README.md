@@ -1,26 +1,42 @@
-# Logger
-extremely lightweight logger base on winston concept of transports and formatters
+<p align="center">
+  <a href="http://logz.io">
+    <img height="150px" src="https://logz.io/wp-content/uploads/2017/06/new-logzio-logo.png">
+  </a>
+</p>
 
-transports - the end target to where the data should go (console, s3 etc...)
-formatters - mappers function to pass the log data throw to add/remove/change the log
+# Logger
+lightweight logger base on winston concept of transports and formatters.
+
+#### Transports - logs destination (console, s3 etc...).
+#### Formatters - mappers function  before logs moved to the transport.
+
+## logging methods:
+| method | weight | color | enum |
+| --- | --- | --- | --- |
+| error | 2 | red | ERROR |
+| warn | 4 | yellow | WARN |
+| info/log/beatify | 6 | white | INFO | (beatify - will print parsed colorful json )
+| debug | 8 | magenta | DEBUG |
+
 
 ## Usage
-### log methods: log, info, error, warn, debug, beautify (show json in readable way with colors on console transport only)
+when creating an instance of logger u need to pass at least one transporter and 0+ formatters
+each log will pass through.
 
+each transporter can receive many formatter that will be invoke after all the logger formatters ended.
 
 ```javascript
 import { Logger, transports, formatters, LogLevel } from '@logzio-node-toolbox/logger';
 
-const logSizeFormatter = formatters.LogSize();
+const logFormatter = formatters.LogSize();
 
-
-const omitFormatter = formatters.omitFields(['name']);
-const consoleTransport1 = new transports.ConsoleTransport({name: 'console-1', formatters: [omitFormatter] });
+const transportFormatter = formatters.omitFields(['name']);
+const consoleTransport1 = new transports.ConsoleTransport({name: 'console-1', formatters: [transportFormatter] });
 
 const consoleTransport2 = new transports.ConsoleTransport({name: 'console-2'});
 
 const logger = new Logger({
-  formatters: [logSizeFormatter],
+  formatters: [logFormatter],
   transports: [consoleTransport1, consoleTransport2],
   metaData: { globalMetaData: 'globalMetaData' }
 });
@@ -52,16 +68,62 @@ await logger.close() // will wait for all transports to close
 
 ```
 
-## current formatters
+## Formatters
+
+### omitFields
+Array of fields by path string tp remove from the log.
 ```javascript
 import { formatters } from '@logzio-node-toolbox/logger';
 
+const f = formatters.omitFields(['path.to.omit', 'path.to.omit2']);
+const logger = new Logger(formatters: [f]);
+logger.log({
+  path: {
+    to :{
+      omit: 'should omit',
+      omit2: 'also should omit'
+      omit3: 'should not omit'
+    }
+  }
+})
+// output: INFO: 18/07/2020 04:07:19.079 { path: { to : { omit3: should not omit } } }
+```
 
-const f = formatters.omitFields(['path.to.omit']);
-// remove fields by path
+### handleError
+will look for err || error || message. err fields make sure they are objects,
+will serialize it and make sure logLevel is error.
+```javascript
+import { formatters } from '@logzio-node-toolbox/logger';
 
 const f = formatters.handleError();
-// find err or error or message.err serialize it and change logLevel to error
+const logger = new Logger(formatters: [f]);
+const err = new Error('random error');
+logger.log({
+  err
+})
+// output: ERROR: 18/07/2020 04:07:19.079 random error { stack: .... , type: .... }
+```
+
+### logSize
+will add logSize field to the log.
+will make sure log is not bigger than the value pass in bytes.
+```javascript
+import { formatters } from '@logzio-node-toolbox/logger';
+
+const f = formatters.logSize(100);
+const logger = new Logger(formatters: [f]);
+logger.log('message with log size', { field: 'random' });
+// output: INFO: 18/07/2020 04:07:19.079 message with log size { logSize: 40 }
+
+
+const f = formatters.logSize(30);
+const logger = new Logger(formatters: [f]);
+logger.log('message with log size', { field: 'random' });
+// output: INFO: 18/07/2020 04:07:19.079 Log exceeded the max bytes size {logObjectKeys: ['message', 'field'] maxLogSize: 30 }
+```
+
+
+
 
 const f = formatters.logSize(100);
 /*
