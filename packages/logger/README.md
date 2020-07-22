@@ -70,10 +70,11 @@ await logger.close() // will wait for all transports to close
 
 ### ConsoleTransport
 log to console
-  @param name - string (default console)
-  @param formatters - array | list of formatters
-  @param logLevel - string (default info) | representing the log level to log
-  @param color - boolean (default true) | adding color to output
+  params
+  name - string (default console)
+  formatters - array | list of formatters
+  logLevel - string (default info) | representing the log level to log
+  color - boolean (default true) | adding color to output
 ```javascript
 import { Logger, transports } from '@logzio-node-toolbox/logger';
 const logzio = new transports.ConsoleTransport({ name: 'logzioTransport', formatters: [transportFormatter], token:'123', meta: {region: 'prod', } });
@@ -81,17 +82,50 @@ const logzio = new transports.ConsoleTransport({ name: 'logzioTransport', format
 
 ### LogzioTransport
 send the log to logzio with the given token
-  @param name - string (default logzio)
-  @param host - string
-  @param token - string
-  @param type - string (default node-js)
-  @param metaData - object | default data to add to each log
-  @param formatters - array | list of formatters
-  @param logLevel - string (default info) | representing the log level to log
-  @param moreOptions - object (default true) | options to pass to logzio-nodejs
+  params
+  name - string (default logzio)
+  host - string
+  token - string
+  type - string (default node-js)
+  metaData - object | default data to add to each log
+  formatters - array | list of formatters
+  logLevel - string (default info) | representing the log level to log
+  moreOptions - object (default true) | options to pass to logzio-nodejs
 ```javascript
 import { Logger, transports } from '@logzio-node-toolbox/logger';
 const console = new transports.LogzioTransport({ name: 'new-console', formatters: [transportFormatter] });
+```
+
+### custom Transport
+creating a custom Transport
+functions:
+logLevel - change log level
+close - stop receiving logs
+open - start receiving logs
+
+
+```javascript
+import { Logger, transports, formatters  } from '@logzio-node-toolbox/logger';
+
+class CustomTransports extend transports.Transport {
+  constructor(name, formatters, logLevel, ...paramsUNeed) {
+    super({ name, formatters, logLevel })
+  }
+  // formatted log will arrive to this log function, so here u can do what u want with the data
+  log(data) {
+    // do whatever with the data
+  }
+
+  // this function will be called and await when closing the logger
+  close()
+}
+
+const customTransports = new CustomTransports({name: 'myCustomTransports', formatters: [formatters.logSize(100)] })
+const logger = new Logger({transports: [ customTransports ] })
+  logger.info('hello')
+  customTransports.loLevel('DEBUG')
+  logger.debug('hello')
+
 ```
 
 
@@ -150,8 +184,9 @@ logger.log('message with log size', { field: 'random' });
 
 ### maskFields
 mask fields by the length was received with *
- @param list - {{ field: string, length?: number  }}
- @param length - number (default 7)
+params
+ list - {{ field: string, length?: number  }}
+ length - number (default 7)
 ```javascript
 import {Logger, formatters } from '@logzio-node-toolbox/logger';
 
@@ -167,9 +202,10 @@ logger.log({
 
 ### pickFields
 will omit all object property except the given array
- @param fieldName - string
- @param list - array if strings
- @param flatten - will flat the omit fields to the root of the log |  default false
+ params
+ fieldName - string
+ list - array if strings
+ flatten - will flat the omit fields to the root of the log |  default false
 ```javascript
 import {Logger, formatters } from '@logzio-node-toolbox/logger';
 
@@ -210,8 +246,9 @@ logger.info({ path: { to : {field : { rename: "some value"}}}});
 ```
 
 ### sliceFields
-@param list - array of paths to slice  (if field is object will stringify it before slice)
-@param size - size to slice .
+params
+list - array of paths to slice  (if field is object will stringify it before slice)
+size - size to slice
 
 ```javascript
 import {Logger, formatters } from '@logzio-node-toolbox/logger';

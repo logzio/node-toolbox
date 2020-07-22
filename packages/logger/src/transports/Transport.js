@@ -16,6 +16,10 @@ export class Transport {
     if (LogLevel[level]) this.logLevel = level;
   }
 
+  close() {
+    this.isOpen = false;
+  }
+
   open() {
     this.isOpen = true;
   }
