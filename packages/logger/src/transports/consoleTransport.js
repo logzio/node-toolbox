@@ -5,13 +5,13 @@ import colorize from 'json-colorizer';
 import chalk from 'chalk';
 import _ from 'lodash';
 
-function printJSON(colorizeLog = false) {
+function printJSON(color = false) {
   return function printJSONLog({ message, logLevel, timestamp, __makeLogPrettyJSON__, ...rest }) {
     const keys = _.keys(rest).length > 0;
 
     if (keys) rest = stringify(rest, null, __makeLogPrettyJSON__ ? 4 : 0);
 
-    if (colorizeLog)
+    if (color)
       return `${levelsMetaData[logLevel].color(logLevel)}: ${chalk.blue(timestamp)} ${message ? message : ''}${
         keys ? ` ${colorize(rest)}` : ''
       }`;
@@ -21,9 +21,13 @@ function printJSON(colorizeLog = false) {
 }
 
 export class ConsoleTransport extends Transport {
-  constructor({ colorizeLog = true, formatters = [], logLevel = null, name = 'console' } = {}) {
+  /**
+   *
+   * @param {*} param0
+   */
+  constructor({ color = true, formatters = [], logLevel = null, name = 'console' } = {}) {
     super({ name, logLevel, formatters });
-    this.print = printJSON(colorizeLog);
+    this.print = printJSON(color);
   }
 
   log(data) {

@@ -1,5 +1,11 @@
-# Config manager
-an efficient config manager based on Joi schema for better manage
+<p align="center">
+  <a href="http://logz.io">
+    <img height="150px" src="https://logz.io/wp-content/uploads/2017/06/new-logzio-logo.png">
+  </a>
+</p>
+
+# Config
+an efficient config manager based on Joi schema for better easy managing configurations
 
 ## Usage
 ```javascript
@@ -23,7 +29,7 @@ const value = config.get('path.to.value');
 ### set value
 use path in key property to set nested values, if empty will mergeDeep from root
 
-onError - callback for when validation error with the schema, if onErorr return true will continue with the merge config even if not valid
+onError - callback for when validation error with the schema, if onError return true will continue with the merge config even if not valid
 ```javascript
 config.set({ value: {}, key = 'path.to.set', onError: (err) => {
   console.log(err)
