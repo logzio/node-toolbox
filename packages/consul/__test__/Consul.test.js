@@ -18,7 +18,7 @@ describe('consul', () => {
   });
 
   it('throw error if no port or host provided', () => {
-    expect(() => new Consul()).toThrowError(new Error('consul must have host and port'));
+    expect(() => new Consul()).toThrowError(new Error('consul must have port'));
   });
 
   it('consul must try amount of retries and fail with error', async () => {

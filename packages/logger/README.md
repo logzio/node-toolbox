@@ -76,7 +76,7 @@ log to console
   @param color - boolean (default true) | adding color to output
 ```javascript
 import { Logger, transports } from '@logzio-node-toolbox/logger';
-const console = new transports.ConsoleTransport({ name: 'new-console', formatters: [transportFormatter] });
+const logzio = new transports.ConsoleTransport({ name: 'logzioTransport', formatters: [transportFormatter], token:'123', meta: {region: 'prod', } });
 ```
 
 ### LogzioTransport

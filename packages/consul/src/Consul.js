@@ -4,8 +4,8 @@ import deepMerge from 'deepmerge';
 
 export class Consul {
   constructor({
-    host,
     port,
+    host = 'localhost',
     connectMaxRetries = 5,
     connectTimeout = 5000,
     connectRetryBackoffFactor = 2,
@@ -16,7 +16,7 @@ export class Consul {
     baseUrl = null,
     logger = console,
   } = {}) {
-    if (!host || !port) throw new Error('consul must have host and port');
+    if (!port) throw new Error('consul must have port');
 
     this.consulInstance = new ConsulLibrary({ host, port, promisify: true });
 
@@ -159,7 +159,7 @@ export class Consul {
     this.openWatchersToClose.push(watcher);
   }
 
-  async register({ meta, checks, address, hostname, serviceName, port: hostPort, registerInterval = null } = {}) {
+  async register({ meta, checks, address, hostname, serviceName, port, registerInterval = null } = {}) {
     if (!serviceName || !hostname) throw new Error('must provide serviceName and hostname to service discovery');
 
     if (this.registerParams.id) {
@@ -171,7 +171,7 @@ export class Consul {
     const options = {
       id: hostname,
       name: serviceName,
-      port: hostPort,
+      port,
       address,
       meta,
       checks,

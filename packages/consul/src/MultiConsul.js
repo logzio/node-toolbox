@@ -1,48 +1,71 @@
 import deepMerge from 'deepmerge';
+import { Consul } from './Consul.js';
 
-export class MultiConsul {
-  constructor({ consul, paths = [] } = {}) {
-    this.paths = paths;
-    this.consul = consul;
-    this.values = [];
-    this.mergedValues;
+export class MultiConsul extends Consul {
+  #paths;
+  #values;
+  #mergedValues;
+  constructor({ paths = [], ...consulOptions } = {}) {
+    super(consulOptions);
+    this.#paths = paths;
+    let p = 1;
+    this.#values = paths.reduce((acc, path) => {
+      acc[path] = { p, value: {} };
+      p++;
+      return acc;
+    }, {});
+
+    this.#mergedValues;
   }
 
-  async merge() {
-    this.mergedValues = deepMerge.all(this.values);
+  _mergeAll() {
+    const values = Object.values(this.#values)
+      .sort((a, b) => a.p - b.p)
+      .map(({ value }) => value);
+
+    this.#mergedValues = deepMerge.all(values);
+    return this.#mergedValues;
   }
 
-  async load() {
-    await Promise.all(
-      this.paths.map(path =>
-        this.consul
-          .get(path)
-          .then(({ value }) => (this.values[this.paths.findIndex(path)] = value))
-          .catch(() => (this.values[this.paths.findIndex(path)] = {})),
-      ),
-    );
+  async _loadAll() {
+    const data = await Promise.allSettled(this.#paths.map(path => this.get(path)));
+    data.forEach(({ value: { value, key } = {} }) => {
+      if (key && value) this.#values[key].value = value;
+    });
+
+    return this._mergeAll();
   }
 
-  async get() {
-    if (!this.mergedValues) await this.load();
+  async getAll() {
+    if (!this.#mergedValues) await this._loadAll();
 
-    return this.mergedValues;
+    return this.#mergedValues;
   }
 
-  async onOneChange({ key, value }) {
-    this.values[this.paths.findIndex(key)] = value;
-    this.mergedValues = deepMerge.all(this.values);
+  async _onOneChange({ key, value }) {
+    this.#values[key].value = value;
+    return this._mergeAll();
   }
 
-  async watch(onChange) {
-    this.paths.forEach(path =>
-      this.consul.watch({
+  async watchAll(change) {
+    this.#paths.forEach(path =>
+      this.watch({
         key: path,
         onChange: async ({ key, value }) => {
-          await this.onOneChange({ key, value });
-          onChange({ key, value: this.mergedValues });
+          await this._onOneChange({ key, value });
+          change({ key, changedValue: value, value: this.#mergedValues });
         },
       }),
     );
   }
 }
+
+// const multiConsul = new MultiConsul({ port: 18500, paths: ['config1.json', 'config2.json', 'config3.json'] });
+
+// async function init() {
+//   multiConsul.watchAll(({ key, changedValue, value }) => {
+//     console.log('init -> key, changedValue, value', key, changedValue, value);
+//   });
+// }
+
+// init();
