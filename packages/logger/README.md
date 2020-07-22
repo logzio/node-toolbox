@@ -122,19 +122,23 @@ logger.log('message with log size', { field: 'random' });
 // output: INFO: 18/07/2020 04:07:19.079 Log exceeded the max bytes size {logObjectKeys: ['message', 'field'] maxLogSize: 30 }
 ```
 
+### maskFields
+will add logSize field to the log.
+will make sure log is not bigger than the value pass in bytes.
+```javascript
+import { formatters } from '@logzio-node-toolbox/logger';
+
+const f = formatters.maskFields([{field: 'password', length: 6 }], 10);
+const logger = new Logger(formatters: [f]);
+logger.log('message with log size', { field: 'random' });
+// output: INFO: 18/07/2020 04:07:19.079 message with log size { logSize: 40 }
 
 
 
-const f = formatters.logSize(100);
-/*
-  attach logSize field and check log size no bigger than number passed by bytes
-  if value is bigger than change log to current format:
-  {
-    logObjectKeys: Object.keys(log),
-    message: 'Log exceeded the max bytes size',
-    maxLogSize: maxLogSizeBytes,
-  }
-*/
+```
+
+
+
 
 const f = formatters.maskFields([{field: 'password', length: 6 }], 10);
 /*
