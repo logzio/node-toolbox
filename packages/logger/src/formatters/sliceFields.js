@@ -6,7 +6,7 @@ const rmCircular = removeCircularFields();
 export function sliceFields(fieldsToSlice = [], maxFieldByteSize = 10000) {
   const maxFieldLength = maxFieldByteSize / 2;
 
-  function _sliceObject(log, obj, key) {
+  function sliceObject(log, obj, key) {
     const size = objectSize.roughObjectSize(obj);
 
     if (size >= maxFieldByteSize) {
@@ -20,7 +20,7 @@ export function sliceFields(fieldsToSlice = [], maxFieldByteSize = 10000) {
     }
   }
 
-  function _addToSlicedObject(log, fieldPath, fieldLength) {
+  function addToSlicedObject(log, fieldPath, fieldLength) {
     if (!log.slicedFields) log.slicedFields = {};
 
     log.slicedFields[fieldPath] = fieldLength;
@@ -28,8 +28,9 @@ export function sliceFields(fieldsToSlice = [], maxFieldByteSize = 10000) {
 
   function sliceStringField(log, value, fieldToSlice) {
     if (typeof value === 'string' && value.length > maxFieldLength) {
+      _.unset(log, fieldToSlice);
       _.set(log, `stringify-${fieldToSlice}`, `${value.slice(0, maxFieldLength)} ...`);
-      _addToSlicedObject(log, fieldToSlice, value.length);
+      addToSlicedObject(log, fieldToSlice, value.length);
     }
   }
 
@@ -40,7 +41,7 @@ export function sliceFields(fieldsToSlice = [], maxFieldByteSize = 10000) {
       if (!value) return;
 
       if (typeof value === 'string') sliceStringField(log, value, filedToSlice);
-      else if (typeof value === 'object') _sliceObject(log, value, filedToSlice);
+      else if (typeof value === 'object') sliceObject(log, value, filedToSlice);
     });
 
     return log;
