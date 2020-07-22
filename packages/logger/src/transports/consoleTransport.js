@@ -21,10 +21,6 @@ function printJSON(color = false) {
 }
 
 export class ConsoleTransport extends Transport {
-  /**
-   *
-   * @param {*} param0
-   */
   constructor({ color = true, formatters = [], logLevel = null, name = 'console' } = {}) {
     super({ name, logLevel, formatters });
     this.print = printJSON(color);
