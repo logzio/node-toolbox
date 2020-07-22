@@ -17,7 +17,6 @@ lightweight logger base on the concept of transports and formatters.
 | info/log/beatify | 6 | white | INFO | (beatify - will print parsed colorful json )
 | debug | 8 | magenta | DEBUG |
 
-
 ## Usage
 when creating an instance of logger u need to pass at least one transporter and 0+ formatters
 each log will pass through.
@@ -257,5 +256,8 @@ const f = formatters.sliceFields(['path.to.slice'], 10);
 const logger = new Logger(formatters: [f]);
 
 logger.info({ path: { to : { slice : { "some value to slice if its to long" }}}});
-// INFO: 18/07/2020 04:07:19.079 { path: { to : {slice: "some value to..."}}}}
+// INFO: 18/07/2020 04:07:19.079 { path: { to : {slice: "some value to...", __overSizedField__: { 'path.to.slice' : 30 }}}}}
+
+logger.info({ path: { to : { slice : { field1: 'first filed to slice', field2: "second filed to slice" }}}});
+// INFO: 18/07/2020 04:07:19.079 { path: { to : {slice: field1: 'first filed to slice', field2: "second f...", __overSizedField__: { 'path.to.slice.field1' : 20, 'path.to.slice.field2': 20 }}}}}
 ```

@@ -9,9 +9,8 @@ describe('formatter - sliceFields', () => {
     const log = { body: logString };
 
     sliceFields(['body'])(log);
-
-    expect(log.slicedFields.body).toEqual(curLength);
-    expect(log['stringify-body'].length).toEqual(5004);
+    expect(log.body.length).toEqual(5004);
+    expect(log.__overSizedField__.body).toEqual(curLength);
   });
 
   it('should slice object', () => {
@@ -20,11 +19,10 @@ describe('formatter - sliceFields', () => {
       key2: new Array(200000).join('12askdopkasopdkasopdkaspodkopas3123123'),
     };
 
-    const log = { body: logObject };
+    const log = { body: { to: logObject } };
 
-    const newLog = sliceFields(['body'])(log);
+    sliceFields(['body.to'])(log);
 
-    expect(newLog['overSizedField-body']).toEqual({ keysLengths: `key1 : 5799942 | key2 : 15199924`, size: 20999866 });
-    expect(newLog['stringify-body'].length).toEqual(5004);
+    expect(log.__overSizedField__).toEqual({ 'body.to.key1': 5799942, 'body.to.key2': 15199924 });
   });
 });
