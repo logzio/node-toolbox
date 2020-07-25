@@ -1,51 +1,80 @@
-import { default as api } from '@opentelemetry/api';
-import { default as core } from '@opentelemetry/core';
-import { default as node } from '@opentelemetry/node';
-import { default as tracing } from '@opentelemetry/tracing';
-import { default as jaegerExporter } from '@opentelemetry/exporter-jaeger';
+import opentracing from 'opentracing';
+import { initTracer } from 'jaeger-client';
+export class Tracer {
+  #tracer;
+  #shouldIgnore;
+  #onStartSpan;
+  #onFinishSpan;
+  #carrierType;
 
-export function createTracer({
-  debug = false,
-  tags = [],
-  port = 6832,
-  host = 'localhost',
-  serviceName = 'node-js',
-  maxPacketSize = 65000,
-  requestHook,
-  responseHook,
-  ignoreOutgoingUrls = [],
-  ignoreIncomingPaths = [],
-  applyCustomAttributesOnSpan,
-  probability = 1,
-} = {}) {
-  const sampler = {};
-  if (!debug) sampler.sampler = new core.ProbabilitySampler(probability);
-
-  const provider = new node.NodeTracerProvider({
-    logLevel: debug ? core.LogLevel.DEBUG : core.LogLevel.ERROR,
-    ...{ sampler },
-    plugins: {
-      http: {
-        ignoreOutgoingUrls,
-        ignoreIncomingPaths,
-        applyCustomAttributesOnSpan,
-        requestHook,
-        responseHook,
-      },
-    },
-  });
-
-  provider.register();
-
-  const exporter = new jaegerExporter.JaegerExporter({
-    serviceName,
+  constructor({
     tags,
-    host,
-    port,
-    maxPacketSize,
-  });
+    onStartSpan,
+    shouldIgnore,
+    onFinishSpan,
+    debug = false,
+    exporterOptions,
+    serviceName = 'node-js',
+    carrierType = opentracing.FORMAT_HTTP_HEADERS,
+  } = {}) {
+    this.#shouldIgnore = shouldIgnore;
+    this.#onStartSpan = onStartSpan;
+    this.#onFinishSpan = onFinishSpan;
+    this.#carrierType = carrierType;
 
-  provider.addSpanProcessor(debug ? new tracing.SimpleSpanProcessor(exporter) : new tracing.BatchSpanProcessor(exporter));
+    let sampler = {
+      type: exporterOptions.type ?? 'const',
+      param: exporterOptions.probability ?? 1,
+    };
 
-  return api.trace.getTracer(serviceName);
+    const reporter = {
+      agentHost: exporterOptions.host ?? 'localhost',
+      agentPort: exporterOptions.port ?? 6832,
+      flushIntervalMs: exporterOptions.interval ?? 2000,
+    };
+
+    const config = {
+      serviceName,
+      sampler,
+      reporter,
+    };
+
+    const options = {
+      tags,
+    };
+
+    if (debug) {
+      sampler = {
+        type: 'const',
+        param: 1,
+      };
+      reporter.logSpans = true;
+      options.logger = console;
+    }
+
+    this.#tracer = initTracer(config, options);
+  }
+
+  startSpan({ operation, tags = {}, carrier } = {}) {
+    if (this.#shouldIgnore?.(operation)) return;
+
+    const rootSpan = this.#tracer.extract(this.#carrierType, carrier);
+
+    const span = this.#tracer.startSpan(operation, { childOf: rootSpan, tags });
+
+    this.onStartSpan?.(span);
+
+    this.#tracer.inject(span, this.#carrierType, carrier);
+
+    return span;
+  }
+
+  finishSpan({ span, tags = {} } = {}) {
+    if (!span) return;
+    if (tags) span.setTags(tags);
+
+    if (this.#onFinishSpan) this.#onFinishSpan(span);
+
+    span.finish();
+  }
 }

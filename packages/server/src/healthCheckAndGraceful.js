@@ -1,4 +1,4 @@
-import { createTerminus } from '@godaddy/terminus';
+import { default as ct } from '@godaddy/terminus';
 
 export function healthCheckAndGraceful({ server, cleanUp, timeout, healthChecks, beforeShutdown, onSendFailureDuringShutdown }) {
   const options = {
@@ -13,5 +13,5 @@ export function healthCheckAndGraceful({ server, cleanUp, timeout, healthChecks,
     onSendFailureDuringShutdown,
   };
 
-  createTerminus(server, options);
+  ct.createTerminus(server, options);
 }

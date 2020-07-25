@@ -1,18 +1,31 @@
 export class Monitor {
   #intervalId;
   #interval;
-  #listeners;
+  #listeners = [];
+  #afterFinish;
+  #monitor;
 
-  constructor(interval = 5000) {
+  constructor({ interval = 5000, afterFinish = false, monitor }) {
     this.#interval = interval;
+    this.#afterFinish = afterFinish;
+    this.#monitor = monitor;
   }
 
-  start(invoke, newInterval = this.#interval) {
-    if (!this.#intervalId && invoke) {
-      this.#intervalId = setInterval(async () => {
-        const data = await invoke();
+  start({ monitor = this.#monitor, interval = this.#interval, onCall, afterFinish = this.#afterFinish } = {}) {
+    if (!this.#intervalId && monitor) {
+      const fn = async () => {
+        const data = await monitor();
         this.#listeners.forEach(subscriber => subscriber(data));
-      }, newInterval);
+      };
+
+      if (afterFinish) {
+        const warpTimeout = async () => {
+          await fn();
+          this.#intervalId = setTimeout(warpTimeout, interval);
+        };
+        setTimeout(warpTimeout, interval);
+      } else this.#intervalId = setInterval(fn, interval);
+      if (onCall) return this.subscribe(onCall);
     }
   }
 
@@ -20,15 +33,20 @@ export class Monitor {
     this.#intervalId && clearInterval(this.#intervalId);
   }
 
-  subscribe(onChange) {
-    if (onChange in this.#listeners) return;
-    this.#listeners.push(onChange);
-    return () => {
-      this.#listeners = this.#listeners.filter(l => l !== onChange);
-    };
+  subscribe(onCall) {
+    const unsubscribe = () => (this.#listeners = this.#listeners.filter(l => l !== onCall));
+
+    if (onCall in this.#listeners) return unsubscribe;
+    this.#listeners.push(onCall);
+    return unsubscribe;
   }
 
-  close() {
+  unsubscribe(onCall) {
+    this.#listeners = this.#listeners.filter(l => l !== onCall);
+  }
+
+  destroy() {
     this.stop();
+    this.#listeners = [];
   }
 }

@@ -1,10 +1,9 @@
 export class Observable {
   #val;
-  #listeners;
+  #listeners = [];
 
   constructor(value) {
     this.#val = value;
-    this.#listeners = [];
   }
 
   set(val) {

@@ -43,20 +43,6 @@ close() - deregister and close all watchers
 extend  consul to work on multiple keys and merged config
 ```javascript
 import { MultiConsul } from '@logzio-node-toolbox/consul';
-  /* params
-    port:  number |  -must-
-    host: string | localhost
-    connectMaxRetries:  number | 5
-    connectTimeout: number | 5000
-    connectRetryBackoffFactor: number | 2
-    failOnFailedConnection: boolean | true
-    watchBackoffFactor: number | 100,
-    watchBackoffMax: number | 30000,
-    watchMaxAttempts: number,
-    baseUrl: string,
-    logger: logger instance,
-  */
-
 const consul = new MultiConsul({ port: 18500, paths:['config1', 'config2', 'config3'] });
 /*
 config1 in consul:
@@ -84,7 +70,6 @@ watchAll(({ key, value, changedValue }) => {
     values: {key1: value1, key2: value2, key3: value3};
   */
 })
-
 
 ```
 

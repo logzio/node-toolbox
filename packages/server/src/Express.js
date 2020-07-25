@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import bodyParser from 'body-parser';
 import helmet from 'helmet';
-import http from 'http';
 export class Express {
   constructor({ port = 3000, middlewares = [], routes = [], beforeAll = null, afterAll = null, errorHandler = null } = {}) {
     this.port = port;
@@ -37,13 +36,12 @@ export class Express {
       } else if (r instanceof express.Router) app.use(r);
     });
 
-    app.use(this.errorHandler);
-    const server = http.createServer(app);
+    if (this.errorHandler) app.use(this.errorHandler);
 
-    if (this.afterAll) this.afterAll({ app, server });
+    if (this.afterAll) this.afterAll(app);
 
     return new Promise(resolve => {
-      app.listen(this.port, () => resolve({ app, server }));
+      const server = app.listen(this.port, () => resolve({ app, server }));
     });
   }
 }

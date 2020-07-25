@@ -1,7 +1,7 @@
-export const requestHooks = ({ server, onRequestStart, onRequestEnd, onRequestError }) => {
+export const requestHooks = ({ server, onStart, onEnd, onError } = {}) => {
   server.on('request', (req, res) => {
-    const requestStartData = onRequestStart?.({ req, res });
-    res.on('error', err => onRequestError?.({ err, requestStartData }));
-    res.on('finish', () => onRequestEnd?.({ req, res, requestStartData }));
+    const requestStartData = onStart?.(req, res);
+    res.on('error', err => onError?.(err, requestStartData));
+    res.on('finish', () => onEnd?.(req, res, requestStartData));
   });
 };

@@ -1,5 +1,5 @@
 {
-  "name": "@logzio-node-toolbox/tracer",
+  "name": "@logzio-node-toolbox/tracer-opentelemtry",
   "version": "1.0.0",
   "description": "multi-functional trace",
   "main": "src/index.js",
@@ -9,7 +9,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/logzio/node-toolbox.git",
-    "directory": "packages/tracer"
+    "directory": "packages/tracer-opentelemtry"
   },
   "publishConfig": {
     "access": "public"
@@ -19,12 +19,9 @@
     "upkg": "ncu --packageFile ./package.json"
   },
   "dependencies": {
-    "@opentelemetry/api": "^0.9.0",
-    "@opentelemetry/core": "^0.9.0",
-    "@opentelemetry/exporter-jaeger": "^0.9.0",
-    "@opentelemetry/tracing": "^0.9.0",
-    "@opentelemetry/propagator-jaeger": "0.8.0",
-    "@logzio-node-toolbox/utils": "1.0.0",
-    "axios": "0.19.2"
+    "jaeger-client": "3.18.0",
+    "opentracing": "0.14.4",
+    "@logzio-node-toolbox/utils": "1.0.0"
+
   }
 }
