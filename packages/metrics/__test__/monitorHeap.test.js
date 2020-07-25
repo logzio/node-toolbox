@@ -1,7 +1,7 @@
 import heapdump from 'heapdump';
 import { Heap } from '../src/Heap.js';
 jest.mock('heapdump');
-describe('metrics - Heap', () => {
+describe.skip('metrics - Heap', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

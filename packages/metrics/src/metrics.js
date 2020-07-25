@@ -4,8 +4,8 @@ import { getUsages } from './getUsages.js';
 export class Metrics extends Monitor {
   #metaData;
 
-  constructor({ metaData = {}, interval = 5000 } = {}) {
-    super(interval);
+  constructor({ metaData = {}, ...MonitorOptions } = {}) {
+    super(MonitorOptions);
     this.#metaData = metaData;
   }
 
@@ -24,7 +24,7 @@ export class Metrics extends Monitor {
     };
   }
 
-  monitor(newInterval) {
-    this.start(this.get.bind(this), newInterval);
+  monitor(interval) {
+    this.start({ monitor: this.get, interval });
   }
 }

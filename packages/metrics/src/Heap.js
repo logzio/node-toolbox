@@ -14,25 +14,30 @@ function _isIncremental(arr) {
 
   return incremental;
 }
-
 export class Heap extends Monitor {
-  #memHistory;
+  #memHistory = [];
   #snapshotFolder;
   #minPercentage;
   #maxPercentage;
   #repeats;
   #onSnapshot;
-  constructor({ snapshotFolder = '/var/local/', minPercentage = 40, maxPercentage = 97, repeats = 3, onSnapshot, interval } = {}) {
-    super(interval);
-    this.#memHistory = [];
+  constructor({
+    snapshotFolder = '/var/local/',
+    minPercentage = 40,
+    maxPercentage = 97,
+    repeats = 3,
+    onSnapshot,
+    ...MonitorOptions
+  } = {}) {
+    super(MonitorOptions);
     this.#snapshotFolder = snapshotFolder;
     this.#minPercentage = minPercentage;
     this.#maxPercentage = maxPercentage;
-    this.#repeats = repeats;
     this.#onSnapshot = onSnapshot;
+    this.#repeats = repeats;
   }
 
-  takeSnapshot(heapPercentage = 0, onSnapshot = this.#onSnapshot) {
+  _takeSnapshot(heapPercentage = 0, onSnapshot = this.#onSnapshot) {
     const name = `${join(this.#snapshotFolder, Date.now().toString())}.heapsnapshot`;
     heapdump.writeSnapshot(name, () => onSnapshot && onSnapshot(name, heapPercentage));
   }
@@ -42,26 +47,31 @@ export class Heap extends Monitor {
     return percentage;
   }
 
-  monitor() {
+  monitor(internval) {
     const invoke = () => this.check(this.get());
-    this.start(invoke);
+    this.start({ monitor: invoke.bind(this), internval });
+  }
+
+  dump(onSnapshot = this.#onSnapshot) {
+    this._takeSnapshot(this.get(), onSnapshot);
   }
 
   check(heapPercentage) {
     if (heapPercentage < this.#minPercentage) {
       this.#memHistory.length = 0;
-      return;
+      return heapPercentage;
     }
 
     this.#memHistory.push(heapPercentage);
 
     if (this.#memHistory.some(m => m >= this.#maxPercentage)) {
-      this.takeSnapshot(heapPercentage);
+      this._takeSnapshot(heapPercentage);
       this.#memHistory.length = 0;
     } else if (this.#repeats === this.#memHistory.length) {
       const incremental = _isIncremental(this.#memHistory);
-      if (incremental) this.takeSnapshot(heapPercentage);
+      if (incremental) this._takeSnapshot(heapPercentage);
       this.#memHistory.length = 0;
     }
+    return heapPercentage;
   }
 }
