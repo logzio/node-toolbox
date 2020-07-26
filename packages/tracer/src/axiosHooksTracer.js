@@ -1,4 +1,4 @@
-import { Tags } from 'opentracing';
+import opentracing from 'opentracing';
 
 export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onFinishSpan, onError, tags } = {}) {
   if (!axios || !tracer) return;
@@ -12,8 +12,8 @@ export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onF
             carrier: config.headers,
             tags: {
               ...config?.meta?.tags,
-              [Tags.HTTP_URL]: config.url,
-              [Tags.HTTP_METHOD]: config.method,
+              [opentracing.Tags.HTTP_URL]: config.url,
+              [opentracing.Tags.HTTP_METHOD]: config.method,
               ...tags,
             },
           });
@@ -31,15 +31,15 @@ export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onF
       return config;
     },
     function (error) {
+      console.log(1);
       try {
-        if (error.config && error.config.meta && error.config.meta.span) {
+        if (error?.config?.meta?.span) {
           const { span, ...meta } = error.config.meta;
 
-          const err = error.error || error.message || 'request error';
-          span.log({ event: 'error', message: err?.message, stack: err?.stack, type: err?.type });
+          span.log({ event: 'error', message: error?.message, stack: error?.stack, type: error?.type || error?.code });
           const tags = {
-            [Tags.ERROR]: true,
-            [Tags.HTTP_STATUS_CODE]: 500,
+            [opentracing.Tags.ERROR]: true,
+            [opentracing.Tags.HTTP_STATUS_CODE]: error?.response?.status || 500,
           };
 
           onFinishSpan?.(span, error);
@@ -62,7 +62,7 @@ export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onF
           onFinishSpan?.(span, response);
 
           const tags = {
-            [Tags.HTTP_STATUS_CODE]: response.status,
+            [opentracing.Tags.HTTP_STATUS_CODE]: response.status,
           };
 
           tracer.finishSpan({ span, tags });
@@ -76,16 +76,15 @@ export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onF
     },
     function (error) {
       try {
-        if (error.config && error.config.meta && error.config.meta.span) {
+        if (error?.config?.meta?.span) {
           const { span, ...meta } = error.config.meta;
-          const err = error.error || error.message || 'request error';
 
-          const status = error.response && error.response.status;
-          span.log({ event: 'error', message: err?.message, stack: err?.stack, type: err?.type });
+          const status = error?.response?.status || 500;
+          span.log({ event: 'error', message: error?.message, stack: error?.stack, type: error?.type || error?.code });
 
           const tags = {
-            [Tags.ERROR]: true,
-            [Tags.HTTP_STATUS_CODE]: status,
+            [opentracing.Tags.ERROR]: true,
+            [opentracing.Tags.HTTP_STATUS_CODE]: status,
           };
 
           onFinishSpan?.(span, error);

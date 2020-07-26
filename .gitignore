@@ -1,5 +1,5 @@
 **/node_modules
-packages/testPackage
+./packages/testPackage/*
 .vscode
 .yarn
 .env

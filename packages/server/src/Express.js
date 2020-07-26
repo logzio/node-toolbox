@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import bodyParser from 'body-parser';
 import helmet from 'helmet';
+import { default as asyncHandler } from 'express-async-handler';
+
 export class Express {
   constructor({ port = 3000, middlewares = [], routes = [], beforeAll = null, afterAll = null, errorHandler = null } = {}) {
     this.port = port;
@@ -26,14 +28,18 @@ export class Express {
     });
 
     this.routes.forEach(r => {
-      if (_.isArray(r)) {
-        const [method, path, ...handlers] = r;
-        app[method](path, ...handlers);
-      } else if (_.isObject(r)) {
-        let { method, path, handlers } = r;
-        if (!_.isArray(handlers)) handlers = [handlers];
-        app[method](path, ...handlers);
-      } else if (r instanceof express.Router) app.use(r);
+      if (r instanceof express.Router) app.use(r);
+      else {
+        let method, path, handlers, handler;
+        if (_.isArray(r)) {
+          [method, path, ...handlers] = r;
+        } else if (_.isObject(r)) {
+          ({ method, path, handler, handlers = [] } = r);
+          if (handler) handlers.push(handler);
+          if (handlers && !_.isArray(handlers)) handlers.push(...handlers);
+        }
+        app[method](path, ...handlers.map(h => (h?.constructor?.name === 'AsyncFunction' ? asyncHandler(h) : h)));
+      }
     });
 
     if (this.errorHandler) app.use(this.errorHandler);

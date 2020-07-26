@@ -1,4 +1,4 @@
-import { Tags } from 'opentracing';
+import opentracing from 'opentracing';
 
 export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onError, tags }) => {
   server.ext({
@@ -12,8 +12,8 @@ export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onError, tags }) 
             operation: path,
             carrier: headers,
             tags: {
-              [Tags.HTTP_URL]: raw.req.url,
-              [Tags.HTTP_METHOD]: method,
+              [opentracing.Tags.HTTP_URL]: raw.req.url,
+              [opentracing.Tags.HTTP_METHOD]: method,
               ...tags,
             },
           });
@@ -39,7 +39,7 @@ export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onError, tags }) 
         const { statusCode } = request.response;
 
         tags = {
-          [Tags.HTTP_STATUS_CODE]: statusCode,
+          [opentracing.Tags.HTTP_STATUS_CODE]: statusCode,
         };
         let error = null;
 
@@ -52,7 +52,7 @@ export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onError, tags }) 
         }
         if (error) {
           span.log({ event: 'error', message: error?.message, stack: error?.stack, type: error?.type });
-          tags[Tags.ERROR] = true;
+          tags[opentracing.Tags.ERROR] = true;
         }
 
         tracer.finishSpan({ span, tags });

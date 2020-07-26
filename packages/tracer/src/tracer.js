@@ -1,5 +1,6 @@
 import opentracing from 'opentracing';
-import { initTracer } from 'jaeger-client';
+import { default as jaegerClient } from 'jaeger-client';
+const { initTracer } = jaegerClient;
 export class Tracer {
   #tracer;
   #shouldIgnore;
@@ -8,12 +9,12 @@ export class Tracer {
   #carrierType;
 
   constructor({
-    tags,
+    tags = {},
     onStartSpan,
     shouldIgnore,
     onFinishSpan,
     debug = false,
-    exporterOptions,
+    exporterOptions = {},
     serviceName = 'node-js',
     carrierType = opentracing.FORMAT_HTTP_HEADERS,
   } = {}) {
@@ -57,10 +58,15 @@ export class Tracer {
 
   startSpan({ operation, tags = {}, carrier } = {}) {
     if (this.#shouldIgnore?.(operation)) return;
-
     const rootSpan = this.#tracer.extract(this.#carrierType, carrier);
 
-    const span = this.#tracer.startSpan(operation, { childOf: rootSpan, tags });
+    const span = this.#tracer.startSpan(operation, {
+      childOf: rootSpan,
+      tags: {
+        [opentracing.Tags.SPAN_KIND]: opentracing.Tags.SPAN_KIND_RPC_SERVER,
+        ...tags,
+      },
+    });
 
     this.onStartSpan?.(span);
 
@@ -71,10 +77,14 @@ export class Tracer {
 
   finishSpan({ span, tags = {} } = {}) {
     if (!span) return;
-    if (tags) span.setTags(tags);
+    if (tags) span.addTags(tags);
 
     if (this.#onFinishSpan) this.#onFinishSpan(span);
 
     span.finish();
+  }
+
+  close() {
+    return new Promise(resolve => this.#tracer.close(resolve));
   }
 }

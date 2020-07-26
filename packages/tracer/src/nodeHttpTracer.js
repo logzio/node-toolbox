@@ -1,4 +1,4 @@
-import { Tags } from 'opentracing';
+import opentracing from 'opentracing';
 
 export function nodeHttpTracer({ server, tracer, tags = {}, shouldIgnore, onStartSpan, onFinishSpan, onError } = {}) {
   if (!server || !tracer) return;
@@ -15,12 +15,12 @@ export function nodeHttpTracer({ server, tracer, tags = {}, shouldIgnore, onStar
       else operation += _parsedUrl.pathname;
 
       const _tags = {
-        [Tags.HTTP_URL]: originalUrl,
-        [Tags.HTTP_METHOD]: method,
+        [opentracing.Tags.HTTP_URL]: originalUrl,
+        [opentracing.Tags.HTTP_METHOD]: method,
         ...tags,
       };
 
-      span = tracer.startSpan({ operation, tags: _tags });
+      span = tracer.startSpan({ operation, tags: _tags, carrier: headers });
       onStartSpan?.({ span, req, res });
     } catch (err) {
       onError?.({ message: `failed to create span ${err.message}`, error: err });
@@ -30,8 +30,8 @@ export function nodeHttpTracer({ server, tracer, tags = {}, shouldIgnore, onStar
       try {
         span.log({ event: 'error', message: error?.message, stack: error?.stack, type: error?.type });
         const _tags = {
-          [Tags.ERROR]: true,
-          [Tags.HTTP_STATUS_CODE]: res.statusCode || 500,
+          [opentracing.Tags.ERROR]: true,
+          [opentracing.Tags.HTTP_STATUS_CODE]: res.statusCode || 500,
         };
 
         onFinishSpan?.(span, error);
@@ -47,7 +47,7 @@ export function nodeHttpTracer({ server, tracer, tags = {}, shouldIgnore, onStar
     res.on('finish', () => {
       try {
         const _tags = {
-          [Tags.HTTP_STATUS_CODE]: res.statusCode,
+          [opentracing.Tags.HTTP_STATUS_CODE]: res.statusCode,
         };
         onFinishSpan?.(span, req, res);
         tracer.finishSpan({ span, tags: _tags });
