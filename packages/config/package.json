@@ -25,7 +25,6 @@
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
   },
   "dependencies": {
-    "@logzio-node-toolbox/utils": "0.0.1",
     "@hapi/joi": "17.1.1",
     "deepmerge": "4.2.2"
 

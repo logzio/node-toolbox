@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "jaeger-client": "3.18.0",
-    "opentracing": "0.14.4",
-    "@logzio-node-toolbox/utils": "0.0.1"
+    "opentracing": "0.14.4"
   }
 }

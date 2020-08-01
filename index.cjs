@@ -5,7 +5,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var _ = _interopDefault(require('lodash'));
-var utils = require('@logzio-node-toolbox/utils');
 var deepMerge = _interopDefault(require('deepmerge'));
 var Joi = _interopDefault(require('@hapi/joi'));
 var retry = _interopDefault(require('async-retry'));
@@ -33,6 +32,33 @@ require('@opentelemetry/core');
 require('@opentelemetry/tracing');
 require('@opentelemetry/exporter-jaeger');
 require('@opentelemetry/propagator-jaeger');
+
+class Observable {
+  #val;
+  #listeners = [];
+
+  constructor(value) {
+    this.#val = value;
+  }
+
+  set(val) {
+    if (this.#val !== val) {
+      this.#val = val;
+      this.#listeners.forEach(l => l(val));
+    }
+  }
+
+  get() {
+    return this.#val;
+  }
+
+  subscribe(listener) {
+    this.#listeners.push(listener);
+    return () => {
+      this.#listeners = this.#listeners.filter(l => l !== listener);
+    };
+  }
+}
 
 function validateAndGetJoiSchema(schema) {
   let finalSchema;
@@ -65,7 +91,7 @@ class Config {
     this.#observables = {};
     this.#schema = validateAndGetJoiSchema(schema);
     this.#overrides = _.pickBy(overrides);
-    this.#observable = new utils.Observable(this.#config);
+    this.#observable = new Observable(this.#config);
     this._merge({ value: defaults });
   }
 
@@ -92,7 +118,7 @@ class Config {
     if (!key) {
       return this.#observable.subscribe(onChange);
     } else if (!this.#observables[key]) {
-      this.#observables[key] = new utils.Observable(this.get(key));
+      this.#observables[key] = new Observable(this.get(key));
     }
     return this.#observables[key].subscribe(onChange);
   }
@@ -815,6 +841,59 @@ var index$1 = /*#__PURE__*/Object.freeze({
   pickFields: pickFields
 });
 
+class Monitor {
+  #intervalId;
+  #interval;
+  #listeners = [];
+  #afterFinish;
+  #monitor;
+
+  constructor({ interval = 5000, afterFinish = false, monitor }) {
+    this.#interval = interval;
+    this.#afterFinish = afterFinish;
+    this.#monitor = monitor;
+  }
+
+  start({ monitor = this.#monitor, interval = this.#interval, onCall, afterFinish = this.#afterFinish } = {}) {
+    if (!this.#intervalId && monitor) {
+      const fn = async () => {
+        const data = await monitor();
+        this.#listeners.forEach(subscriber => subscriber(data));
+      };
+
+      if (afterFinish) {
+        const warpTimeout = async () => {
+          await fn();
+          this.#intervalId = setTimeout(warpTimeout, interval);
+        };
+        setTimeout(warpTimeout, interval);
+      } else this.#intervalId = setInterval(fn, interval);
+      if (onCall) return this.subscribe(onCall);
+    }
+  }
+
+  stop() {
+    this.#intervalId && clearInterval(this.#intervalId);
+  }
+
+  subscribe(onCall) {
+    const unsubscribe = () => (this.#listeners = this.#listeners.filter(l => l !== onCall));
+
+    if (onCall in this.#listeners) return unsubscribe;
+    this.#listeners.push(onCall);
+    return unsubscribe;
+  }
+
+  unsubscribe(onCall) {
+    this.#listeners = this.#listeners.filter(l => l !== onCall);
+  }
+
+  destroy() {
+    this.stop();
+    this.#listeners = [];
+  }
+}
+
 const { cpu, drive, mem, netstat } = osUtils;
 
 async function getUsages() {
@@ -854,7 +933,7 @@ async function getUsages() {
   return metricsData;
 }
 
-class Metrics extends utils.Monitor {
+class Metrics extends Monitor {
   #metaData;
 
   constructor({ metaData = {}, ...MonitorOptions } = {}) {
@@ -893,7 +972,7 @@ function _isIncremental(arr) {
 
   return incremental;
 }
-class Heap extends utils.Monitor {
+class Heap extends Monitor {
   #memHistory = [];
   #snapshotFolder;
   #minPercentage;
@@ -1447,86 +1526,6 @@ function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onFinishSp
       return Promise.reject(error);
     },
   );
-}
-
-class Observable {
-  #val;
-  #listeners = [];
-
-  constructor(value) {
-    this.#val = value;
-  }
-
-  set(val) {
-    if (this.#val !== val) {
-      this.#val = val;
-      this.#listeners.forEach(l => l(val));
-    }
-  }
-
-  get() {
-    return this.#val;
-  }
-
-  subscribe(listener) {
-    this.#listeners.push(listener);
-    return () => {
-      this.#listeners = this.#listeners.filter(l => l !== listener);
-    };
-  }
-}
-
-class Monitor {
-  #intervalId;
-  #interval;
-  #listeners = [];
-  #afterFinish;
-  #monitor;
-
-  constructor({ interval = 5000, afterFinish = false, monitor }) {
-    this.#interval = interval;
-    this.#afterFinish = afterFinish;
-    this.#monitor = monitor;
-  }
-
-  start({ monitor = this.#monitor, interval = this.#interval, onCall, afterFinish = this.#afterFinish } = {}) {
-    if (!this.#intervalId && monitor) {
-      const fn = async () => {
-        const data = await monitor();
-        this.#listeners.forEach(subscriber => subscriber(data));
-      };
-
-      if (afterFinish) {
-        const warpTimeout = async () => {
-          await fn();
-          this.#intervalId = setTimeout(warpTimeout, interval);
-        };
-        setTimeout(warpTimeout, interval);
-      } else this.#intervalId = setInterval(fn, interval);
-      if (onCall) return this.subscribe(onCall);
-    }
-  }
-
-  stop() {
-    this.#intervalId && clearInterval(this.#intervalId);
-  }
-
-  subscribe(onCall) {
-    const unsubscribe = () => (this.#listeners = this.#listeners.filter(l => l !== onCall));
-
-    if (onCall in this.#listeners) return unsubscribe;
-    this.#listeners.push(onCall);
-    return unsubscribe;
-  }
-
-  unsubscribe(onCall) {
-    this.#listeners = this.#listeners.filter(l => l !== onCall);
-  }
-
-  destroy() {
-    this.stop();
-    this.#listeners = [];
-  }
 }
 
 function ExportAsync(name = 'instance') {

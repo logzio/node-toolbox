@@ -1,4 +1,4 @@
-import { Monitor } from '@logzio-node-toolbox/utils';
+import { Monitor } from '../../utils/src/Monitor.js';
 import { join } from 'path';
 import heapdump from 'heapdump';
 import v8 from 'v8';
