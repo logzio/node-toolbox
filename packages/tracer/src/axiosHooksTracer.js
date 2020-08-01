@@ -31,7 +31,6 @@ export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onF
       return config;
     },
     function (error) {
-      console.log(1);
       try {
         if (error?.config?.meta?.span) {
           const { span, ...meta } = error.config.meta;
