@@ -27,8 +27,9 @@ export class MultiConsul extends Consul {
     return this.#mergedValues;
   }
 
-  async _loadAll() {
+  async load() {
     const data = await Promise.allSettled(this.#paths.map(path => this.get(path)));
+
     data.forEach(({ value: { value, key } = {} }) => {
       if (key && value) this.values[key].value = value;
     });
@@ -37,7 +38,7 @@ export class MultiConsul extends Consul {
   }
 
   async getAll() {
-    if (!this.#mergedValues) await this._loadAll();
+    if (!this.#mergedValues) await this.load();
 
     return this.#mergedValues;
   }

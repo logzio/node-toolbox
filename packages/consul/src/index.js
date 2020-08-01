@@ -1,2 +1,2 @@
-export * from './Config.js';
-export * from './Observable.js';
+export { Consul } from './Consul.js';
+export { MultiConsul } from './MultiConsul.js';

@@ -1,6 +1,18 @@
 import opentracing from 'opentracing';
 import { default as jaegerClient } from 'jaeger-client';
 const { initTracer } = jaegerClient;
+
+/**
+ * configuration for tracer.
+ * @typedef {Object}  TracerConfig
+ * @property {Object} [tags=] tags - key value for default tags for each span.
+ * @property {boolean} [debug=false] debug - debug created spans.
+ * @property {string} [serviceName=node-js] serviceName - name of the serivce.
+ * @property {string} [carrierType=http_headers] carrierType - opentracing carrier types
+ * @property {string} [carrierType=http_headers] carrierType - opentracing carrier types
+ */
+
+/** Tracer create jaeger-tracer-clinet for easy use */
 export class Tracer {
   #tracer;
   #shouldIgnore;
@@ -8,6 +20,10 @@ export class Tracer {
   #onFinishSpan;
   #carrierType;
 
+  /**
+   * constructor description
+   * @param {TracerConfig} tracerConfig - config the Tracer.
+   */
   constructor({
     tags = {},
     onStartSpan,
@@ -17,7 +33,7 @@ export class Tracer {
     exporterOptions = {},
     serviceName = 'node-js',
     carrierType = opentracing.FORMAT_HTTP_HEADERS,
-  } = {}) {
+  }) {
     this.#shouldIgnore = shouldIgnore;
     this.#onStartSpan = onStartSpan;
     this.#onFinishSpan = onFinishSpan;

@@ -5,7 +5,7 @@ let logger = {};
 import ConsulClass from 'consul';
 import { Consul } from '../src/Consul.js';
 
-describe('consul', () => {
+describe('Consul', () => {
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
