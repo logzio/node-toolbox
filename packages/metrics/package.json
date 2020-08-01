@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "simple metrics reporter",
   "main": "src/index.js",
+  "types": "src/index.d.ts",
   "type": "module",
   "license": "MIT",
   "author": "Nir winkler <madvinking@gmail.com>",
