@@ -1,4 +1,4 @@
-import { Monitor } from '../../utils/src/Monitor.js';
+import { Monitor } from '@logzio-node-toolbox/utils';
 import { getUsages } from './getUsages.js';
 
 export class Metrics extends Monitor {

@@ -26,7 +26,7 @@ params:
           interval - number (2000) | jaeger exporter flush interval
 
 ```javascript
-import { Tracer } from '@logz-node-toolbox/tracer;
+import { Tracer } from '@logzio-node-toolbox/tracer;
 
 const config = {
   serviceName: 'client-api',
