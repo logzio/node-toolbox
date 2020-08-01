@@ -2,7 +2,11 @@
   "name": "@logzio-node-toolbox/metrics",
   "version": "0.0.1",
   "description": "simple metrics reporter",
-  "main": "src/index.js",
+  "main": "src/index.cjs",
+  "exports": {
+    "import": "./src/index.js",
+    "require": ".src/index.cjs"
+  },
   "types": "src/index.d.ts",
   "type": "module",
   "license": "MIT",
@@ -17,7 +21,8 @@
   },
   "scripts": {
     "clean": "rm -rf node_modules",
-    "upkg": "ncu --packageFile ./package.json"
+    "upkg": "ncu --packageFile ./package.json",
+    "compile": "rollup src/index.js --format cjs --file src/index.cjs"
   },
   "dependencies": {
     "v8": "0.1.0",
