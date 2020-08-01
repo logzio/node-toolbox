@@ -19,12 +19,12 @@
     "upkg": "ncu --packageFile ./package.json"
   },
   "dependencies": {
-    "@opentelemetry/api": "^0.9.0",
-    "@opentelemetry/core": "^0.9.0",
-    "@opentelemetry/exporter-jaeger": "^0.9.0",
-    "@opentelemetry/tracing": "^0.9.0",
+    "@opentelemetry/api": "^0.10.1",
+    "@opentelemetry/core": "^0.10.1",
+    "@opentelemetry/exporter-jaeger": "^0.10.1",
+    "@opentelemetry/tracing": "^0.10.1",
     "@opentelemetry/propagator-jaeger": "0.8.0",
-    "@logzio-node-toolbox/utils": "1.0.0",
+    "@logzio-node-toolbox/utils": "0.0.1",
     "axios": "0.19.2"
   }
 }

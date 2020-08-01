@@ -19,7 +19,7 @@
     "upkg": "ncu --packageFile ./package.json"
   },
   "dependencies": {
-    "@logzio-node-toolbox/utils": "1.0.0",
+    "@logzio-node-toolbox/utils": "0.0.1",
     "@hapi/joi": "17.1.1",
     "deepmerge": "4.2.2"
 
