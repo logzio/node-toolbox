@@ -5,35 +5,9 @@ Object.defineProperty(exports, '__esModule', { value: true });
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var _ = _interopDefault(require('lodash'));
+var utils = require('@logzio-node-toolbox/utils');
 var deepMerge = _interopDefault(require('deepmerge'));
 var Joi = _interopDefault(require('@hapi/joi'));
-
-class Observable {
-  #val;
-  #listeners = [];
-
-  constructor(value) {
-    this.#val = value;
-  }
-
-  set(val) {
-    if (this.#val !== val) {
-      this.#val = val;
-      this.#listeners.forEach(l => l(val));
-    }
-  }
-
-  get() {
-    return this.#val;
-  }
-
-  subscribe(listener) {
-    this.#listeners.push(listener);
-    return () => {
-      this.#listeners = this.#listeners.filter(l => l !== listener);
-    };
-  }
-}
 
 function validateAndGetJoiSchema(schema) {
   let finalSchema;
@@ -66,7 +40,7 @@ class Config {
     this.#observables = {};
     this.#schema = validateAndGetJoiSchema(schema);
     this.#overrides = _.pickBy(overrides);
-    this.#observable = new Observable(this.#config);
+    this.#observable = new utils.Observable(this.#config);
     this._merge({ value: defaults });
   }
 
@@ -93,7 +67,7 @@ class Config {
     if (!key) {
       return this.#observable.subscribe(onChange);
     } else if (!this.#observables[key]) {
-      this.#observables[key] = new Observable(this.get(key));
+      this.#observables[key] = new utils.Observable(this.get(key));
     }
     return this.#observables[key].subscribe(onChange);
   }
