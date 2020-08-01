@@ -2,7 +2,11 @@
   "name": "logzio-node-tools",
   "version": "0.0.1",
   "description": "the perfect node templates & tools",
-  "main": "src/index.js",
+  "main": "index.cjs",
+  "exports": {
+    "import": "./index.js",
+    "require": "./index.cjs"
+  },
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -18,8 +22,8 @@
     "lint": "eslint -c .eslintrc.cjs  --quiet --color packages/**/*.js",
     "upkg": "lerna run upkg && ncu",
     "checkLicense": "license-checker | grep 'licenses:' | sort -u",
-    "ncu": "ncu",
-    "compile": "lerna run compile"
+    "compile": "lerna run compile && rollup index.js --format cjs --file index.cjs",
+    "ncu": "ncu"
   },
   "author": "Nir Winkler",
   "workspaces": [
