@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/utils",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "collection of nice utils",
   "main": "src/index.cjs",
   "exports": {
@@ -23,7 +23,5 @@
     "clean": "rm -rf node_modules",
     "upkg": "ncu --packageFile ./package.json",
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
-  },
-  "dependencies": {
   }
 }

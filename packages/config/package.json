@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/config",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "config manager based on Joi schema with subscription capabilities",
   "main": "src/index.cjs",
   "types": "src/index.d.ts",
@@ -25,9 +25,8 @@
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
   },
   "dependencies": {
-    "@logzio-node-toolbox/utils": "0.0.1",
     "@hapi/joi": "17.1.1",
+    "@logzio-node-toolbox/utils": "^0.0.2",
     "deepmerge": "4.2.2"
-
   }
 }

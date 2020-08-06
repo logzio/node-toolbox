@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "server utils and frameworks templates",
   "main": "src/index.cjs",
   "exports": {
@@ -25,9 +25,9 @@
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
   },
   "dependencies": {
+    "@godaddy/terminus": "4.4.1",
     "express": "^4.17.1",
     "express-async-handler": "1.1.4",
-    "helmet": "^3.23.3",
-    "@godaddy/terminus": "4.4.1"
+    "helmet": "^3.23.3"
   }
 }
