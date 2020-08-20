@@ -1,4 +1,4 @@
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import _ from 'lodash';
 
 export function validateAndGetJoiSchema(schema) {

@@ -1,4 +1,4 @@
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import { Config } from '../src/Config.js';
 
 describe('Config - create config with schema', () => {

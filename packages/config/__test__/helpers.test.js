@@ -1,4 +1,4 @@
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import { validateAndGetJoiSchema } from '../src/helpers.js';
 
 describe('config - helpers', () => {

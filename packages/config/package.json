@@ -2,12 +2,10 @@
   "name": "@logzio-node-toolbox/config",
   "version": "0.0.2",
   "description": "config manager based on Joi schema with subscription capabilities",
-  "main": "src/index.cjs",
-  "types": "src/index.d.ts",
-  "exports": {
-    "import": "./src/index.js",
-    "require": ".src/index.cjs"
-  },
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "files": ["dist"],
+  "types": "dist/index.d.ts",
   "type": "module",
   "license": "MIT",
   "author": "Nir winkler <madvinking@gmail.com>",
@@ -20,13 +18,16 @@
     "access": "public"
   },
   "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -cw",
     "clean": "rm -rf node_modules",
     "upkg": "ncu --packageFile ./package.json",
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
   },
   "dependencies": {
-    "@hapi/joi": "17.1.1",
+    "joi": "17.2.1",
     "@logzio-node-toolbox/utils": "^0.0.2",
-    "deepmerge": "4.2.2"
+    "deepmerge": "4.2.2",
+    "lodash": "4.17.20"
   }
 }
