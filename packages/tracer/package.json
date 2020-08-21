@@ -21,11 +21,11 @@
   },
   "scripts": {
     "clean": "rm -rf node_modules",
-    "upkg": "ncu --packageFile ./package.json",
+    "upkg": "ncu -u --packageFile ./package.json",
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
   },
   "dependencies": {
-    "jaeger-client": "3.18.0",
+    "jaeger-client": "3.18.1",
     "opentracing": "0.14.4"
   }
 }

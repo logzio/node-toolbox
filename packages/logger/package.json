@@ -21,7 +21,7 @@
   },
   "scripts": {
     "clean": "rm -rf node_modules",
-    "upkg": "ncu --packageFile ./package.json",
+    "upkg": "ncu -u --packageFile ./package.json",
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
   },
   "dependencies": {
@@ -29,8 +29,8 @@
     "dateformat": "3.0.3",
     "json-colorizer": "^2.2.2",
     "json-stringify-safe": "5.0.1",
-    "lodash": "4.17.19",
-    "logzio-nodejs": "2.0.1",
+    "lodash": "4.17.20",
+    "logzio-nodejs": "2.0.2",
     "rough-object-size": "1.0.1",
     "serialize-error": "^7.0.1"
   }

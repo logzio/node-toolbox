@@ -18,38 +18,38 @@
     "lint": "eslint -c .eslintrc.cjs  --quiet --color packages/**/*.js",
     "upkg": "lerna run upkg && ncu",
     "checkLicense": "license-checker | grep 'licenses:' | sort -u",
-    "ncu": "ncu"
+    "ncu": "ncu -u"
   },
   "author": "Nir Winkler",
   "workspaces": [
     "packages/*"
   ],
   "devDependencies": {
-    "@babel/core": "^7.11.0",
+    "@babel/core": "^7.11.4",
     "@babel/preset-env": "^7.11.0",
     "@lerna/batch-packages": "^3.16.0",
     "@lerna/filter-packages": "^3.18.0",
     "@lerna/project": "^3.21.0",
     "@rollup/plugin-typescript": "^5.0.2",
     "@types/lodash": "^4.14.159",
-    "@typescript-eslint/eslint-plugin": "^3.7.1",
-    "@typescript-eslint/parser": "^3.7.1",
-    "babel-jest": "^26.2.2",
-    "eslint": "^7.6.0",
+    "@typescript-eslint/eslint-plugin": "^3.9.1",
+    "@typescript-eslint/parser": "^3.9.1",
+    "babel-jest": "^26.3.0",
+    "eslint": "^7.7.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
     "husky": "4.2.5",
-    "jest": "26.2.2",
+    "jest": "26.4.1",
     "lerna": "^3.22.1",
     "license-checker": "25.0.1",
     "minimist": "^1.2.5",
     "nodemon": "2.0.4",
-    "npm-check-updates": "7.0.2",
+    "npm-check-updates": "7.1.1",
     "prettier": "^2.0.5",
-    "rollup": "2.23.0",
+    "rollup": "2.26.4",
     "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-terser": "^7.0.0",
-    "typescript": "3.9.7"
+    "typescript": "4.0.2"
   },
   "husky": {
     "hooks": {

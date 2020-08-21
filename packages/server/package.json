@@ -21,13 +21,13 @@
   },
   "scripts": {
     "clean": "rm -rf node_modules",
-    "upkg": "ncu --packageFile ./package.json",
+    "upkg": "ncu -u --packageFile ./package.json",
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
   },
   "dependencies": {
     "@godaddy/terminus": "4.4.1",
     "express": "^4.17.1",
     "express-async-handler": "1.1.4",
-    "helmet": "^3.23.3"
+    "helmet": "^4.1.0"
   }
 }
