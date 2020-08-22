@@ -1,6 +1,6 @@
 **/node_modules
 **/dist
-packages/testPackage/*
+packages/test/*
 .vscode
 .yarn
 .env

@@ -29,13 +29,13 @@ export class Express {
       else {
         let method, path, handlers, handler;
         if (_.isArray(r)) {
-          [method, path, ...handlers] = r;
+          [method = 'get', path, ...handlers] = r;
         } else if (_.isObject(r)) {
-          ({ method, path, handler, handlers = [] } = r);
+          ({ method = 'get', path, handler, handlers = [] } = r);
           if (handlers && !_.isArray(handlers)) handlers = [handlers];
           if (handler) handlers = [handler, ...handlers];
         }
-        app[method](path, ...handlers.map(h => (h?.constructor?.name === 'AsyncFunction' ? asyncHandler(h) : h)));
+        app[method.toLowerCase()](path, ...handlers.map(h => (h?.constructor?.name === 'AsyncFunction' ? asyncHandler(h) : h)));
       }
     });
 
