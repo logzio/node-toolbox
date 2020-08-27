@@ -32,12 +32,12 @@ async function main() {
         {
           file: path.join(basePath, main),
           format: 'cjs',
-          plugins: [terser({ module: false,  ecma: 2019, mangle: false })]
+          // plugins: [terser({ module: false,  ecma: 2019, mangle: false })]
         },
         {
           file: path.join(basePath, modulePath),
           format: 'es',
-          plugins: [terser({ module: true,  ecma: 2019, mangle: false })]
+          // plugins: [terser({ module: true,  ecma: 2019, mangle: false })]
         },
       ],
       external: [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})],

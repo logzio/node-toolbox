@@ -11,7 +11,7 @@ export function validateAndGetJoiSchema(schema) {
       return curSchema;
     }, Joi.object());
   } else {
-    if (schema.isJoi) finalSchema = schema;
+    if (Joi.isSchema(schema)) finalSchema = schema;
     else finalSchema = Joi.object(schema);
   }
 

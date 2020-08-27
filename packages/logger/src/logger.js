@@ -104,7 +104,7 @@ export class Logger {
   }
 
   addFormatter(formatter) {
-    this.#formatters = this.#formatters.push(formatter);
+    this.#formatters.push(formatter);
   }
   removeFormatter(formatter) {
     this.#formatters = this.#formatters.filter(f => f !== formatter);
