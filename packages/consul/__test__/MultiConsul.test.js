@@ -92,7 +92,7 @@ describe.only('MultiConsul', () => {
       }
     };
 
-    multiConsul.watchAll(onChange);
+    multiConsul.watchAll({ onChange });
 
     expect(Consul.prototype.watch).toHaveBeenCalledTimes(3);
     expect(Consul.prototype.watch).toHaveBeenCalledTimes(3);

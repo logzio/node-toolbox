@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { registerData, connectionOptions, passedConnectOptions } from './Consul.mock.js';
+import { registerData, connectionOptions } from './Consul.mock.js';
 
-let logger = {};
 import ConsulClass from 'consul';
 import { Consul } from '../src/Consul.js';
 
@@ -9,56 +8,36 @@ describe('Consul', () => {
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
-
-    logger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-    };
   });
 
   it('throw error if no port or host provided', () => {
     expect(() => new Consul()).toThrowError(new Error('consul must have port'));
   });
 
-  it('consul must try amount of retries and fail with error', async () => {
-    const consul = new Consul({
-      failOnFailedConnection: true,
-      connectMaxRetries: 2,
-      connectRetryBackoffFactor: 0,
-      ...connectionOptions,
-      logger,
-    });
+  it('should validate connection amountOf retries ', async () => {
+    const consul = new Consul(connectionOptions);
+
+    expect(ConsulClass).toHaveBeenCalledTimes(1);
+    expect(ConsulClass).toHaveBeenCalledWith({ ...connectionOptions, promisify: true });
 
     consul.consulInstance.agent.check.list.mockRejectedValue(new Error('random error'));
-    await expect(consul.validateConnected()).rejects.toEqual(
-      new Error('CONSUL: failed to connect to consul after 3 attempts with message: random error'),
+
+    await expect(consul.validateConnected({ timeout: 0, factor: 0, retries: 3 })).rejects.toEqual(
+      new Error('CONSUL: failed to connect to consul after 4 attempts with message: random error'),
     );
 
-    expect(consul.consulInstance.agent.check.list).toHaveBeenCalledTimes(3);
-    expect(logger.info).toHaveBeenCalledTimes(2);
-    expect(ConsulClass).toHaveBeenCalledTimes(1);
-    expect(ConsulClass).toHaveBeenCalledWith(connectionOptions);
+    expect(consul.consulInstance.agent.check.list).toHaveBeenCalledTimes(4);
   });
 
   it('consul instance should be created with the host and port provided', async () => {
-    const consul = new Consul({
-      ...passedConnectOptions,
-      ...connectionOptions,
-      logger,
-    });
+    const consul = new Consul(connectionOptions);
 
     ['consulInstance', 'get', 'set', 'watch', 'merge', 'register', 'close'].forEach(name => expect(consul[name]).toBeDefined());
-
-    expect(ConsulClass).toHaveBeenCalledTimes(1);
-    expect(ConsulClass).toHaveBeenCalledWith(connectionOptions);
   });
 
   it('buildKey should ignore remove prefix slash on key', async () => {
     const consul = new Consul({
-      ...passedConnectOptions,
       ...connectionOptions,
-      logger,
       baseUrl: '',
     });
 
@@ -68,9 +47,7 @@ describe('Consul', () => {
 
   it('buildKey should add slash to key if baseUrl exist', async () => {
     const consul = new Consul({
-      ...passedConnectOptions,
       ...connectionOptions,
-      logger,
       baseUrl: 'base',
     });
 
@@ -80,9 +57,7 @@ describe('Consul', () => {
 
   it('buildKey should remove slash to key if baseUrl exist', async () => {
     const consul = new Consul({
-      ...passedConnectOptions,
       ...connectionOptions,
-      logger,
       baseUrl: 'base2/',
     });
 
@@ -90,27 +65,8 @@ describe('Consul', () => {
     expect(consul.buildKey('/nada')).toEqual('base2/nada');
   });
 
-  it('watch should return with warn if no onChange or key', async () => {
-    const consul = new Consul({
-      ...passedConnectOptions,
-      ...connectionOptions,
-      watchBackoffFactor: 8200,
-      watchBackoffMax: 8220,
-      logger,
-    });
-
-    consul.watch();
-    expect(logger.warn).toHaveBeenCalledWith('CONSUL: must provide key and onChange function');
-  });
-
   it('watch should invoke on change', async () => {
-    const consul = new Consul({
-      ...passedConnectOptions,
-      ...connectionOptions,
-      watchBackoffFactor: 8200,
-      watchBackoffMax: 8220,
-      logger,
-    });
+    const consul = new Consul(connectionOptions);
 
     let onChangedCalled = false;
     const onChange = data => {
@@ -118,7 +74,7 @@ describe('Consul', () => {
       expect(data).toEqual({ key: 'yablolo', value: { name: 'new name' } });
     };
 
-    consul.watch({ key: 'randomKey', onChange });
+    consul.watch({ key: 'randomKey', onChange, backoffFactor: 8200, backoffMax: 8220 });
 
     expect(consul.openWatchersToClose.length).toEqual(1);
 
@@ -142,13 +98,7 @@ describe('Consul', () => {
   });
 
   it('register should not register if service exist', async () => {
-    const consul = new Consul({
-      failOnFailedConnection: true,
-      connectMaxRetries: 2,
-      connectRetryBackoffFactor: 0,
-      ...connectionOptions,
-      logger,
-    });
+    const consul = new Consul(connectionOptions);
 
     consul.consulInstance.agent.service.list
       .mockImplementationOnce(() => new Promise().reject())
@@ -161,13 +111,7 @@ describe('Consul', () => {
   });
 
   it('register should not register if service exist', async () => {
-    const consul = new Consul({
-      failOnFailedConnection: true,
-      connectMaxRetries: 2,
-      connectRetryBackoffFactor: 0,
-      ...connectionOptions,
-      logger,
-    });
+    const consul = new Consul(connectionOptions);
 
     consul.consulInstance.agent.service.list
       .mockImplementationOnce(() => Promise.resolve({}))
@@ -191,13 +135,7 @@ describe('Consul', () => {
   });
 
   it('service registration should register and save the id', async () => {
-    const consul = new Consul({
-      failOnFailedConnection: true,
-      connectMaxRetries: 2,
-      connectRetryBackoffFactor: 0,
-      ...connectionOptions,
-      logger,
-    });
+    const consul = new Consul(connectionOptions);
 
     consul.consulInstance.agent.service.list
       .mockImplementationOnce(() => Promise.resolve({}))
@@ -221,13 +159,7 @@ describe('Consul', () => {
   });
 
   it.skip('service registration should retry every register Interval', async done => {
-    const consul = new Consul({
-      failOnFailedConnection: true,
-      connectMaxRetries: 2,
-      connectRetryBackoffFactor: 0,
-      ...connectionOptions,
-      logger,
-    });
+    const consul = new Consul(connectionOptions);
 
     consul.consulInstance.agent.service.list.mockImplementation(() => Promise.resolve({}));
 
@@ -257,13 +189,7 @@ describe('Consul', () => {
   });
 
   it('close should remove watchers and deregister service', async () => {
-    const consul = new Consul({
-      failOnFailedConnection: true,
-      connectMaxRetries: 2,
-      connectRetryBackoffFactor: 0,
-      ...connectionOptions,
-      logger,
-    });
+    const consul = new Consul(connectionOptions);
 
     consul.consulInstance.agent.service.list.mockImplementation(() => Promise.resolve({}));
 

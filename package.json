@@ -12,13 +12,13 @@
   "scripts": {
     "clean": "lerna clean && rm -rf node_modules",
     "test": "jest --config jest.config.cjs",
-    "compile": "rollup -c",
+    "compile": "rollup -c --ignore @logzio-node-toolbox/test",
     "test:watch": "jest --watch --config jest.config.cjs",
     "test:debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --config jest.config.cjs",
     "lint": "eslint -c .eslintrc.cjs  --quiet --color packages/**/*.js",
-    "upkg": "lerna run upkg && yarn ncu",
     "checkLicense": "license-checker | grep 'licenses:' | sort -u",
-    "ncu": "ncu -u"
+    "ncu": "lerna run upkg && yarn upkg",
+    "upkg": "ncu -u"
   },
   "author": "Nir Winkler",
   "workspaces": [
@@ -53,8 +53,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint && yarn test && yarn compile",
-      "pre-push": "yarn upkg && yarn checkLicense"
+      "pre-commit": "yarn ncu && yarn checkLicense && yarn lint && yarn test && yarn compile"
     }
   },
   "engines": {

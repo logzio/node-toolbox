@@ -42,11 +42,4 @@ export const registerData = {
 export const connectionOptions = {
   host: 'localhost',
   port: 8282,
-  promisify: true,
-};
-
-export const passedConnectOptions = {
-  connectMaxRetries: 0,
-  connectRetryBackoffFactor: 0,
-  failOnFailedConnection: false,
 };

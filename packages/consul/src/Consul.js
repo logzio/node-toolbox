@@ -3,45 +3,19 @@ import ConsulLibrary from 'consul';
 import deepMerge from 'deepmerge';
 
 export class Consul {
-  constructor({
-    port,
-    host = 'localhost',
-    connectMaxRetries = 5,
-    connectTimeout = 5000,
-    connectRetryBackoffFactor = 2,
-    failOnFailedConnection = true,
-    watchBackoffFactor = 100,
-    watchBackoffMax = 30000,
-    watchMaxAttempts = null,
-    baseUrl = null,
-    logger = console,
-  } = {}) {
+  constructor({ port, host = 'localhost', baseUrl = null } = {}) {
     if (!port) throw new Error('consul must have port');
 
     this.consulInstance = new ConsulLibrary({ host, port, promisify: true });
 
-    this._logger = logger;
     this.keyPrefix = baseUrl ? `${baseUrl.replace(/\/*$/, '')}/` : '';
-
-    this.retry = {
-      retries: connectMaxRetries,
-      factor: connectRetryBackoffFactor,
-    };
 
     this.connectionParams = {
       host,
       port,
-      timeout: connectTimeout,
-      failOnFailedConnection,
     };
 
     this.openWatchersToClose = [];
-    this.watchOptions = {
-      backoffFactor: watchBackoffFactor,
-      backoffMax: watchBackoffMax,
-    };
-
-    if (watchMaxAttempts) this.watchOptions.maxAttempts = watchMaxAttempts;
 
     this.registerParams = {
       id: null,
@@ -50,31 +24,11 @@ export class Consul {
     };
   }
 
-  async validateConnected() {
-    const { host, port, timeout, failOnFailedConnection } = this.connectionParams;
-    let countRetries = 0;
-
+  async validateConnected({ fail = true, timeout = 5000, retries = 6, factor = 2, onRetry = null }) {
     try {
-      await retry(async () => {
-        if (this._logger && countRetries !== 0)
-          this._logger.info(`CONSUL: try to connect to ${host}:${port} ${countRetries}/${this.retry.retries}`);
-
-        countRetries += 1;
-
-        await this.consulInstance.agent.check.list({ timeout });
-      }, this.retry);
-
-      if (this._logger) {
-        const message = `CONSUL: connected successfully to ${host}:${port}`;
-
-        if (countRetries > 1) this._logger.warn(`${message} after ${countRetries} tries`);
-        else this._logger.info(message);
-      }
+      await retry(async () => this.consulInstance.agent.check.list({ timeout }), { factor, retries, onRetry });
     } catch (err) {
-      const errorMessage = `CONSUL: failed to connect to consul after ${countRetries} attempts with message: ${err.message}`;
-
-      if (failOnFailedConnection) throw new Error(errorMessage);
-      else if (this._logger) this._logger.warn(errorMessage);
+      if (fail) throw new Error(`CONSUL: failed to connect to consul after ${retries + 1} attempts with message: ${err.message}`);
     }
   }
 
@@ -123,50 +77,28 @@ export class Consul {
     return newValues;
   }
 
-  watch({ key, onChange } = {}) {
-    if (!key || !onChange) {
-      if (this._logger) this._logger.warn('CONSUL: must provide key and onChange function');
-
-      return;
-    }
+  watch({ key, onChange, onError, backoffFactor = 100, backoffMax = 30000, maxAttempts = 10000 } = {}) {
+    if (!key || !onChange) return;
 
     const options = {
+      method: this.consulInstance.kv.get,
       options: { key: this.buildKey(key) },
-      ...this.watchOptions,
+      backoffFactor,
+      backoffMax,
+      maxAttempts,
     };
-
-    if (this._logger) this._logger.info(`CONSUL: start watching ${JSON.stringify(options)}`);
-
-    options.method = this.consulInstance.kv.get;
 
     const watcher = this.consulInstance.watch(options);
 
     watcher.on('change', data => data && onChange(this.parseValue(data)));
-    watcher.on('error', error => {
-      if (error && error.message === 'not found') return;
-
-      if (this._logger) {
-        if (error && error.code === 'ECONNREFUSED') {
-          const { address, port } = error;
-
-          this._logger.warn(`CONSUL: unable to reconnect to ${address}:${port}, not watching ${key}`);
-        } else if (error && error.code === 'ECONNRESET') {
-          this._logger.warn(`CONSUL: connection to consul lost, stop watching ${key}`);
-        } else this._logger.error(`CONSUL: error on watch ${key}`);
-      }
-    });
-
+    watcher.on('error', err => err && onError(err));
     this.openWatchersToClose.push(watcher);
   }
 
-  async register({ meta, checks, address, hostname, serviceName, port, registerInterval = null } = {}) {
+  async register({ meta, checks, address, hostname, serviceName, port, interval = null, onErorr } = {}) {
     if (!serviceName || !hostname) throw new Error('must provide serviceName and hostname to service discovery');
 
-    if (this.registerParams.id) {
-      if (this._logger) this._logger.warn(`CONSUL: ${this.registerParams.id} already registered`);
-
-      return;
-    }
+    if (this.registerParams.id) return;
 
     const options = {
       id: hostname,
@@ -193,9 +125,9 @@ export class Consul {
       try {
         await invokeRegister();
 
-        if (registerInterval) this.registerParams.timeoutId = setTimeout(startRegisterInterval, registerInterval);
+        if (interval) this.registerParams.timeoutId = setTimeout(startRegisterInterval, interval);
       } catch (err) {
-        if (this._logger) this._logger.error('CONSUL: registration failed', err);
+        onErorr(err);
       }
     };
 
@@ -204,21 +136,11 @@ export class Consul {
     startRegisterInterval();
   }
 
-  set logger(newLogger) {
-    this._logger = newLogger;
-  }
-
   async close() {
-    try {
-      if (this.registerParams.id) {
-        if (this.registerParams.timeoutId) clearTimeout(this.registerParams.timeoutId);
-
-        await retry(async () => this.consulInstance.agent.service.deregister(this.registerParams.id), this.retry);
-      }
-
-      this.openWatchersToClose.forEach(watcher => watcher.end());
-    } catch (err) {
-      if (this._logger) this._logger.error('CONSUL: close consul failed', err);
+    if (this.registerParams.id) {
+      if (this.registerParams.timeoutId) clearTimeout(this.registerParams.timeoutId);
+      await retry(async () => this.consulInstance.agent.service.deregister(this.registerParams.id), this.retry);
     }
+    this.openWatchersToClose.forEach(watcher => watcher.end());
   }
 }

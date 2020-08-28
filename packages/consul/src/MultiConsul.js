@@ -48,13 +48,14 @@ export class MultiConsul extends Consul {
     return this._mergeAll();
   }
 
-  async watchAll(change) {
+  async watchAll({ onChange, onError }) {
     this.#paths.forEach(path =>
       this.watch({
         key: path,
+        onError,
         onChange: async ({ key, value }) => {
           await this._onOneChange({ key, value });
-          change({ key, changedValue: value, value: this.#mergedValues });
+          onChange({ key, changedValue: value, value: this.#mergedValues });
         },
       }),
     );
