@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/logger",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "multi-functional logger",
   "main": "dist/index.js",
   "module": "dist/index.es.js",

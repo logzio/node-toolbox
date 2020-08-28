@@ -27,6 +27,6 @@ export default {
   ERROR: 'ERROR',
 };
 
-export function changeLogLevelColor({ logLevel, color }) {
+export function setLogLevelColor({ logLevel, color }) {
   if (levelsMetaData[logLevel] && /^#.{6}$/.test(color)) levelsMetaData[logLevel] = color;
 }

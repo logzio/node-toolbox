@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/config",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "config manager based on Joi schema with subscription capabilities",
   "main": "dist/index.js",
   "module": "dist/index.es.js",

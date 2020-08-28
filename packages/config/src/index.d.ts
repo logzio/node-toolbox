@@ -25,5 +25,5 @@ export declare class Config {
   public constructor(loggerOptions: ConfigOptions);
   public subscribe(subscribeOptions: SubscribeOptions): Unsubscriber;
   public set(setOptions: SetOptions): void;
-  public get(key: string): void;
+  public get(key?: string): any;
 }

@@ -1,4 +1,7 @@
-/* eslint-disable no-unused-vars */
+interface AnyObject {
+  [key: string]: any;
+}
+
 export enum LogLevel {
   DEBUG = 'DEBUG',
   INFO = 'INFO',
@@ -6,40 +9,14 @@ export enum LogLevel {
   ERROR = 'ERROR',
 }
 
-interface AnyObject {
-  [key: string]: any;
-}
-
-export interface ChangeLogLevelColorOptions {
+export interface SetLogLevelColorColorOptions {
   logLevel: LogLevel;
   color: string;
 }
 
-export declare function changeLogLevelColor(changeLogLevelColorOptions: ChangeLogLevelColorOptions): void;
+export declare function setLogLevelColor(setLogLevelColorColorOptions: SetLogLevelColorColorOptions): void;
 
-export interface LoggerOptions {
-  transports?: Transport[];
-  metaData?: AnyObject;
-  formatters?: void[];
-  datePattern?: string;
-  logLevel?: LogLevel;
-}
-
-export declare class Logger {
-  public constructor(loggerOptions: LoggerOptions);
-  public debug(): void;
-  public log(): void;
-  public info(): void;
-  public warn(): void;
-  public error(): void;
-  public beautify(): void;
-  public close(): void;
-  public logLevel(logLevel: LogLevel): void;
-  public addTransport(transport: Transport): void;
-  public addFormatter(formatter: void[]): void;
-  public removeTransport(id: string): void;
-  public removeFormatter(formatter: void): void;
-}
+type formatter = (...args: any[]) => void;
 
 export interface TransportOptions {
   name?: string;
@@ -58,30 +35,54 @@ export interface LogzioTransportOptions extends TransportOptions {
   metaData?: AnyObject;
 }
 
-export declare namespace transports {
-  class Transport {
-    public constructor(transportOptions: TransportOptions);
-    public debug(): void;
-    public log(): void;
-    public info(): void;
-    public warn(): void;
-    public error(): void;
-    public beautify(): void;
-    public close(): void;
-    public logLevel(logLevel: LogLevel): void;
-    public addTransport(transport?: Transport): void;
-    public addFormatter(): void;
-    public removeTransport(): void;
-    public removeFormatter(): void;
-  }
+export class Transport implements TransportOptions {
+  name?: string;
+  LogLevel?: LogLevel;
+  formatters?: void[];
+  public constructor(transportOptions: TransportOptions);
+  public close(): void;
+  public logLevel(logLevel: LogLevel): void;
+  public addFormatter(): void;
+  public removeFormatter(): void;
+}
 
-  class ConsoleTransport extends Transport {
-    public constructor(consoleTransportOptions: ConsoleTransportOptions);
-  }
+export class ConsoleTransport extends Transport implements ConsoleTransportOptions {
+  public constructor(consoleTransportOptions: ConsoleTransportOptions);
+}
 
-  class LogzioTransport extends Transport {
-    public constructor(logzioTransportOptions: LogzioTransportOptions);
-  }
+export class LogzioTransport extends Transport implements LogzioTransportOptions {
+  public constructor(logzioTransportOptions: LogzioTransportOptions);
+  host?: string;
+  type?: string;
+  token: string;
+  metaData?: AnyObject;
+  name?: string;
+  LogLevel?: LogLevel;
+  formatters?: void[];
+}
+
+export interface LoggerOptions {
+  transports?: Transport | Transport[];
+  metaData?: AnyObject;
+  formatters?: formatter | formatter[];
+  datePattern?: string;
+  logLevel?: LogLevel;
+}
+
+export declare class Logger {
+  public constructor(loggerOptions: LoggerOptions);
+  public debug(...args: any[]): void;
+  public log(...args: any[]): void;
+  public info(...args: any[]): void;
+  public warn(...args: any[]): void;
+  public error(...args: any[]): void;
+  public beautify(...args: any[]): void;
+  public close(): void;
+  public logLevel(logLevel: LogLevel): void;
+  public addTransport(transport: Transport): void;
+  public addFormatter(formatter: void[]): void;
+  public removeTransport(name: string): void;
+  public removeFormatter(name: string): void;
 }
 
 type ReceiveLog = () => void;

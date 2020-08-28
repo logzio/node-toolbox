@@ -39,11 +39,11 @@ export interface RegisterOptions {
 export declare class Consul {
   public constructor(consulOptions: ConsulOptions);
   public validateConnected(validateConnectedOptions: ValidateConnectedOptions): void;
-  private parseValue(Values?: { Value?: string; key?: Key }): void;
+  private parseValue(Values?: { Value?: string; key?: string }): void;
   private buildKey(key: string): { key: string; value: AnyObject };
-  public get(key: string): AnyObject;
+  public get(key?: string): AnyObject;
   public set(key: string, value: AnyObject): void;
-  public keys(key: string): AnyObject;
+  public keys(key?: string): AnyObject;
   public merge(key: string, values: AnyObject): AnyObject;
   public watch(watchOptions: WatchOptions): void;
   public register(registerOptions: RegisterOptions): void;
