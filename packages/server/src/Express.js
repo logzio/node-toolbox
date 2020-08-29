@@ -7,24 +7,19 @@ import { default as asyncHandler } from 'express-async-handler';
 export class Express {
   constructor({ port = 3000, middlewares = [], routes = [], errorHandler = null } = {}) {
     this.port = port;
-    this.middlewares = middlewares;
     this.routes = routes;
     this.errorHandler = errorHandler;
-  }
-
-  async start() {
     const app = express();
-
     app.use(helmet());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
 
-    this.middlewares.forEach(mid => {
+    middlewares.forEach(mid => {
       if (_.isArray(mid)) app.use(...mid);
       else app.use(mid);
     });
 
-    this.routes.forEach(r => {
+    routes.forEach(r => {
       if (r instanceof express.Router) {
         if (r.base) app.use(r.base, r);
         else app.use(r);
@@ -41,10 +36,14 @@ export class Express {
       }
     });
 
-    if (this.errorHandler) app.use(this.errorHandler);
+    if (errorHandler) app.use(errorHandler);
 
+    this.app = app;
+  }
+
+  async stat(port = this.port) {
     return new Promise(resolve => {
-      const server = app.listen(this.port, () => resolve({ app, server }));
+      const server = this.app.listen(port, () => resolve({ app: this.app, server }));
     });
   }
 }
