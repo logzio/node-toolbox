@@ -25,8 +25,10 @@ export class Express {
     });
 
     this.routes.forEach(r => {
-      if (r instanceof express.Router) app.use(r);
-      else {
+      if (r instanceof express.Router) {
+        if (r.base) app.use(r.base, r);
+        else app.use(r);
+      } else {
         let method, path, handlers, handler;
         if (_.isArray(r)) {
           [method = 'get', path, ...handlers] = r;

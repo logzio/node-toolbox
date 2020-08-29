@@ -4,7 +4,7 @@ import { getPackages } from '@lerna/project';
 import filterPackages from '@lerna/filter-packages';
 import batchPackages from '@lerna/batch-packages';
 import copy from 'rollup-plugin-copy';
-import { terser } from "rollup-plugin-terser";
+// import { terser } from 'rollup-plugin-terser';
 
 async function getSortedPackages(scope, ignore) {
   const packages = await getPackages(__dirname);
@@ -24,26 +24,28 @@ async function main() {
     /* Absolute path to input file */
     const input = path.join(basePath, 'src/index.js');
     /* "main" field from package.json file. */
-    const { main, module: modulePath } = pkg.toJSON();
+    const {
+      exports: { import: esPath, require: cjsPath },
+    } = pkg.toJSON();
     /* Push build config for this package. */
     config.push({
       input,
       output: [
         {
-          file: path.join(basePath, main),
+          file: path.join(basePath, cjsPath),
           format: 'cjs',
-          // plugins: [terser({ module: false,  ecma: 2019, mangle: false })]
+          // plugins: [terser({ module: false, ecma: 2019, mangle: false })],
         },
         {
-          file: path.join(basePath, modulePath),
+          file: path.join(basePath, esPath),
           format: 'es',
-          // plugins: [terser({ module: true,  ecma: 2019, mangle: false })]
+          // plugins: [terser({ module: true, ecma: 2019, mangle: false })],
         },
       ],
+      // all dependencies should be listed as external
       external: [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})],
-      plugins: [
-        copy({ targets: [ { src: path.join(basePath, 'src/index.d.ts'), dest: path.join(basePath, 'dist') } ] })
-      ]
+      // copy the ts declaration file into the dist folder
+      plugins: [copy({ targets: [{ src: path.join(basePath, 'src/index.d.ts'), dest: path.join(basePath, 'dist') }] })],
     });
   });
 

@@ -3,8 +3,10 @@
   "version": "0.0.4",
   "description": "multi-functional logger",
   "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "files": ["dist"],
+  "exports": {
+    "import": "./dist/index.es.js",
+    "require": "./dist/index.js"
+  },
   "types": "dist/index.d.ts",
   "type": "module",
   "license": "MIT",
