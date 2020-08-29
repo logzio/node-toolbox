@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/server",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "server utils and frameworks templates",
   "main": "dist/index.js",
   "exports": {
@@ -8,6 +8,7 @@
     "require": "./dist/index.js"
   },
   "types": "dist/index.d.ts",
+  "files": ["dist"],
   "type": "module",
   "license": "MIT",
   "author": "Nir winkler <madvinking@gmail.com>",
