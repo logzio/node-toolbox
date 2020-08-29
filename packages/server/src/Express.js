@@ -7,22 +7,20 @@ import { default as asyncHandler } from 'express-async-handler';
 export class Express {
   constructor({ port = 3000, middlewares = [], routes = [], errorHandler = null } = {}) {
     this.port = port;
-    this.routes = routes;
-    this.errorHandler = errorHandler;
-    const app = express();
-    app.use(helmet());
-    app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(bodyParser.json());
+    this.app = express();
+    this.app.use(helmet());
+    this.app.use(bodyParser.urlencoded({ extended: false }));
+    this.app.use(bodyParser.json());
 
     middlewares.forEach(mid => {
-      if (_.isArray(mid)) app.use(...mid);
-      else app.use(mid);
+      if (_.isArray(mid)) this.app.use(...mid);
+      else this.app.use(mid);
     });
 
     routes.forEach(r => {
       if (r instanceof express.Router) {
-        if (r.base) app.use(r.base, r);
-        else app.use(r);
+        if (r.base) this.app.use(r.base, r);
+        else this.app.use(r);
       } else {
         let method, path, handlers, handler;
         if (_.isArray(r)) {
@@ -32,16 +30,17 @@ export class Express {
           if (handlers && !_.isArray(handlers)) handlers = [handlers];
           if (handler) handlers = [handler, ...handlers];
         }
-        app[method.toLowerCase()](path, ...handlers.map(h => (h?.constructor?.name === 'AsyncFunction' ? asyncHandler(h) : h)));
+        this.app[method.toLowerCase()](
+          path,
+          ...handlers.map(h => (h?.constructor?.name === 'AsyncFunction' ? asyncHandler(h) : h)),
+        );
       }
     });
 
-    if (errorHandler) app.use(errorHandler);
-
-    this.app = app;
+    if (errorHandler) this.app.use(errorHandler);
   }
 
-  async stat(port = this.port) {
+  async start(port = this.port) {
     return new Promise(resolve => {
       const server = this.app.listen(port, () => resolve({ app: this.app, server }));
     });
