@@ -41,12 +41,12 @@ const mockGet2 = path => {
   else if (path == 'configPathC') return Promise.resolve(configPathC);
 };
 
-describe.only('MultiConsul', () => {
+describe('MultiConsul', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
   it('create consul instance with values object by order of array of paths', () => {
-    const multiConsul = new MultiConsul({ paths, host: '127.0.0.1' });
+    const multiConsul = new MultiConsul({ paths, host: '127.0.0.1', port: 80 });
     expect(multiConsul.values).toEqual({
       configPathA: { p: 1, value: {} },
       configPathB: { p: 2, value: {} },
@@ -54,13 +54,13 @@ describe.only('MultiConsul', () => {
     });
 
     expect(Consul).toHaveBeenCalledTimes(1);
-    expect(Consul).toHaveBeenCalledWith({ host: '127.0.0.1' });
+    expect(Consul).toHaveBeenCalledWith({ host: '127.0.0.1', port: 80 });
   });
 
-  it('merge all avilable configs', async () => {
+  it('merge all available configs', async () => {
     Consul.prototype.get = mockGet1;
 
-    const multiConsul = new MultiConsul({ paths });
+    const multiConsul = new MultiConsul({ paths, port: 82 });
 
     const allConfig = await multiConsul.getAll();
     expect(allConfig).toEqual({ a: 'a', b: 'b', c: 'b' });
@@ -70,7 +70,7 @@ describe.only('MultiConsul', () => {
     Consul.prototype.get = mockGet1;
     Consul.prototype.watch = jest.fn();
 
-    const multiConsul = new MultiConsul({ paths });
+    const multiConsul = new MultiConsul({ paths, port: 82 });
     await multiConsul.load();
 
     let callCout = 0;

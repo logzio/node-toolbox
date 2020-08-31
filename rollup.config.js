@@ -4,7 +4,8 @@ import { getPackages } from '@lerna/project';
 import filterPackages from '@lerna/filter-packages';
 import batchPackages from '@lerna/batch-packages';
 import copy from 'rollup-plugin-copy';
-// import { terser } from 'rollup-plugin-terser';
+import babel from '@rollup/plugin-babel';
+import { terser } from 'rollup-plugin-terser';
 
 async function getSortedPackages(scope, ignore) {
   const packages = await getPackages(__dirname);
@@ -32,20 +33,25 @@ async function main() {
       input,
       output: [
         {
+          sourcemap: true,
           file: path.join(basePath, cjsPath),
           format: 'cjs',
-          // plugins: [terser({ module: false, ecma: 2019, mangle: false })],
+          plugins: [terser({ module: false, ecma: 2015, mangle: false })],
         },
         {
+          sourcemap: true,
           file: path.join(basePath, esPath),
           format: 'es',
-          // plugins: [terser({ module: true, ecma: 2019, mangle: false })],
+          plugins: [terser({ module: true, ecma: 2015, mangle: false })],
         },
       ],
       // all dependencies should be listed as external
       external: [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})],
       // copy the ts declaration file into the dist folder
-      plugins: [copy({ targets: [{ src: path.join(basePath, 'src/index.d.ts'), dest: path.join(basePath, 'dist') }] })],
+      plugins: [
+        copy({ targets: [{ src: path.join(basePath, 'src/index.d.ts'), dest: path.join(basePath, 'dist') }] }),
+        babel({ babelHelpers: 'bundled' }),
+      ],
     });
   });
 

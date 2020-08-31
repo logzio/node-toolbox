@@ -1,5 +1,6 @@
 jest.mock('consul', () =>
   jest.fn().mockImplementation(() => ({
+    buildKey: jest.fn().mockImplementation(key => key),
     watch: jest.fn().mockImplementation(() => ({
       on: jest.fn(),
       end: jest.fn(),

@@ -3,8 +3,7 @@ import { Consul } from './Consul.js';
 
 export class MultiConsul extends Consul {
   #paths;
-
-  #mergedValues;
+  #mergedValues = null;
   constructor({ paths = [], ...consulOptions } = {}) {
     super(consulOptions);
     this.#paths = paths;
@@ -14,8 +13,6 @@ export class MultiConsul extends Consul {
       p++;
       return acc;
     }, {});
-
-    this.#mergedValues;
   }
 
   _mergeAll() {
@@ -30,8 +27,8 @@ export class MultiConsul extends Consul {
   async load() {
     const data = await Promise.allSettled(this.#paths.map(path => this.get(path)));
 
-    data.forEach(({ value: { value, key } = {} }) => {
-      if (key && value) this.values[key].value = value;
+    data.forEach(({ value: { value } = {} }, index) => {
+      if (value) this.values[this.#paths[index]].value = value;
     });
 
     return this._mergeAll();
