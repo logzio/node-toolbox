@@ -48,7 +48,7 @@
     "license-checker": "25.0.1",
     "minimist": "^1.2.5",
     "nodemon": "2.0.4",
-    "npm-check-updates": "8.0.3",
+    "npm-check-updates": "8.0.4",
     "prettier": "^2.1.1",
     "rollup": "2.26.9",
     "rollup-plugin-copy": "^3.3.0",
