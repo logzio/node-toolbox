@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/utils",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "collection of nice utils",
   "main": "dist/index.js",
   "exports": {

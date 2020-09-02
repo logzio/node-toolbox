@@ -2382,6 +2382,11 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
+"@logzio-node-toolbox/utils@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@logzio-node-toolbox/utils/-/utils-0.0.2.tgz#c2ac9bb912747b6d10af83cb7ce88caad79d2770"
+  integrity sha512-rj05OLptiW/0D7zSUwxDQSrcHOLGmO9TyLoer+tnO1sFqzzkruJxf3IthX9pE+cAtVbsMWj3a/9XvmBDmFVWFA==
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
