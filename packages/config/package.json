@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "joi": "17.2.1",
+    "core-js": "3.6.5",
     "@logzio-node-toolbox/utils": "^0.0.2",
     "deepmerge": "4.2.2",
     "lodash": "4.17.20"

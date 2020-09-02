@@ -9,7 +9,7 @@ export class MultiConsul extends Consul {
     this.#paths = paths;
     let p = 1;
     this.values = paths.reduce((acc, path) => {
-      acc[path] = { p, value: {} };
+      acc[this.buildKey(path)] = { p, value: {} };
       p++;
       return acc;
     }, {});
@@ -27,8 +27,8 @@ export class MultiConsul extends Consul {
   async load() {
     const data = await Promise.allSettled(this.#paths.map(path => this.get(path)));
 
-    data.forEach(({ value: { value } = {} }, index) => {
-      if (value) this.values[this.#paths[index]].value = value;
+    data.forEach(({ value: { value, key } = {} }) => {
+      if (value && key) this.values[key].value = value;
     });
 
     return this._mergeAll();

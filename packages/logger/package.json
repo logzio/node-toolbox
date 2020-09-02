@@ -26,6 +26,7 @@
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
   },
   "dependencies": {
+    "core-js": "3.6.5",
     "chalk": "4.1.0",
     "dateformat": "3.0.3",
     "json-colorizer": "^2.2.2",

@@ -21,6 +21,7 @@
     "access": "public"
   },
   "scripts": {
+    "core-js": "3.6.5",
     "clean": "rm -rf node_modules",
     "upkg": "ncu -u --packageFile ./package.json",
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"

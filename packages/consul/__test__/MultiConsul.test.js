@@ -3,8 +3,10 @@ import { Consul, MultiConsul } from '../src/index.js';
 
 const paths = ['configPathA', 'configPathB', 'configPathC'];
 
+Consul.prototype.buildKey = key => `prefix/${key}`;
+
 const configPathA = {
-  key: 'configPathA',
+  key: 'prefix/configPathA',
   value: {
     a: 'a',
     b: 'a',
@@ -13,7 +15,7 @@ const configPathA = {
 };
 
 const configPathB = {
-  key: 'configPathB',
+  key: 'prefix/configPathB',
   value: {
     b: 'b',
     c: 'b',
@@ -21,7 +23,7 @@ const configPathB = {
 };
 
 const configPathC = {
-  key: 'configPathC',
+  key: 'prefix/configPathC',
   value: {
     c: 'c',
   },
@@ -48,9 +50,9 @@ describe('MultiConsul', () => {
   it('create consul instance with values object by order of array of paths', () => {
     const multiConsul = new MultiConsul({ paths, host: '127.0.0.1', port: 80 });
     expect(multiConsul.values).toEqual({
-      configPathA: { p: 1, value: {} },
-      configPathB: { p: 2, value: {} },
-      configPathC: { p: 3, value: {} },
+      'prefix/configPathA': { p: 1, value: {} },
+      'prefix/configPathB': { p: 2, value: {} },
+      'prefix/configPathC': { p: 3, value: {} },
     });
 
     expect(Consul).toHaveBeenCalledTimes(1);
@@ -100,10 +102,10 @@ describe('MultiConsul', () => {
     const { onChange: onChangeA } = Consul.prototype.watch.mock.calls[0][0];
     const { onChange: onChangeC } = Consul.prototype.watch.mock.calls[2][0];
 
-    await onChangeA({ key: 'configPathA', value: changeA });
+    await onChangeA({ key: 'prefix/configPathA', value: changeA });
     Consul.prototype.get = mockGet2;
 
-    await onChangeC({ key: 'configPathC', value: changeC });
+    await onChangeC({ key: 'prefix/configPathC', value: changeC });
 
     expect(callCout).toEqual(2);
   });

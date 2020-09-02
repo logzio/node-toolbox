@@ -33,16 +33,12 @@ async function main() {
       input,
       output: [
         {
-          sourcemap: true,
           file: path.join(basePath, cjsPath),
           format: 'cjs',
-          plugins: [terser({ module: false, ecma: 2015, mangle: false })],
         },
         {
-          sourcemap: true,
           file: path.join(basePath, esPath),
           format: 'es',
-          plugins: [terser({ module: true, ecma: 2015, mangle: false })],
         },
       ],
       // all dependencies should be listed as external
