@@ -5,7 +5,6 @@ import filterPackages from '@lerna/filter-packages';
 import batchPackages from '@lerna/batch-packages';
 import copy from 'rollup-plugin-copy';
 import babel from '@rollup/plugin-babel';
-import { terser } from 'rollup-plugin-terser';
 
 async function getSortedPackages(scope, ignore) {
   const packages = await getPackages(__dirname);
