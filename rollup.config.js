@@ -4,7 +4,9 @@ import { getPackages } from '@lerna/project';
 import filterPackages from '@lerna/filter-packages';
 import batchPackages from '@lerna/batch-packages';
 import copy from 'rollup-plugin-copy';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import babel from '@rollup/plugin-babel';
+import commonjs from '@rollup/plugin-commonjs';
 
 async function getSortedPackages(scope, ignore) {
   const packages = await getPackages(__dirname);
@@ -44,8 +46,10 @@ async function main() {
       external: [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})],
       // copy the ts declaration file into the dist folder
       plugins: [
-        copy({ targets: [{ src: path.join(basePath, 'src/index.d.ts'), dest: path.join(basePath, 'dist') }] }),
         babel({ babelHelpers: 'bundled' }),
+        nodeResolve(),
+        commonjs(),
+        copy({ targets: [{ src: path.join(basePath, 'src/index.d.ts'), dest: path.join(basePath, 'dist') }] }),
       ],
     });
   });
