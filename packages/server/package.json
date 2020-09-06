@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/server",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "server utils and frameworks templates",
   "main": "dist/index.js",
   "exports": {
