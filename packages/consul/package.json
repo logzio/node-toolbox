@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/consul",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Consul easy use for json configs and service discovery",
   "main": "dist/index.js",
   "exports": {
@@ -26,7 +26,6 @@
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
   },
   "dependencies": {
-    "core-js": "3.6.5",
     "async-retry": "1.3.1",
     "consul": "0.37.0",
     "deepmerge": "4.2.2"

@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/utils",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "collection of nice utils",
   "main": "dist/index.js",
   "exports": {
@@ -21,7 +21,6 @@
     "access": "public"
   },
   "scripts": {
-    "core-js": "3.6.5",
     "clean": "rm -rf node_modules",
     "upkg": "ncu -u --packageFile ./package.json",
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"

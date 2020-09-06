@@ -30,7 +30,6 @@
     "@opentelemetry/core": "^0.11.0",
     "@opentelemetry/exporter-jaeger": "^0.11.0",
     "@opentelemetry/propagator-jaeger": "0.9.0",
-    "@opentelemetry/tracing": "^0.11.0",
-    "core-js": "3.6.5"
+    "@opentelemetry/tracing": "^0.11.0"
   }
 }
