@@ -1,21 +1,21 @@
 {
-  "name": "@logzio-node-toolbox/server",
-  "version": "0.0.8",
-  "description": "server utils and frameworks templates",
+  "name": "@logzio-node-toolbox/isolate-workspace",
+  "version": "0.0.2",
+  "description": "isolate yarn workspace",
   "main": "dist/index.js",
   "exports": {
     "import": "./dist/index.es.js",
     "require": "./dist/index.js"
   },
   "types": "dist/index.d.ts",
-  "files": ["dist"],
   "type": "module",
+  "files": ["dist"],
   "license": "MIT",
   "author": "Nir winkler <madvinking@gmail.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/logzio/node-toolbox.git",
-    "directory": "packages/server"
+    "directory": "packages/tracer"
   },
   "publishConfig": {
     "access": "public"
@@ -26,11 +26,8 @@
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
   },
   "dependencies": {
-    "@godaddy/terminus": "4.4.1",
-    "express": "^4.17.1",
-    "lodash": "4.17.20",
-    "body-parser": "1.19.0",
-    "express-async-handler": "1.1.4",
-    "helmet": "^4.1.1"
+    "@yarnpkg/lockfile": "^1.1.0",
+    "find-yarn-workspace-root": "^2.0.0",
+    "fs-extra": "^9.0.1"
   }
 }

@@ -28,7 +28,7 @@
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
   },
   "dependencies": {
-    "joi": "17.2.1",
+    "joi": "17.3.0",
     "@logzio-node-toolbox/utils": "^0.0.8",
     "deepmerge": "4.2.2",
     "lodash": "4.17.20"
