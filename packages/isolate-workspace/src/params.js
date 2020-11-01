@@ -6,21 +6,16 @@ const getWorkspacesRoot = dir => {
   const pkg = path.join(dir, 'package.json');
   let found = false;
   if (fs.existsSync(pkg)) {
-    const { workspaces } = require(pkg);
+    const { workspaces } = JSON.parse(fs.readFileSync(pkg, 'utf-8'));
     if (workspaces) found = true;
   }
   if (found) return dir;
   return getWorkspacesRoot(path.join(dir, '../'));
 };
 
-const rootDir = getWorkspacesRoot(__dirname);
-console.log('rootDir: ', rootDir);
+export const rootDir = getWorkspacesRoot(path.resolve());
 
-const allWorkspaces = JSON.parse(execSync('yarn workspaces --silent info', { cwd: rootDir }).toString());
-for (let key in allWorkspaces) {
-  allWorkspaces[key].location = path.join(rootDir, allWorkspaces[key].location);
-  allWorkspaces[key].pkgJson = require(path.join(allWorkspaces[key].location, 'package.json'));
-}
+export const allWorkspaces = JSON.parse(execSync('yarn workspaces --silent info', { cwd: rootDir }).toString());
 
 let [, , ...cliParams] = process.argv;
 
@@ -38,17 +33,17 @@ const help = getParam('--help');
 
 if (help) printHelp();
 
-const ignoreDev = getParam('--ignore-dev');
+export const ignoreDev = getParam('--ignore-dev');
 
-const ignoreYarnLock = getParam('--ignore-yarn-lock');
+export const ignoreYarnLock = getParam('--ignore-yarn-lock');
 
-const defaultPackageJson = getParam('--default-package-json', true);
+export const defaultPackageJson = getParam('--default-package-json', true);
 
-const defaultWorkspacesFolder = getParam('--default-workspaces-folder', true) || 'node_modules';
+export const defaultWorkspacesFolder = getParam('--default-workspaces-folder', true) || 'node_modules';
 
-const copyOnlyFiles = getParam('--copy-only-files');
+export const copyOnlyFiles = getParam('--copy-only-files');
 
-const workspaceName = (function getWorkspaceName() {
+export const workspaceName = (function getWorkspaceName() {
   const [targetWorkspaceName] = cliParams;
 
   if (!targetWorkspaceName) {
@@ -66,6 +61,12 @@ const workspaceName = (function getWorkspaceName() {
   process.exit(1);
 })();
 
+for (let key in allWorkspaces) {
+  allWorkspaces[key].location = path.join(rootDir, allWorkspaces[key].location);
+  allWorkspaces[key].pkgJsonLocation = path.join(allWorkspaces[key].location, 'package.json');
+  allWorkspaces[key].pkgJson = JSON.parse(fs.readFileSync(allWorkspaces[key].pkgJsonLocation));
+}
+
 function printHelp() {
   console.log(`
 isolating workspace node_modules
@@ -73,15 +74,3 @@ isolating workspace node_modules
 
   process.exit(0);
 }
-
-module.exports = {
-  rootDir,
-  workspaceName,
-  ignoreDev,
-  allWorkspaces,
-  ignoreYarnLock,
-  defaultPackageJson,
-  defaultWorkspacesFolder,
-  copyOnlyFiles,
-  getWorkspaceName,
-};
