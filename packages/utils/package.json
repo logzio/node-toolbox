@@ -9,7 +9,9 @@
   },
   "types": "dist/index.d.ts",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "license": "MIT",
   "author": "Nir winkler <madvinking@gmail.com>",
   "repository": {
@@ -24,5 +26,8 @@
     "clean": "rm -rf node_modules",
     "upkg": "ncu -u --packageFile ./package.json",
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
+  },
+  "dependencies": {
+    "kill-port": "^1.6.1"
   }
 }
