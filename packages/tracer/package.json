@@ -27,6 +27,6 @@
   },
   "dependencies": {
     "jaeger-client": "3.18.1",
-    "opentracing": "0.14.4"
+    "opentracing": "0.14.5"
   }
 }

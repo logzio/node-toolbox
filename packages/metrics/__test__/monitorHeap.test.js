@@ -6,7 +6,7 @@ describe.skip('metrics - Heap', () => {
     jest.clearAllMocks();
   });
 
-  it('should take snapshot if percentage incremental', async () => {
+  it.skip('should take snapshot if percentage incremental', async () => {
     const heap = new Heap({ minPercentage: 10, repeats: 4 });
     for (let i = 2; i <= 19; i++) {
       heap.check(i);
@@ -15,7 +15,7 @@ describe.skip('metrics - Heap', () => {
     expect(heapdump.writeSnapshot).toHaveBeenCalledTimes(2);
   });
 
-  it('should take snapshot if percentage is max', async () => {
+  it.skip('should take snapshot if percentage is max', async () => {
     const heap = new Heap({ minPercentage: 10, repeats: 4, maxPercentage: 20 });
     heap.check(20);
     for (let i = 2; i <= 9; i++) {
