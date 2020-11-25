@@ -2,10 +2,10 @@
   "name": "@logzio-node-toolbox/server",
   "version": "0.0.8",
   "description": "server utils and frameworks templates",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "exports": {
     "import": "./dist/index.es.js",
-    "require": "./dist/index.js"
+    "require": "./dist/index.cjs"
   },
   "types": "dist/index.d.ts",
   "files": ["dist"],

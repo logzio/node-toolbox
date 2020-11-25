@@ -2,10 +2,10 @@
   "name": "@logzio-node-toolbox/metrics",
   "version": "0.0.2",
   "description": "simple metrics reporter",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "exports": {
     "import": "./dist/index.es.js",
-    "require": "./dist/index.js"
+    "require": "./dist/index.cjs"
   },
   "types": "dist/index.d.ts",
   "type": "module",

@@ -2,10 +2,10 @@
   "name": "@logzio-node-toolbox/config",
   "version": "0.0.8",
   "description": "config manager based on Joi schema with subscription capabilities",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "exports": {
     "import": "./dist/index.es.js",
-    "require": "./dist/index.js"
+    "require": "./dist/index.cjs"
   },
   "types": "dist/index.d.ts",
   "type": "module",

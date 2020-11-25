@@ -2,10 +2,10 @@
   "name": "@logzio-node-toolbox/consul",
   "version": "0.0.8",
   "description": "Consul easy use for json configs and service discovery",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "exports": {
     "import": "./dist/index.es.js",
-    "require": "./dist/index.js"
+    "require": "./dist/index.cjs"
   },
   "types": "dist/index.d.ts",
   "type": "module",

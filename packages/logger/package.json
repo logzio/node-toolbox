@@ -2,10 +2,10 @@
   "name": "@logzio-node-toolbox/logger",
   "version": "0.0.8",
   "description": "multi-functional logger",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "exports": {
     "import": "./dist/index.es.js",
-    "require": "./dist/index.js"
+    "require": "./dist/index.cjs"
   },
   "types": "dist/index.d.ts",
   "type": "module",
