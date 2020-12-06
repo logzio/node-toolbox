@@ -8,7 +8,6 @@
     "require": "./dist/index.cjs"
   },
   "types": "dist/index.d.ts",
-  "type": "module",
   "files": ["dist"],
   "license": "MIT",
   "author": "Nir winkler <madvinking@gmail.com>",
