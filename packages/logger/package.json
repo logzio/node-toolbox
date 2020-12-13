@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/logger",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "description": "multi-functional logger",
   "main": "dist/index.cjs",
   "exports": {
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "chalk": "4.1.0",
-    "dateformat": "4.0.0",
+    "dateformat": "4.3.1",
     "json-colorizer": "^2.2.2",
     "json-stringify-safe": "5.0.1",
     "lodash": "4.17.20",
