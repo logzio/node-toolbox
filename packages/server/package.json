@@ -26,7 +26,7 @@
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
   },
   "dependencies": {
-    "@godaddy/terminus": "4.4.1",
+    "@godaddy/terminus": "4.5.0",
     "express": "^4.17.1",
     "lodash": "4.17.20",
     "body-parser": "1.19.0",
