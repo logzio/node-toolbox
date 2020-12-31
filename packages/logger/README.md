@@ -51,9 +51,6 @@ logger.info('hello', { name: 'name', message: 'override' }); // first args alway
 logger.info('hello', { name: 'from' }, {last: 'last'}); // concat objects args
 // INFO: 18/07/2020 04:07:19.079 hello {"name":"from", last: 'last', logSize: 70 }
 
-logger.info('hello', { name: 'from' }, {last: 'last'}); // concat objects args
-// INFO: 18/07/2020 04:07:19.079 hello {"name":"from", last: 'last', logSize: 70 }
-
 logger.info('hello', { name: 'from' }, [1,2,3]); // not objects will push to _logArgs_ array
 // INFO: 18/07/2020 04:07:19.079 hello {"name":"from", _logArgs_: [[1,2,3]], logSize: 70 }
 
@@ -69,38 +66,38 @@ await logger.close() // will wait for all transports to close
 
 ### ConsoleTransport
 log to console
-  params
-  name - string (default console)
-  formatters - array | list of formatters
-  logLevel - string (default info) | representing the log level to log
-  color - boolean (default true) | adding color to output
+- params
+  - name - string (default console)
+  - formatters - array | list of formatters
+  - logLevel - string (default info) | representing the log level to log
+  - color - boolean (default true) | adding color to output
 ```javascript
 import { Logger, transports } from '@logzio-node-toolbox/logger';
-const logzio = new transports.ConsoleTransport({ name: 'logzioTransport', formatters: [transportFormatter], token:'123', meta: {region: 'prod', } });
+const consoleTransport = new transports.ConsoleTransport({ name: 'logzioTransport', formatters: [transportFormatter], token:'123', meta: {region: 'prod', } });
 ```
 
 ### LogzioTransport
 send the log to logzio with the given token
-  params
-  name - string (default logzio)
-  host - string
-  token - string
-  type - string (default node-js)
-  metaData - object | default data to add to each log
-  formatters - array | list of formatters
-  logLevel - string (default info) | representing the log level to log
-  moreOptions - object (default true) | options to pass to logzio-nodejs
+- params
+  - name - string (default logzio)
+  - host - string
+  - token - string
+  - type - string (default node-js)
+  - metaData - object | default data to add to each log
+  - formatters - array | list of formatters
+  - logLevel - string (default info) | representing the log level to log
+  - moreOptions - object (default true) | options to pass to logzio-nodejs
 ```javascript
 import { Logger, transports } from '@logzio-node-toolbox/logger';
-const console = new transports.LogzioTransport({ name: 'new-console', formatters: [transportFormatter] });
+const logzioTransport = new transports.LogzioTransport({ name: 'new-console', formatters: [transportFormatter] });
 ```
 
 ### custom Transport
 creating a custom Transport
-functions:
-logLevel - change log level
-close - stop receiving logs
-open - start receiving logs
+- functions:
+  - logLevel - change log level
+  - close - stop receiving logs
+  - open - start receiving logs
 
 
 ```javascript
@@ -111,7 +108,7 @@ class CustomTransports extend transports.Transport {
     super({ name, formatters, logLevel })
   }
   // formatted log will arrive to this log function, so here u can do what u want with the data
-  log(data) {
+  logLevel(data) {
     // do whatever with the data
   }
 
@@ -133,7 +130,7 @@ const logger = new Logger({transports: [ customTransports ] })
 ### omitFields
 Array of fields by path string tp remove from the log.
 ```javascript
-import {Logger, formatters } from '@logzio-node-toolbox/logger';
+import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
 const f = formatters.omitFields(['path.to.omit', 'path.to.omit2']);
 const logger = new Logger(formatters: [f]);
@@ -141,7 +138,7 @@ logger.log({
   path: {
     to :{
       omit: 'should omit',
-      omit2: 'also should omit'
+      omit2: 'also should omit',
       omit3: 'should not omit'
     }
   }
@@ -153,10 +150,10 @@ logger.log({
 1. look for err || error || message. err fields make sure they are objects.
 2. serialize the error and make sure logLevel is error.
 ```javascript
-import {Logger, formatters } from '@logzio-node-toolbox/logger';
+import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
-const f = formatters.handleError();
-const logger = new Logger(formatters: [f]);
+const formatter = formatters.handleError();
+const logger = new Logger(formatters: [formatter]);
 const err = new Error('random error');
 logger.log({
   err
@@ -166,54 +163,55 @@ logger.log({
 
 ### logSize
 1. add logSize field to the log.
-2. validate log is size with value pass in bytes.
+2. validate max log size with value pass in bytes.
 ```javascript
-import {Logger, formatters } from '@logzio-node-toolbox/logger';
+import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
-const f = formatters.logSize(100);
-const logger = new Logger(formatters: [f]);
+const formatter = formatters.logSize(100);
+const logger = new Logger(formatters: [formatter]);
 logger.log('message with log size', { field: 'random' });
 // output: INFO: 18/07/2020 04:07:19.079 message with log size { logSize: 40 }
 
-const f = formatters.logSize(30);
-const logger = new Logger(formatters: [f]);
+const formatter = formatters.logSize(30);
+const logger = new Logger(formatters: [formatter]);
 logger.log('message with log size', { field: 'random' });
 // output: INFO: 18/07/2020 04:07:19.079 Log exceeded the max bytes size {logObjectKeys: ['message', 'field'] maxLogSize: 30 }
 ```
 
 ### maskFields
 mask fields by the length was received with *
-params
- list - {{ field: string, length?: number  }}
- length - number (default 7)
+- params:
+  - list - {{ field: string, length?: number  }}
+  - length - number (default 7)
 ```javascript
-import {Logger, formatters } from '@logzio-node-toolbox/logger';
+import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
-const f = formatters.maskFields([{field: 'password', length: 6 }], 10);
-const logger = new Logger(formatters: [f]);
+const formatter = formatters.maskFields([{ field: 'password', length: 6 }], 10);
+const logger = new Logger(formatters: [formatter]);
 logger.log({
   field: 'random',
   password: '12345678',
   ip: '123.123.123.123',
-  });
+});
 // output: INFO: 18/07/2020 04:07:19.079 message with log size { field: 'random', password: '**345678', ip: '****23.123.123' }
 ```
 
 ### pickFields
 will omit all object property except the given array
- params
- fieldName - string
- list - array if strings
- flatten - will flat the omit fields to the root of the log |  default false
+- params
+  - fieldName - string
+  - list - array of strings
+  - flatten - will flat the omit fields to the root of the log | default false
 ```javascript
-import {Logger, formatters } from '@logzio-node-toolbox/logger';
+import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
-const f = formatters.pickFields('req', ['port', 'host'], true);
-const logger = new Logger(formatters: [f]);
+const formatter = formatters.pickFields('req', ['port', 'host'], true);
+const logger = new Logger(formatters: [formatter]);
 logger.info("incoming" ,{req: {port: '3000', host: 'localhost', ip: "127.0.0.1" }});
 // INFO: 18/07/2020 04:07:19.079 {"message":"incoming", "port": "3000", host: "localhost"}
 
-const f = formatters.pickFields('req', ['port', 'host'], false);
+const formatter = formatters.pickFields('req', ['port', 'host'], false);
+const logger = new Logger(formatters: [formatter]);
 logger.info("incoming" ,{req: { port: '3000', host: 'localhost', ip: "127.0.0.1" }});
 // INFO: 18/07/2020 04:07:19.079 {"message":"incoming", req: { "port": "3000", host: "localhost"} }
 ```
@@ -221,12 +219,12 @@ logger.info("incoming" ,{req: { port: '3000', host: 'localhost', ip: "127.0.0.1"
 ### removeCircularFields
 iterate over the log and remove all circular fields
 ```javascript
-import {Logger, formatters } from '@logzio-node-toolbox/logger';
+import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
-const f = formatters.removeCircularFields();
-const logger = new Logger(formatters: [f]);
+const formatter = formatters.removeCircularFields();
+const logger = new Logger(formatters: [formatter]);
 
-const a = {name : 'name'};
+const a = { name : 'name'};
 a.b = a;
 logger.info(a);
 // INFO: 18/07/2020 04:07:19.079 {"name":"name", "b": [Circular] }
@@ -235,25 +233,25 @@ logger.info(a);
 ### renameFields
 rename fields from to path to path
 ```javascript
-import {Logger, formatters } from '@logzio-node-toolbox/logger';
+import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
-const f = formatters.renameFields({'path.to.field.rename': 'name.to.field. newName' });
-const logger = new Logger(formatters: [f]);
+const formatter = formatters.renameFields({ 'path.to.field.rename': 'name.to.field. newName' });
+const logger = new Logger(formatters: [formatter]);
 
 logger.info({ path: { to : {field : { rename: "some value"}}}});
-// INFO: 18/07/2020 04:07:19.079 { path: { to : {field : { newName: "some value"}}}}
+// INFO: 18/07/2020 04:07:19.079 { path: { to : {field : { newName: "some value" }}}}
 ```
 
 ### sliceFields
-params
-list - array of paths to slice  (if field is object will stringify it before slice)
-size - size to slice
+- params
+  - list - array of paths to slice  (if field is object will stringify it before slice)
+  - size - size to slice
 
 ```javascript
-import {Logger, formatters } from '@logzio-node-toolbox/logger';
+import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
-const f = formatters.sliceFields(['path.to.slice'], 10);
-const logger = new Logger(formatters: [f]);
+const formatter = formatters.sliceFields(['path.to.slice'], 10);
+const logger = new Logger(formatters: [formatter]);
 
 logger.info({ path: { to : { slice : { "some value to slice if its to long" }}}});
 // INFO: 18/07/2020 04:07:19.079 { path: { to : {slice: "some value to...", __overSizedField__: { 'path.to.slice' : 30 }}}}}
