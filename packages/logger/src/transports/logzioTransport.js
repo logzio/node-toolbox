@@ -16,8 +16,8 @@ export class LogzioTransport extends Transport {
   }
 
   _createLogger() {
-    const { host, token, name, extraFields, moreOptions } = this;
-    this.logzIoLogger = LogzioLogger.createLogger({ host, token, name, extraFields, moreOptions });
+    const { host, token, name, extraFields, moreOptions, type } = this;
+    this.logzIoLogger = LogzioLogger.createLogger({ host, token, name, extraFields, moreOptions, type });
     this.isOpen = true;
   }
 
