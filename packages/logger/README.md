@@ -24,14 +24,14 @@ each log will pass through.
 each transporter can receive many formatter that will be invoke after all the logger formatters ended.
 
 ```javascript
-import { Logger, transports, formatters, LogLevel } from '@logzio-node-toolbox/logger';
+import { Logger, ConsoleTransport, formatters, LogLevel } from '@logzio-node-toolbox/logger';
 
 const logFormatter = formatters.LogSize();
 
 const transportFormatter = formatters.omitFields(['name']);
-const consoleTransport1 = new transports.ConsoleTransport({name: 'console-1', formatters: [transportFormatter] });
+const consoleTransport1 = new ConsoleTransport({name: 'console-1', formatters: [transportFormatter] });
 
-const consoleTransport2 = new transports.ConsoleTransport({name: 'console-2'});
+const consoleTransport2 = new ConsoleTransport({name: 'console-2'});
 
 const logger = new Logger({
   formatters: [logFormatter],
@@ -72,8 +72,8 @@ log to console
   - logLevel - string (default info) | representing the log level to log
   - color - boolean (default true) | adding color to output
 ```javascript
-import { Logger, transports } from '@logzio-node-toolbox/logger';
-const consoleTransport = new transports.ConsoleTransport({ name: 'logzioTransport', formatters: [transportFormatter], token:'123', meta: {region: 'prod', } });
+import { Logger, ConsoleTransport } from '@logzio-node-toolbox/logger';
+const consoleTransport = new ConsoleTransport({ name: 'logzioTransport', formatters: [transportFormatter], token:'123', meta: {region: 'prod', } });
 ```
 
 ### LogzioTransport
@@ -88,8 +88,8 @@ send the log to logzio with the given token
   - logLevel - string (default info) | representing the log level to log
   - moreOptions - object (default true) | options to pass to logzio-nodejs
 ```javascript
-import { Logger, transports } from '@logzio-node-toolbox/logger';
-const logzioTransport = new transports.LogzioTransport({ name: 'new-console', formatters: [transportFormatter] });
+import { Logger, LogzioTransport } from '@logzio-node-toolbox/logger';
+const logzioTransport = new LogzioTransport({ name: 'new-console', formatters: [transportFormatter] });
 ```
 
 ### custom Transport
@@ -101,9 +101,9 @@ creating a custom Transport
 
 
 ```javascript
-import { Logger, transports, formatters  } from '@logzio-node-toolbox/logger';
+import { Logger, Transport, formatters } from '@logzio-node-toolbox/logger';
 
-class CustomTransports extend transports.Transport {
+class CustomTransports extend Transport {
   constructor(name, formatters, logLevel, ...paramsUNeed) {
     super({ name, formatters, logLevel })
   }
