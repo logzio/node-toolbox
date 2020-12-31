@@ -8,8 +8,8 @@ export class LogzioTransport extends Transport {
 
     this.host = host;
     this.token = token;
-    this.name = type;
-    this.name = type;
+    this.name = name;
+    this.type = type;
     this.extraFields = metaData;
     this.moreOptions = moreOptions;
     this._createLogger();
