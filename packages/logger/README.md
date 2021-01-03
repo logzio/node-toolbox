@@ -26,7 +26,7 @@ each transporter can receive many formatter that will be invoke after all the lo
 ```javascript
 import { Logger, ConsoleTransport, formatters, LogLevel } from '@logzio-node-toolbox/logger';
 
-const logFormatter = formatters.LogSize();
+const logFormatter = formatters.logSize();
 
 const transportFormatter = formatters.omitFields(['name']);
 const consoleTransport1 = new ConsoleTransport({name: 'console-1', formatters: [transportFormatter] });
