@@ -235,7 +235,7 @@ rename fields from to path to path
 ```javascript
 import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
-const formatter = formatters.renameFields({ 'path.to.field.rename': 'name.to.field. newName' });
+const formatter = formatters.renameFields({ from: 'path.to.field.rename', to: 'name.to.field.newName' });
 const logger = new Logger({ formatters: [formatter] });
 
 logger.info({ path: { to : {field : { rename: "some value"}}}});
