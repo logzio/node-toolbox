@@ -199,21 +199,21 @@ logger.log({
 ### pickFields
 will omit all object property except the given array
 - params
-  - fieldName - string
+  - name - string
   - list - array of strings
-  - flatten - will flat the omit fields to the root of the log | default false
+  - shouldFlat - will flat the omit fields to the root of the log | default true
 ```javascript
 import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
 const formatter = formatters.pickFields('req', ['port', 'host'], true);
 const logger = new Logger({ formatters: [formatter] });
-logger.info("incoming" ,{req: {port: '3000', host: 'localhost', ip: "127.0.0.1" }});
-// INFO: 18/07/2020 04:07:19.079 {"message":"incoming", "port": "3000", host: "localhost"}
+logger.info("incoming" ,{ req: { port: '3000', host: 'localhost', ip: "127.0.0.1" }});
+// INFO: 18/07/2020 04:07:19.079 { "message":"incoming", "port": "3000", host: "localhost" }
 
 const formatter = formatters.pickFields('req', ['port', 'host'], false);
 const logger = new Logger({ formatters: [formatter] });
-logger.info("incoming" ,{req: { port: '3000', host: 'localhost', ip: "127.0.0.1" }});
-// INFO: 18/07/2020 04:07:19.079 {"message":"incoming", req: { "port": "3000", host: "localhost"} }
+logger.info("incoming" ,{ req: { port: '3000', host: 'localhost', ip: "127.0.0.1" }});
+// INFO: 18/07/2020 04:07:19.079 { "message":"incoming", req: { "port": "3000", host: "localhost" } }
 ```
 
 ### removeCircularFields
