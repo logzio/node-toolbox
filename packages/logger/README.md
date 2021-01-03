@@ -132,8 +132,8 @@ Array of fields by path string tp remove from the log.
 ```javascript
 import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
-const f = formatters.omitFields(['path.to.omit', 'path.to.omit2']);
-const logger = new Logger(formatters: [f]);
+const formatter = formatters.omitFields(['path.to.omit', 'path.to.omit2']);
+const logger = new Logger({ formatters: [formatter] });
 logger.log({
   path: {
     to :{
@@ -153,7 +153,7 @@ logger.log({
 import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
 const formatter = formatters.handleError();
-const logger = new Logger(formatters: [formatter]);
+const logger = new Logger({ formatters: [formatter] });
 const err = new Error('random error');
 logger.log({
   err
@@ -168,12 +168,12 @@ logger.log({
 import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
 const formatter = formatters.logSize(100);
-const logger = new Logger(formatters: [formatter]);
+const logger = new Logger({ formatters: [formatter] });
 logger.log('message with log size', { field: 'random' });
 // output: INFO: 18/07/2020 04:07:19.079 message with log size { logSize: 40 }
 
 const formatter = formatters.logSize(30);
-const logger = new Logger(formatters: [formatter]);
+const logger = new Logger({ formatters: [formatter] });
 logger.log('message with log size', { field: 'random' });
 // output: INFO: 18/07/2020 04:07:19.079 Log exceeded the max bytes size {logObjectKeys: ['message', 'field'] maxLogSize: 30 }
 ```
@@ -187,7 +187,7 @@ mask fields by the length was received with *
 import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
 const formatter = formatters.maskFields([{ field: 'password', length: 6 }], 10);
-const logger = new Logger(formatters: [formatter]);
+const logger = new Logger({ formatters: [formatter] });
 logger.log({
   field: 'random',
   password: '12345678',
@@ -206,12 +206,12 @@ will omit all object property except the given array
 import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
 const formatter = formatters.pickFields('req', ['port', 'host'], true);
-const logger = new Logger(formatters: [formatter]);
+const logger = new Logger({ formatters: [formatter] });
 logger.info("incoming" ,{req: {port: '3000', host: 'localhost', ip: "127.0.0.1" }});
 // INFO: 18/07/2020 04:07:19.079 {"message":"incoming", "port": "3000", host: "localhost"}
 
 const formatter = formatters.pickFields('req', ['port', 'host'], false);
-const logger = new Logger(formatters: [formatter]);
+const logger = new Logger({ formatters: [formatter] });
 logger.info("incoming" ,{req: { port: '3000', host: 'localhost', ip: "127.0.0.1" }});
 // INFO: 18/07/2020 04:07:19.079 {"message":"incoming", req: { "port": "3000", host: "localhost"} }
 ```
@@ -222,7 +222,7 @@ iterate over the log and remove all circular fields
 import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
 const formatter = formatters.removeCircularFields();
-const logger = new Logger(formatters: [formatter]);
+const logger = new Logger({ formatters: [formatter] });
 
 const a = { name : 'name'};
 a.b = a;
@@ -236,7 +236,7 @@ rename fields from to path to path
 import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
 const formatter = formatters.renameFields({ 'path.to.field.rename': 'name.to.field. newName' });
-const logger = new Logger(formatters: [formatter]);
+const logger = new Logger({ formatters: [formatter] });
 
 logger.info({ path: { to : {field : { rename: "some value"}}}});
 // INFO: 18/07/2020 04:07:19.079 { path: { to : {field : { newName: "some value" }}}}
@@ -251,7 +251,7 @@ logger.info({ path: { to : {field : { rename: "some value"}}}});
 import { Logger, formatters } from '@logzio-node-toolbox/logger';
 
 const formatter = formatters.sliceFields(['path.to.slice'], 10);
-const logger = new Logger(formatters: [formatter]);
+const logger = new Logger({ formatters: [formatter] });
 
 logger.info({ path: { to : { slice : { "some value to slice if its to long" }}}});
 // INFO: 18/07/2020 04:07:19.079 { path: { to : {slice: "some value to...", __overSizedField__: { 'path.to.slice' : 30 }}}}}
