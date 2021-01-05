@@ -21,7 +21,7 @@ type formatter = (...args: any[]) => void;
 export interface TransportOptions {
   name?: string;
   LogLevel?: LogLevel;
-  formatters?: void[];
+  formatters?: formatter[];
 }
 
 export interface ConsoleTransportOptions extends TransportOptions {
@@ -38,7 +38,7 @@ export interface LogzioTransportOptions extends TransportOptions {
 export class Transport implements TransportOptions {
   name?: string;
   LogLevel?: LogLevel;
-  formatters?: void[];
+  formatters?: formatter[];
   public constructor(transportOptions: TransportOptions);
   public close(): void;
   public logLevel(logLevel: LogLevel): void;
@@ -58,13 +58,13 @@ export class LogzioTransport extends Transport implements LogzioTransportOptions
   metaData?: AnyObject;
   name?: string;
   LogLevel?: LogLevel;
-  formatters?: void[];
+  formatters?: formatter[];
 }
 
 export interface LoggerOptions {
-  transports?: Transport | Transport[];
+  transports?: Transport[];
   metaData?: AnyObject;
-  formatters?: formatter | formatter[];
+  formatters?: formatter[];
   datePattern?: string;
   logLevel?: LogLevel;
 }
@@ -80,7 +80,7 @@ export declare class Logger {
   public close(): void;
   public logLevel(logLevel: LogLevel): void;
   public addTransport(transport: Transport): void;
-  public addFormatter(formatter: void[]): void;
+  public addFormatter(formatter: formatter[]): void;
   public removeTransport(name: string): void;
   public removeFormatter(name: string): void;
 }
@@ -91,10 +91,10 @@ export type MaskField = {
   field: string;
   length?: number;
 };
-export type RenameField = {
-  from: string;
-  to: string;
-};
+
+interface StringValueObject {
+  [from: string]: string;
+}
 export declare namespace formatters {
   function handleError(): ReceiveLog;
   function logSize(maxLogSizeBytes: number): ReceiveLog;
@@ -102,6 +102,6 @@ export declare namespace formatters {
   function omitFields(fields: string[]): ReceiveLog;
   function pickFields(name: string, list: string[], shouldFlat?: boolean): ReceiveLog;
   function removeCircularFields(): ReceiveLog;
-  function renameFields(fields: RenameField[]): ReceiveLog;
+  function renameFields(fields: StringValueObject[]): ReceiveLog;
   function sliceFields(fields: string[], maxFieldByteSize: number): ReceiveLog;
 }
