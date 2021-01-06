@@ -7,9 +7,15 @@ export function handleError() {
 
     if (err) serError = err;
     else if (error) serError = error;
-    else if (_.isObject(message) && message.err && _.isObject(message.err)) {
-      serError = message.err;
-      message = null;
+    else if (_.isObject(message)) {
+      const { err: messageErr, error: messageError, ...restMessage } = message;
+      if (messageErr) {
+        serError = messageErr;
+      }
+      else if (messageError) {
+        serError = messageError;
+      }
+      message = restMessage;
     } else {
       return { logLevel, message, ...data };
     }

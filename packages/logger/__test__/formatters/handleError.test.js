@@ -10,4 +10,14 @@ describe('formatter - handleError', () => {
 
     expect(newLog).toEqual(expected);
   });
+
+  it('should serialized error in message field', () => {
+    const err = new Error('error message');
+    const log = {  message: { err, moreData: 'wow' } };
+    const expected = { error: serializeError(err), message: { moreData: 'wow' }, logLevel: 'ERROR' };
+
+    const newLog = handleError()(log);
+
+    expect(newLog).toEqual(expected);
+  });
 });
