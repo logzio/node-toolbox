@@ -10,33 +10,93 @@ easy to use warper for consul to register to service discovery and get, merge an
 ## Usage
 ```javascript
 import { Consul } from '@logzio-node-toolbox/consul';
-  /* params
-    port:  number |  -must-
-    host: string | localhost
-    connectMaxRetries:  number | 5
-    connectTimeout: number | 5000
-    connectRetryBackoffFactor: number | 2
-    failOnFailedConnection: boolean | true
-    watchBackoffFactor: number | 100,
-    watchBackoffMax: number | 30000,
-    watchMaxAttempts: number,
-    baseUrl: string,
-    logger: logger instance,
-  */
-const consul = new Consul({ port: 18500 });
+
+const consul = new Consul({ port: 18500, host: '127.0.0.1', baseUrl = 'some_base_url' });
 ```
+initialized params:
+1. port - consul port to connect default 8500 (default 8500)
+2. host - consul host to connect default 8500 (default localhost)
+3. baseUrl - some default path to load configs from, will prefix the path to each get request (default '')
+4. validateOptions - object with defaults { fail: true, timeout: 5000, retries: 6, factor: 2, onRetry: null }
+    can override each one of the defaults.
+5. defaultWatchOptions - object with defaults { backoffFactor: 100, backoffMax: 30000, maxAttempts: 10000 }
+    can override each one of the defaults.
+6. defaultRegisterRetryOptions - object with defaults { factor: 2, retries: 6, onRetry: null }
+    can override each one of the defaults.
 
 ## methods
-validateConnected - make use connected to consul service (will retry (connectMaxRetries) of times);
-get(key) - will get a key from consul service
-set(key, value) - will set value
-keys(path) - list of keys in path
-merge(key, values) - deepmerge values with key
-watch(fn => ({key, onChange})) - will listen when key changed and invoke onChange
-     onChange will received the new ({key ,vale})
+### validateConnected - make use connected to consul service (will retry (connectMaxRetries) of times);
+receive same params as validateOptions and will merge with th one passed to the initializer
+``javascript
+  await consul.validateConnected(validateOptions)
+```
 
-register({ meta, checks, address, hostname, serviceName, port, registerInterval }) - will register to service discovery and with given params will interval to make sure service is still registered
-close() - deregister and close all watchers
+### get - will get a key from consul service, (if initlized with base path it will prefix it)
+```javascript
+  const { key, value } = await consul.get('somepath/config.json')
+  // if have base path will fetch 'some_base_url/somepath/config.json'
+```
+
+### set - will set a value to consul, (if initlized with basebath it will prefix it)
+```javascript
+   await consul.set('somepath/config.json', {key: "value"})
+  // if have base path will set to 'some_base_url/somepath/config.json'
+```
+
+### keys - list of keys in path
+```javascript
+   await consul.keys('somepath/config.json')
+```
+
+### merge - deepmerge current values with new values
+it will fetch current values will deep merge all keys and set it
+```javascript
+   await consul.merge('somepath/config.json', {newKey: "newValue" })
+```
+
+### watch - listen to key change and invoke handler
+receive same watchOptions object as the initializer ( will merge them together)
+```javascript
+   await consul.watch({
+   key: 'somepath/config.json',
+   onChange: ({key, value}) => {
+       console.log(key)
+       console.log(value) // new values
+   },
+   onError:(err) => {
+    console.log(err)
+   },
+   watchOptions
+   })
+```
+
+### register - will register to service discovery and with given params will interval to make sure service is still registered
+receive same registerRetryOptions object as the initializer ( will merge them together)
+```javascript
+    interface RegisterData {
+      meta?: AnyObject;
+      checks?: AnyObject;
+      address?: string;
+      id?: string;
+      name?: string;
+      port?: number;
+    }
+
+   await consul.register({
+   data,
+   validateRegisteredInterval: 3000,
+   onError:(err) => {
+    console.log(err)
+   },
+   registerRetryOptions
+   })
+```
+
+#### close - deregister and close all watchers
+receive same registerRetryOptions object as the initializer ( will merge them together)
+```javascript
+   await consul.close(registerRetryOptions)
+```
 
 
 # multiConsul

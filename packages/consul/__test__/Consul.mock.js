@@ -23,21 +23,23 @@ jest.mock('consul', () =>
 );
 
 export const registerData = {
-  meta: {
-    meta: 'data',
-  },
-  checks: [
-    {
-      http: 'http://localhost',
-      deregistercriticalserviceafter: '6s',
-      interval: '5m',
+  data: {
+    meta: {
+      meta: 'data',
     },
-  ],
-  address: 'address',
-  hostname: 'hostname82',
-  serviceName: 'serviceName82',
-  port: 8282,
-  registerInterval: 0,
+    checks: [
+      {
+        http: 'http://localhost',
+        deregistercriticalserviceafter: '6s',
+        interval: '5m',
+      },
+    ],
+    address: 'address',
+    id: 'hostname82',
+    name: 'serviceName82',
+    port: 8282,
+  },
+  validateRegisteredInterval: 0,
 };
 
 export const connectionOptions = {
