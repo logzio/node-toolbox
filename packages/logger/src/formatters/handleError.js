@@ -11,8 +11,7 @@ export function handleError() {
       const { err: messageErr, error: messageError, ...restMessage } = message;
       if (messageErr) {
         serError = messageErr;
-      }
-      else if (messageError) {
+      } else if (messageError) {
         serError = messageError;
       }
       message = restMessage;
