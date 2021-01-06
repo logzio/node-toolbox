@@ -102,6 +102,6 @@ export declare namespace formatters {
   function omitFields(fields: string[]): ReceiveLog;
   function pickFields(name: string, list: string[], shouldFlat?: boolean): ReceiveLog;
   function removeCircularFields(): ReceiveLog;
-  function renameFields(fields: StringValueObject[]): ReceiveLog;
+  function renameFields(fields: StringValueObject): ReceiveLog;
   function sliceFields(fields: string[], maxFieldByteSize: number): ReceiveLog;
 }
