@@ -1,6 +1,7 @@
 {
   "name": "logzio-node-tools",
   "version": "0.0.1",
+  "private":"true",
   "description": "the perfect node templates & tools",
   "license": "MIT",
   "type": "module",
