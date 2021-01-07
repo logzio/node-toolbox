@@ -27,7 +27,7 @@ initialized params:
 ## methods
 ### validateConnected - make use connected to consul service (will retry (connectMaxRetries) of times);
 receive same params as validateOptions and will merge with th one passed to the initializer
-``javascript
+```javascript
   await consul.validateConnected(validateOptions)
 ```
 
