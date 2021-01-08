@@ -116,11 +116,11 @@ export class Consul {
     const watcher = this.consulInstance.watch(options);
 
     watcher.on('change', data => data && onChange(parseValue(data)));
-    watcher.on('error', err => err && onError(err));
+    watcher.on('error', err => err && onError(err, key));
     this.openWatchersToClose.push(watcher);
   }
 
-  async register({ data = {}, validateRegisteredInterval, onError, registerRetryOptions = {} } = {}) {
+  async register(data, registerRetryOptions = {}) {
     if (!data.name || !data.id) throw new Error('must provide name and id to register for consul service discovery');
 
     if (this.registerParams.id) return;
@@ -130,25 +130,33 @@ export class Consul {
       ...registerRetryOptions,
     };
 
-    const startRegister = async () => {
+    const list = await retry(async () => this.consulInstance.agent.service.list(), options);
+
+    const isRegistered = Object.entries(list).some(([id, { Service }]) => id === data.id && Service === data.name);
+
+    if (!isRegistered) {
+      await retry(async () => this.consulInstance.agent.service.register(data), options);
+
+      this.registerParams.id = data.id;
+    }
+  }
+
+  async registerInterval({ data, interval, onError, registerRetryOptions }) {
+    const options = {
+      ...this.registerRetryOptions,
+      ...registerRetryOptions,
+    };
+
+    const startInterval = async () => {
       try {
-        const list = await retry(async () => this.consulInstance.agent.service.list(), options);
-
-        const isRegistered = Object.entries(list).some(([id, { Service }]) => id === data.id && Service === data.name);
-
-        if (!isRegistered) {
-          await retry(async () => this.consulInstance.agent.service.register(data), options);
-
-          this.registerParams.id = data.id;
-        }
-
-        if (validateRegisteredInterval) this.registerParams.timeoutId = setTimeout(startRegister, validateRegisteredInterval);
+        await this.register(data, options);
       } catch (err) {
         onError(err);
       }
+      this.registerParams.timeoutId = setTimeout(startInterval, interval);
     };
 
-    await startRegister();
+    startInterval();
   }
 
   async close(registerRetryOptions = {}) {

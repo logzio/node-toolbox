@@ -32,7 +32,7 @@ export interface WatchOptions {
   watchOptions?: WatchOptionsInner;
 }
 
-export interface RegisterOptionsInner {
+export interface RegisterRetryOptions {
   factor?: number;
   retries?: number;
   onRetry?: VoidFunction;
@@ -45,12 +45,13 @@ export interface RegisterData {
   name?: string;
   port?: number;
 }
-export interface RegisterOptions {
-  data: RegisterData;
-  validateRegisteredInterval?: number;
+export interface RegisterIntervalOptions {
+  registerData: RegisterData;
+  registerRetryOptions?: RegisterRetryOptions;
+  interval: number;
   onError?: VoidFunction;
-  registerOptions?: RegisterOptionsInner;
 }
+
 export declare class Consul {
   public constructor(consulOptions: ConsulOptions);
   public validateConnected(validateOptions: ValidateOptions): void;
@@ -59,8 +60,9 @@ export declare class Consul {
   public set(key: string, value: AnyObject): void;
   public keys(key?: string): AnyObject;
   public merge(key: string, values: AnyObject): AnyObject;
-  public watch(watchOptions: WatchOptions): void;
-  public register(registerOptions: RegisterOptions): void;
+  public watch(watchOptions?: WatchOptions): void;
+  public register(registerData: RegisterData, registerRetryOptions?: RegisterRetryOptions): void;
+  public registerInterval(registerIntervalOptions: RegisterIntervalOptions): void;
   public close(): void;
 }
 interface MultiConsulOptions extends ConsulOptions {

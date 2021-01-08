@@ -93,12 +93,12 @@ describe('Consul', () => {
     expect(onChangedCalled).toBeTruthy();
   });
 
-  it('register should not register if service exist', async () => {
+  it('register should not register if service exist but retry on list', async () => {
     const consul = new Consul(connectionOptions);
 
     consul.consulInstance.agent.service.list
       .mockImplementationOnce(() => new Promise().reject())
-      .mockImplementation(() => Promise.resolve({ [registerData.data.id]: { Service: registerData.data.name } }));
+      .mockImplementation(() => Promise.resolve({ [registerData.id]: { Service: registerData.name } }));
 
     await consul.register(registerData);
 
@@ -106,7 +106,7 @@ describe('Consul', () => {
     expect(consul.consulInstance.agent.service.register).toBeCalledTimes(0);
   });
 
-  it('register should not register if service exist', async () => {
+  it('register should call register if service not exist', async () => {
     const consul = new Consul(connectionOptions);
 
     consul.consulInstance.agent.service.list.mockImplementationOnce(() => Promise.resolve({}));
@@ -115,11 +115,11 @@ describe('Consul', () => {
     expect(consul.consulInstance.agent.service.list).toBeCalledTimes(1);
     expect(consul.consulInstance.agent.service.register).toBeCalledTimes(1);
 
-    expect(consul.consulInstance.agent.service.register).toBeCalledWith(registerData.data);
-    expect(consul.registerParams.id).toEqual(registerData.data.id);
+    expect(consul.consulInstance.agent.service.register).toBeCalledWith(registerData);
+    expect(consul.registerParams.id).toEqual(registerData.id);
   });
 
-  it('service registration should register and save the id', async () => {
+  it('register should not call register if service exist', async () => {
     const consul = new Consul(connectionOptions);
 
     consul.consulInstance.agent.service.list.mockImplementationOnce(() =>
@@ -128,10 +128,7 @@ describe('Consul', () => {
     await consul.register(registerData);
 
     expect(consul.consulInstance.agent.service.list).toBeCalledTimes(1);
-    expect(consul.consulInstance.agent.service.register).toBeCalledTimes(1);
-
-    expect(consul.consulInstance.agent.service.register).toBeCalledWith(registerData.data);
-    expect(consul.registerParams.id).toEqual(registerData.data.id);
+    expect(consul.consulInstance.agent.service.register).toBeCalledTimes(0);
   });
 
   it.skip('service registration should retry every register Interval', async done => {
@@ -178,6 +175,6 @@ describe('Consul', () => {
     expect(ConsulClass.mock.results[0].value.watch.mock.results[0].value.end).toBeCalledTimes(1);
     expect(ConsulClass.mock.results[0].value.watch.mock.results[0].value.end).toBeCalledTimes(1);
     expect(consul.consulInstance.agent.service.deregister).toBeCalledTimes(1);
-    expect(consul.consulInstance.agent.service.deregister).toBeCalledWith(registerData.data.id);
+    expect(consul.consulInstance.agent.service.deregister).toBeCalledWith(registerData.id);
   });
 });
