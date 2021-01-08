@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import Joi from 'joi';
-import { Observable } from '@logzio-node-toolbox/utils';
+import { Observable } from './Observable';
 import deepMerge from 'deepmerge';
 
 export class Config {
