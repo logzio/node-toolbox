@@ -149,7 +149,7 @@ export class Consul {
 
     const startInterval = async () => {
       try {
-        await this.register(data, options);
+        await this.register({ data, retryOptions: options });
       } catch (err) {
         onError(err);
       }
