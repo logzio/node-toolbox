@@ -4,9 +4,19 @@ interface AnyObject {
 
 type Unsubscriber = () => void;
 
+export interface SubscribeOptions {
+  onChange: VoidFunction;
+  key?: string;
+}
+export interface SetOptions {
+  value: AnyObject;
+  key?: string;
+  onError: VoidFunction;
+}
+
 export declare class Config {
   public constructor(schema: AnyObject, config: AnyObject);
-  public subscribe(onChange: (data: any) => void, key?: string): Unsubscriber;
-  public set(value: AnyObject, key?: string, onError: (data: any) => void): void;
+  public subscribe(subscribeOptions: SubscribeOptions): Unsubscriber;
+  public set(setOptions: SetOptions): void;
   public get(key?: string): any;
 }

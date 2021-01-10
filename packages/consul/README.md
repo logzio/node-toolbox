@@ -39,7 +39,7 @@ receive same params as validateOptions and will merge with th one passed to the 
 
 ### set - will set a value to consul, (if initlized with basebath it will prefix it)
 ```javascript
-   await consul.set('somepath/config.json', {key: "value"})
+   await consul.set({key: 'somepath/config.json', value: {some: "value"}})
   // if have base path will set to 'some_base_url/somepath/config.json'
 ```
 
@@ -51,7 +51,7 @@ receive same params as validateOptions and will merge with th one passed to the 
 ### merge - deepmerge current values with new values
 it will fetch current values will deep merge all keys and set it
 ```javascript
-   await consul.merge('somepath/config.json', {newKey: "newValue" })
+   await consul.merge({key: 'somepath/config.json', value: {toOverride: "newValue" }})
 ```
 
 ### watch - listen to key change and invoke handler
@@ -70,7 +70,7 @@ receive same watchOptions object as the initializer ( will merge them together)
    })
 ```
 
-### register - will register to service discovery and with given params will interval to make sure service is still registered
+### register - will register service to consul
 receive same registerRetryOptions object as the initializer ( will merge them together)
 ```javascript
     interface RegisterData {
@@ -84,13 +84,32 @@ receive same registerRetryOptions object as the initializer ( will merge them to
 
    await consul.register({
    data,
-   validateRegisteredInterval: 3000,
+   registerRetryOptions
+   })
+```
+
+### registerInterval - will create interval to validate service always register to consul
+receive same registerRetryOptions object as the initializer ( will merge them together)
+```javascript
+    interface RegisterData {
+      meta?: AnyObject;
+      checks?: AnyObject;
+      address?: string;
+      id?: string;
+      name?: string;
+      port?: number;
+    }
+
+   await consul.register({
+   data,
+   interval: 3000,
    onError:(err) => {
     console.log(err)
    },
    registerRetryOptions
    })
 ```
+
 
 #### close - deregister and close all watchers
 receive same registerRetryOptions object as the initializer ( will merge them together)

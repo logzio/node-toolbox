@@ -83,7 +83,7 @@ export class Consul {
     return parseValue(await this.consulInstance.kv.get(this.buildKey(key)));
   }
 
-  async set(key, value) {
+  async set({ key, value }) {
     return this.consulInstance.kv.set(this.buildKey(key), JSON.stringify(value));
   }
 
@@ -91,12 +91,12 @@ export class Consul {
     return this.consulInstance.kv.keys(this.buildKey(key));
   }
 
-  async merge(key, values) {
+  async merge({ key, value }) {
     const configValues = await this.get(key);
 
     const currentValues = configValues ? configValues.value : {};
 
-    const newValues = deepMerge(currentValues, values);
+    const newValues = deepMerge(currentValues, value);
 
     await this.set(key, newValues);
 
@@ -120,14 +120,14 @@ export class Consul {
     this.openWatchersToClose.push(watcher);
   }
 
-  async register(data, registerRetryOptions = {}) {
+  async register({ data, retryOptions } = {}) {
     if (!data.name || !data.id) throw new Error('must provide name and id to register for consul service discovery');
 
     if (this.registerParams.id) return;
 
     const options = {
       ...this.registerRetryOptions,
-      ...registerRetryOptions,
+      ...retryOptions,
     };
 
     const list = await retry(async () => this.consulInstance.agent.service.list(), options);
@@ -141,10 +141,10 @@ export class Consul {
     }
   }
 
-  async registerInterval({ data, interval, onError, registerRetryOptions }) {
+  async registerInterval({ data, interval, onError, retryOptions }) {
     const options = {
       ...this.registerRetryOptions,
-      ...registerRetryOptions,
+      ...retryOptions,
     };
 
     const startInterval = async () => {

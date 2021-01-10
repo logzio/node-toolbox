@@ -100,7 +100,7 @@ describe('Consul', () => {
       .mockImplementationOnce(() => new Promise().reject())
       .mockImplementation(() => Promise.resolve({ [registerData.id]: { Service: registerData.name } }));
 
-    await consul.register(registerData);
+    await consul.register({ data: registerData });
 
     expect(consul.consulInstance.agent.service.list).toBeCalledTimes(2);
     expect(consul.consulInstance.agent.service.register).toBeCalledTimes(0);
@@ -110,7 +110,7 @@ describe('Consul', () => {
     const consul = new Consul(connectionOptions);
 
     consul.consulInstance.agent.service.list.mockImplementationOnce(() => Promise.resolve({}));
-    await consul.register(registerData);
+    await consul.register({ data: registerData });
 
     expect(consul.consulInstance.agent.service.list).toBeCalledTimes(1);
     expect(consul.consulInstance.agent.service.register).toBeCalledTimes(1);
@@ -125,7 +125,7 @@ describe('Consul', () => {
     consul.consulInstance.agent.service.list.mockImplementationOnce(() =>
       Promise.resolve({ [registerData.id]: { Service: registerData.name } }),
     );
-    await consul.register(registerData);
+    await consul.register({ data: registerData });
 
     expect(consul.consulInstance.agent.service.list).toBeCalledTimes(1);
     expect(consul.consulInstance.agent.service.register).toBeCalledTimes(0);
@@ -166,7 +166,7 @@ describe('Consul', () => {
 
     consul.consulInstance.agent.service.list.mockImplementation(() => Promise.resolve({}));
 
-    await consul.register(registerData);
+    await consul.register({ data: registerData });
     consul.watch({ key: 'randomKey', onChange: () => {} });
     consul.watch({ key: 'randomKey2', onChange: () => {} });
 

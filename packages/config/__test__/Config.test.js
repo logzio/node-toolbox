@@ -87,9 +87,9 @@ describe('Config - create config with schema', () => {
     const config = new Config(schema);
 
     expect(config.get('teams.name')).toEqual('first name');
-    config.set({ teams: { name: 'override name' } });
+    config.set({ value: { teams: { name: 'override name' } } });
     expect(config.get('teams.name')).toEqual('override name');
-    config.set('override name2', 'teams.name');
+    config.set({ value: 'override name2', key: 'teams.name' });
     expect(config.get('teams.name')).toEqual('override name2');
   });
 
@@ -108,7 +108,7 @@ describe('Config - create config with schema', () => {
       expect(err.message).toEqual('"teams.name" must be a string');
       return false;
     };
-    config.set(123, 'teams.name', onError);
+    config.set({ value: 123, key: 'teams.name', onError });
     expect(config.get()).toEqual({ teams: { name: 'first name' } });
     expect(onErrorCalled).toEqual(true);
   });
@@ -128,7 +128,7 @@ describe('Config - create config with schema', () => {
       expect(err.message).toEqual('"teams.name" must be a string');
       return true;
     };
-    config.set(123, 'teams.name', onError);
+    config.set({ value: 123, key: 'teams.name', onError });
     expect(config.get()).toEqual({ teams: { name: 123 } });
     expect(onErrorCalled).toEqual(true);
   });
@@ -171,17 +171,17 @@ describe('Config - create config with schema', () => {
       }
     };
 
-    const unSubName = config.subscribe(onChangeName, 'teams.name');
-    const unSubGlobal = config.subscribe(onChangeGlobal);
+    const unSubName = config.subscribe({ onChange: onChangeName, key: 'teams.name' });
+    const unSubGlobal = config.subscribe({ onChange: onChangeGlobal });
 
-    config.set('name2', 'teams.name');
-    config.set('last2', 'teams.last');
+    config.set({ value: 'name2', key: 'teams.name' });
+    config.set({ value: 'last2', key: 'teams.last' });
 
     expect(config.get()).toEqual({ teams: { name: 'name2', last: 'last2' } });
     unSubName();
     unSubGlobal();
 
-    config.set({ teams: { name: 'name3' } });
+    config.set({ value: { teams: { name: 'name3' } } });
 
     expect(config.get()).toEqual({ teams: { name: 'name3', last: 'last2' } });
 

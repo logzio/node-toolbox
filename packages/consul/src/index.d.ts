@@ -11,6 +11,11 @@ export interface ConsulOptions {
   registerRetryOptions?: RegisterRetryOptions;
 }
 
+export interface KeyValueOptions {
+  key?: string;
+  value: AnyObject;
+}
+
 export interface ValidateOptions {
   fail?: boolean;
   timeout?: number;
@@ -45,23 +50,25 @@ export interface RegisterData {
   name?: string;
   port?: number;
 }
-export interface RegisterIntervalOptions {
+export interface RegisterOptions {
   registerData: RegisterData;
   registerRetryOptions?: RegisterRetryOptions;
+}
+
+export interface RegisterIntervalOptions extends RegisterOptions {
   interval: number;
   onError?: VoidFunction;
 }
-
 export declare class Consul {
   public constructor(consulOptions: ConsulOptions);
   public validateConnected(validateOptions: ValidateOptions): void;
   private buildKey(key: string): { key: string; value: AnyObject };
   public get(key?: string): AnyObject;
-  public set(key: string, value: AnyObject): void;
+  public set(keyValueOptions: KeyValueOptions): void;
   public keys(key?: string): AnyObject;
-  public merge(key: string, values: AnyObject): AnyObject;
+  public merge(keyValueOptions: KeyValueOptions): AnyObject;
   public watch(watchOptions?: WatchOptions): void;
-  public register(registerData: RegisterData, registerRetryOptions?: RegisterRetryOptions): void;
+  public register(registerOptions: RegisterOptions): void;
   public registerInterval(registerIntervalOptions: RegisterIntervalOptions): void;
   public close(): void;
 }
