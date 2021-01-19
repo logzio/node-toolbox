@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/config",
-  "version": "0.0.10",
+  "version": "0.0.13",
   "description": "config manager based on Joi schema with subscription capabilities",
   "main": "dist/index.cjs",
   "exports": {
@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "joi": "17.3.0",
-    "@logzio-node-toolbox/utils": "^0.0.8",
     "deepmerge": "4.2.2",
     "lodash": "4.17.20"
   }

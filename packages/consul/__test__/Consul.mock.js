@@ -34,10 +34,9 @@ export const registerData = {
     },
   ],
   address: 'address',
-  hostname: 'hostname82',
-  serviceName: 'serviceName82',
+  id: 'hostname82',
+  name: 'serviceName82',
   port: 8282,
-  registerInterval: 0,
 };
 
 export const connectionOptions = {

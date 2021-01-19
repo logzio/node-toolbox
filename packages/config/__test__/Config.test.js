@@ -2,18 +2,20 @@ import Joi from 'joi';
 import { Config } from '../src/Config.js';
 
 describe('Config - create config with schema', () => {
-  it('should throw an error in no schema', () => {
+  it('should throw an error if no schema', () => {
     expect(() => new Config()).toThrow('must pass Joi type schema');
+
+    expect(() => new Config({ nope: 'nope' })).toThrow('must pass Joi type schema');
   });
 
   it('should start with default values from schema', () => {
-    const schema = {
+    const schema = Joi.object({
       teams: Joi.object({
         name: Joi.string().default('first name'),
         last: Joi.string().default('last name'),
       }).default(),
-    };
-    const config = new Config({ schema });
+    });
+    const config = new Config(schema);
     expect(config.get()).toEqual({
       teams: {
         name: 'first name',
@@ -22,83 +24,67 @@ describe('Config - create config with schema', () => {
     });
   });
 
-  it('should override with defaults if they are valid', () => {
+  it('should throw error if default not valid', () => {
     const schema = {
       teams: Joi.object({
         name: Joi.string().default('first name'),
         last: Joi.string().default('last name'),
       }).default(),
     };
-
-    const defaults = {
+    const configs = {
       teams: {
-        name: 'first name override',
+        name: 123,
       },
     };
-    const config = new Config({ schema, defaults });
-    expect(config.get()).toEqual({
-      teams: {
-        name: 'first name override',
-        last: 'last name',
-      },
-    });
+    expect(() => new Config(schema, configs)).toThrow('must pass Joi type schema');
   });
 
-  it('overrides cant be changed', () => {
-    const schema = {
+  it('should override with defaults if they are valid', () => {
+    const schema = Joi.object({
       teams: Joi.object({
         name: Joi.string().default('first name'),
         last: Joi.string().default('last name'),
       }).default(),
-    };
+    });
 
-    const defaults = {
+    const configs = {
       teams: {
-        name: 'first name default',
+        name: 'first name override',
       },
     };
-
-    const overrides = {
-      teams: {
-        name: 'overrides are the strongest',
-      },
-    };
-
-    const config = new Config({ schema, defaults, overrides });
-    config.set({ key: 'teams.name', value: 'set config name' });
-
+    const config = new Config(schema, configs);
     expect(config.get()).toEqual({
       teams: {
-        name: 'overrides are the strongest',
+        name: 'first name override',
         last: 'last name',
       },
     });
   });
 
   it('should throw error if defaults are not valid', () => {
-    const schema = {
+    const schema = Joi.object({
       teams: Joi.object({
         name: Joi.string().default('first name'),
         last: Joi.string().default('last name'),
       }).default(),
-    };
+    });
 
-    const defaults = {
+    const configs = {
       teams: {
         name: 123,
       },
     };
-    expect(() => new Config({ schema, defaults })).toThrow('"teams.name" must be a string');
+    expect(() => new Config(schema, configs)).toThrow('"teams.name" must be a string');
   });
 
   it('should set value by string or object if valid', () => {
-    const schema = {
+    const schema = Joi.object({
       teams: Joi.object({
         name: Joi.string().default('first name'),
       }).default(),
-    };
+    });
 
-    const config = new Config({ schema });
+    const config = new Config(schema);
 
     expect(config.get('teams.name')).toEqual('first name');
     config.set({ value: { teams: { name: 'override name' } } });
@@ -106,14 +92,15 @@ describe('Config - create config with schema', () => {
     config.set({ value: 'override name2', key: 'teams.name' });
     expect(config.get('teams.name')).toEqual('override name2');
   });
+
   it('should not merge not valid if onError return false', () => {
-    const schema = {
+    const schema = Joi.object({
       teams: Joi.object({
         name: Joi.string().default('first name'),
       }).default(),
-    };
+    });
 
-    const config = new Config({ schema });
+    const config = new Config(schema);
 
     let onErrorCalled = false;
     const onError = err => {
@@ -121,19 +108,19 @@ describe('Config - create config with schema', () => {
       expect(err.message).toEqual('"teams.name" must be a string');
       return false;
     };
-    config.set({ key: 'teams.name', value: 123, onError });
+    config.set({ value: 123, key: 'teams.name', onError });
     expect(config.get()).toEqual({ teams: { name: 'first name' } });
     expect(onErrorCalled).toEqual(true);
   });
 
   it('should merge not valid if onError return true', () => {
-    const schema = {
+    const schema = Joi.object({
       teams: Joi.object({
         name: Joi.string().default('first name'),
       }).default(),
-    };
+    });
 
-    const config = new Config({ schema });
+    const config = new Config(schema);
 
     let onErrorCalled = false;
     const onError = err => {
@@ -141,20 +128,20 @@ describe('Config - create config with schema', () => {
       expect(err.message).toEqual('"teams.name" must be a string');
       return true;
     };
-    config.set({ key: 'teams.name', value: 123, onError });
+    config.set({ value: 123, key: 'teams.name', onError });
     expect(config.get()).toEqual({ teams: { name: 123 } });
     expect(onErrorCalled).toEqual(true);
   });
 
   it('should subscribed & unsubscribed specific and global value', () => {
-    const schema = {
+    const schema = Joi.object({
       teams: Joi.object({
         name: Joi.string().default('name'),
         last: Joi.string().default('last'),
       }).default(),
-    };
+    });
 
-    const config = new Config({ schema });
+    const config = new Config(schema);
 
     let amountCalledOnChangeName = 0;
     const onChangeName = newVal => {
@@ -184,11 +171,11 @@ describe('Config - create config with schema', () => {
       }
     };
 
-    const unSubName = config.subscribe({ key: 'teams.name', onChange: onChangeName });
+    const unSubName = config.subscribe({ onChange: onChangeName, key: 'teams.name' });
     const unSubGlobal = config.subscribe({ onChange: onChangeGlobal });
 
-    config.set({ key: 'teams.name', value: 'name2' });
-    config.set({ key: 'teams.last', value: 'last2' });
+    config.set({ value: 'name2', key: 'teams.name' });
+    config.set({ value: 'last2', key: 'teams.last' });
 
     expect(config.get()).toEqual({ teams: { name: 'name2', last: 'last2' } });
     unSubName();

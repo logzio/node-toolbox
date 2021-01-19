@@ -10,10 +10,6 @@ describe('Consul', () => {
     jest.clearAllMocks();
   });
 
-  it('throw error if no port or host provided', () => {
-    expect(() => new Consul()).toThrowError(new Error('consul must have port'));
-  });
-
   it('should validate connection amountOf retries ', async () => {
     const consul = new Consul(connectionOptions);
 
@@ -74,7 +70,7 @@ describe('Consul', () => {
       expect(data).toEqual({ key: 'yablolo', value: { name: 'new name' } });
     };
 
-    consul.watch({ key: 'randomKey', onChange, backoffFactor: 8200, backoffMax: 8220 });
+    consul.watch({ key: 'randomKey', onChange, watchOptions: { backoffFactor: 8200, backoffMax: 8220 } });
 
     expect(consul.openWatchersToClose.length).toEqual(1);
 
@@ -97,65 +93,42 @@ describe('Consul', () => {
     expect(onChangedCalled).toBeTruthy();
   });
 
-  it('register should not register if service exist', async () => {
+  it('register should not register if service exist but retry on list', async () => {
     const consul = new Consul(connectionOptions);
 
     consul.consulInstance.agent.service.list
       .mockImplementationOnce(() => new Promise().reject())
-      .mockImplementation(() => Promise.resolve({ [registerData.hostname]: { Service: registerData.serviceName } }));
+      .mockImplementation(() => Promise.resolve({ [registerData.id]: { Service: registerData.name } }));
 
-    await consul.register(registerData);
+    await consul.register({ data: registerData });
 
-    expect(consul.consulInstance.agent.service.list).toBeCalledTimes(3);
+    expect(consul.consulInstance.agent.service.list).toBeCalledTimes(2);
     expect(consul.consulInstance.agent.service.register).toBeCalledTimes(0);
   });
 
-  it('register should not register if service exist', async () => {
+  it('register should call register if service not exist', async () => {
     const consul = new Consul(connectionOptions);
 
-    consul.consulInstance.agent.service.list
-      .mockImplementationOnce(() => Promise.resolve({}))
-      .mockImplementationOnce(() => Promise.resolve({ [registerData.hostname]: { Service: registerData.serviceName } }));
-    await consul.register(registerData);
+    consul.consulInstance.agent.service.list.mockImplementationOnce(() => Promise.resolve({}));
+    await consul.register({ data: registerData });
 
-    expect(consul.consulInstance.agent.service.list).toBeCalledTimes(2);
+    expect(consul.consulInstance.agent.service.list).toBeCalledTimes(1);
     expect(consul.consulInstance.agent.service.register).toBeCalledTimes(1);
 
-    const expectedData = {
-      meta: registerData.meta,
-      checks: registerData.checks,
-      address: registerData.address,
-      port: registerData.port,
-      id: registerData.hostname,
-      name: registerData.serviceName,
-    };
-
-    expect(consul.consulInstance.agent.service.register).toBeCalledWith(expectedData);
-    expect(consul.registerParams.id).toEqual(expectedData.id);
+    expect(consul.consulInstance.agent.service.register).toBeCalledWith(registerData);
+    expect(consul.registerParams.id).toEqual(registerData.id);
   });
 
-  it('service registration should register and save the id', async () => {
+  it('register should not call register if service exist', async () => {
     const consul = new Consul(connectionOptions);
 
-    consul.consulInstance.agent.service.list
-      .mockImplementationOnce(() => Promise.resolve({}))
-      .mockImplementationOnce(() => Promise.resolve({ [registerData.hostname]: { Service: registerData.serviceName } }));
-    await consul.register(registerData);
+    consul.consulInstance.agent.service.list.mockImplementationOnce(() =>
+      Promise.resolve({ [registerData.id]: { Service: registerData.name } }),
+    );
+    await consul.register({ data: registerData });
 
-    expect(consul.consulInstance.agent.service.list).toBeCalledTimes(2);
-    expect(consul.consulInstance.agent.service.register).toBeCalledTimes(1);
-
-    const expectedData = {
-      meta: registerData.meta,
-      checks: registerData.checks,
-      address: registerData.address,
-      port: registerData.port,
-      id: registerData.hostname,
-      name: registerData.serviceName,
-    };
-
-    expect(consul.consulInstance.agent.service.register).toBeCalledWith(expectedData);
-    expect(consul.registerParams.id).toEqual(expectedData.id);
+    expect(consul.consulInstance.agent.service.list).toBeCalledTimes(1);
+    expect(consul.consulInstance.agent.service.register).toBeCalledTimes(0);
   });
 
   it.skip('service registration should retry every register Interval', async done => {
@@ -193,7 +166,7 @@ describe('Consul', () => {
 
     consul.consulInstance.agent.service.list.mockImplementation(() => Promise.resolve({}));
 
-    await consul.register(registerData);
+    await consul.register({ data: registerData });
     consul.watch({ key: 'randomKey', onChange: () => {} });
     consul.watch({ key: 'randomKey2', onChange: () => {} });
 
@@ -202,6 +175,6 @@ describe('Consul', () => {
     expect(ConsulClass.mock.results[0].value.watch.mock.results[0].value.end).toBeCalledTimes(1);
     expect(ConsulClass.mock.results[0].value.watch.mock.results[0].value.end).toBeCalledTimes(1);
     expect(consul.consulInstance.agent.service.deregister).toBeCalledTimes(1);
-    expect(consul.consulInstance.agent.service.deregister).toBeCalledWith(registerData.hostname);
+    expect(consul.consulInstance.agent.service.deregister).toBeCalledWith(registerData.id);
   });
 });
