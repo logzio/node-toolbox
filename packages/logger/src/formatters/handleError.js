@@ -13,6 +13,8 @@ export function handleError() {
         serError = messageErr;
       } else if (messageError) {
         serError = messageError;
+      } else {
+        return { logLevel, message, ...data };
       }
       message = restMessage;
     } else {
