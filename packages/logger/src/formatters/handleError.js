@@ -23,12 +23,10 @@ export function handleError() {
 
     if (message) data.message = message;
 
-    const { name, stack, message: errorMessage } = serError;
-
     return {
       ...data,
       logLevel: 'ERROR',
-      error: se.serializeError({ name, stack, message: errorMessage }),
+      error: se.serializeError(serError),
     };
   };
 }
