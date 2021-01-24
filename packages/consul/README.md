@@ -55,7 +55,7 @@ it will fetch current values will deep merge all keys and set it
 ```
 
 ### watch - listen to key change and invoke handler
-receive same watchOptions object as the initializer ( will merge them together)
+options - same watchOptions object as the initializer ( will merge them together)
 ```javascript
    await consul.watch({
    key: 'somepath/config.json',
@@ -66,12 +66,12 @@ receive same watchOptions object as the initializer ( will merge them together)
    onError:(err) => {
     console.log(err)
    },
-   watchOptions
+   options
    })
 ```
 
 ### register - will register service to consul
-receive same registerRetryOptions object as the initializer ( will merge them together)
+options - same as registerRetryOptions object as the initializer ( will merge them together)
 ```javascript
     interface RegisterData {
       meta?: AnyObject;
@@ -84,12 +84,12 @@ receive same registerRetryOptions object as the initializer ( will merge them to
 
    await consul.register({
    data,
-   registerRetryOptions
+   options
    })
 ```
 
 ### registerInterval - will create interval to validate service always register to consul
-receive same registerRetryOptions object as the initializer ( will merge them together)
+options - same as registerRetryOptions object as the initializer ( will merge them together)
 ```javascript
     interface RegisterData {
       meta?: AnyObject;
@@ -106,15 +106,15 @@ receive same registerRetryOptions object as the initializer ( will merge them to
    onError:(err) => {
     console.log(err)
    },
-   registerRetryOptions
+   options
    })
 ```
 
 
 #### close - deregister and close all watchers
-receive same registerRetryOptions object as the initializer ( will merge them together)
+options - same as registerRetryOptions object as the initializer ( will merge them together)
 ```javascript
-   await consul.close(registerRetryOptions)
+   await consul.close(options)
 ```
 
 

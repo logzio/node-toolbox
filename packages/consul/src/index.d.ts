@@ -34,7 +34,7 @@ export interface WatchOptions {
   key?: string;
   onChange?: VoidFunction;
   onError?: VoidFunction;
-  watchOptions?: WatchOptionsInner;
+  options?: WatchOptionsInner;
 }
 
 export interface RegisterRetryOptions {
@@ -52,34 +52,39 @@ export interface RegisterData {
 }
 export interface RegisterOptions {
   registerData: RegisterData;
-  registerRetryOptions?: RegisterRetryOptions;
+  options?: RegisterRetryOptions;
 }
 
 export interface RegisterIntervalOptions extends RegisterOptions {
   interval: number;
   onError?: VoidFunction;
 }
+export interface WatchAllOptions {
+  onChange?: VoidFunction;
+  onError?: VoidFunction;
+  options?: WatchOptionsInner;
+}
 export declare class Consul {
-  public constructor(consulOptions: ConsulOptions);
-  public validateConnected(validateOptions: ValidateOptions): void;
+  public constructor(options: ConsulOptions);
+  public validateConnected(options: ValidateOptions): void;
   private buildKey(key: string): { key: string; value: AnyObject };
   public get(key?: string): AnyObject;
-  public set(keyValueOptions: KeyValueOptions): void;
+  public set(options: KeyValueOptions): void;
   public keys(key?: string): AnyObject;
-  public merge(keyValueOptions: KeyValueOptions): AnyObject;
-  public watch(watchOptions?: WatchOptions): void;
-  public register(registerOptions: RegisterOptions): void;
-  public registerInterval(registerIntervalOptions: RegisterIntervalOptions): void;
+  public merge(options: KeyValueOptions): AnyObject;
+  public watch(options?: WatchOptions): void;
+  public register(options: RegisterOptions): void;
+  public registerInterval(options: RegisterIntervalOptions): void;
   public close(): void;
 }
 interface MultiConsulOptions extends ConsulOptions {
   paths: string[];
 }
 export declare class MultiConsul extends Consul {
-  public constructor(multiConsulOptions: MultiConsulOptions);
+  public constructor(options: MultiConsulOptions);
   private _mergeAll(): AnyObject;
   private _onOneChange(Values: { key: string; value: AnyObject }): AnyObject;
   public load(): AnyObject;
   public getAll(): AnyObject;
-  public watchAll(onChange: VoidFunction): AnyObject;
+  public watchAll(options: WatchAllOptions): AnyObject;
 }
