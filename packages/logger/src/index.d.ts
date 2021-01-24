@@ -59,6 +59,7 @@ export class LogzioTransport extends Transport implements LogzioTransportOptions
   name?: string;
   LogLevel?: LogLevel;
   formatters?: formatter[];
+  public replaceToken(token: string);
 }
 
 export interface LoggerOptions {
@@ -83,6 +84,7 @@ export declare class Logger {
   public addFormatter(formatter: formatter[]): void;
   public removeTransport(name: string): void;
   public removeFormatter(name: string): void;
+  public replaceToken(token: string, transportName: string): void;
 }
 
 type ReceiveLog = () => void;

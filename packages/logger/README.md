@@ -62,6 +62,24 @@ logger.logLevel(LogLevel.DEBUG) // will start log debug as well
 await logger.close() // will wait for all transports to close
 
 ```
+
+```javascript
+import { Logger, ConsoleTransport, formatters, LogLevel } from '@logzio-node-toolbox/logger';
+import { Logger, LogzioTransport } from '@logzio-node-toolbox/logger';
+
+const logzioTransport = new LogzioTransport({ name: 'logzioTransport', formatters: [transportFormatter], token: 'your-logzio-token' });
+
+const logFormatter = formatters.logSize();
+
+const transportFormatter = formatters.omitFields(['name']);
+
+const logger = new Logger({
+  transports: [logzioTransport],
+});
+
+logger.replaceToken('new-logzio-token', 'logzioTransport'); // replaces the token in 'logzioTransport' transport
+
+```
 ## Transports
 
 ### ConsoleTransport
@@ -73,7 +91,7 @@ log to console
   - color - boolean (default true) | adding color to output
 ```javascript
 import { Logger, ConsoleTransport } from '@logzio-node-toolbox/logger';
-const consoleTransport = new ConsoleTransport({ name: 'logzioTransport', formatters: [transportFormatter], token:'123', meta: {region: 'prod', } });
+const consoleTransport = new ConsoleTransport({ name: 'consoleTransport', formatters: [transportFormatter], token:'123', meta: {region: 'prod', } });
 ```
 
 ### LogzioTransport
@@ -89,7 +107,9 @@ send the log to logzio with the given token
   - moreOptions - object (default true) | options to pass to logzio-nodejs
 ```javascript
 import { Logger, LogzioTransport } from '@logzio-node-toolbox/logger';
-const logzioTransport = new LogzioTransport({ name: 'new-console', formatters: [transportFormatter] });
+const logzioTransport = new LogzioTransport({ name: 'logzioTransport', formatters: [transportFormatter], token: 'your-logzio-token' });
+
+logzioTransport.replaceToken('new-logzio-token');
 ```
 
 ### custom Transport

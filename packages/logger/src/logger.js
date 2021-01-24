@@ -117,4 +117,10 @@ export class Logger {
   logLevel(level) {
     if (LogLevel[level]) this.#logLevel = level;
   }
+
+  async replaceToken(token, transportName = 'logzio') {
+    if (this.transports[transportName] && this.transports[transportName].replaceToken) {
+      await this.transports[transportName].replaceToken(token);
+    }
+  }
 }
