@@ -1,7 +1,7 @@
 import opentracing from 'opentracing';
 import { default as jaegerClient } from 'jaeger-client';
 const { initTracer } = jaegerClient;
-
+const { FORMAT_HTTP_HEADERS } = opentracing;
 export class Tracer {
   #tracer;
   #shouldIgnore;
@@ -17,7 +17,7 @@ export class Tracer {
     debug = false,
     exporterOptions = {},
     serviceName = 'node-js',
-    carrierType = opentracing.FORMAT_HTTP_HEADERS,
+    carrierType = FORMAT_HTTP_HEADERS,
   }) {
     this.#shouldIgnore = shouldIgnore;
     this.#onStartSpan = onStartSpan;

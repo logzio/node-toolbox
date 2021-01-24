@@ -27,12 +27,12 @@
   },
   "dependencies": {
     "chalk": "4.1.0",
-    "dateformat": "4.4.1",
+    "dateformat": "4.5.0",
     "json-colorizer": "^2.2.2",
     "json-stringify-safe": "5.0.1",
     "lodash": "4.17.20",
     "logzio-nodejs": "2.0.2",
     "rough-object-size": "1.0.1",
-    "serialize-error": "^8.0.0"
+    "serialize-error": "^8.0.1"
   }
 }

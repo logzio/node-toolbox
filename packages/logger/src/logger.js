@@ -2,6 +2,7 @@ import _ from 'lodash';
 import LogLevel, { levelsMetaData } from './LogLevels.js';
 import dateFormat from 'dateformat';
 
+const { INFO } = LogLevel;
 const isOnlyObject = a => !_.isArray(a) && _.isObject(a);
 
 export class Logger {
@@ -12,13 +13,7 @@ export class Logger {
   #logLevel;
   #_log;
 
-  constructor({
-    transports = [],
-    metaData = {},
-    formatters = [],
-    datePattern = 'dd/mm/yyyy hh:mm:ss.l',
-    logLevel = LogLevel.INFO,
-  } = {}) {
+  constructor({ transports = [], metaData = {}, formatters = [], datePattern = 'dd/mm/yyyy hh:mm:ss.l', logLevel = INFO } = {}) {
     if (transports.length === 0) console.warn('LOGGER: HAVE NO TRANSPORTS');
     this.#transports = transports;
     this.transports = transports.reduce((acc, transport) => {
@@ -30,7 +25,7 @@ export class Logger {
     this.#metaData = metaData;
     this.#formatters = formatters;
     this.#datePattern = datePattern;
-    this.#_log = function _log(logLevel = LogLevel.INFO, [message = null, ...rest] = []) {
+    this.#_log = function _log(logLevel = INFO, [message = null, ...rest] = []) {
       const data = {
         ...rest.reduce((cur, arg) => {
           if (isOnlyObject(arg)) {
@@ -68,11 +63,11 @@ export class Logger {
   }
 
   log() {
-    this.#_log(LogLevel.INFO, arguments);
+    this.#_log(INFO, arguments);
   }
 
   info() {
-    this.#_log(LogLevel.INFO, arguments);
+    this.#_log(INFO, arguments);
   }
 
   warn() {
@@ -88,7 +83,7 @@ export class Logger {
 
     data.__makeLogPrettyJSON__ = true;
 
-    this.#_log(LogLevel.INFO, [message, data]);
+    this.#_log(INFO, [message, data]);
   }
   addTransport(transport) {
     this.#transports.push(transport);

@@ -66,8 +66,8 @@ export class Consul {
     };
   }
 
-  async validateConnected(validateOptions = {}) {
-    let { fail, timeout, retries, factor, onRetry } = { ...this.validateOptions, ...validateOptions };
+  async validateConnected(options = {}) {
+    let { fail, timeout, retries, factor, onRetry } = { ...this.validateOptions, ...options };
     try {
       await retry(async () => this.consulInstance.agent.check.list({ timeout }), { factor, retries, onRetry });
     } catch (err) {
@@ -103,53 +103,53 @@ export class Consul {
     return newValues;
   }
 
-  watch({ key, onChange, onError, watchOptions = {} } = {}) {
+  watch({ key, onChange, onError, options = {} } = {}) {
     if (!key || !onChange) return;
 
-    const options = {
+    const watchOptions = {
       method: this.consulInstance.kv.get,
       options: { key: this.buildKey(key) },
       ...this.watchOptions,
-      ...watchOptions,
+      ...options,
     };
 
-    const watcher = this.consulInstance.watch(options);
+    const watcher = this.consulInstance.watch(watchOptions);
 
     watcher.on('change', data => data && onChange(parseValue(data)));
-    watcher.on('error', err => err && onError(err, key));
+    watcher.on('error', error => error && onError({ error, key }));
     this.openWatchersToClose.push(watcher);
   }
 
-  async register({ data, retryOptions } = {}) {
+  async register({ data, options } = {}) {
     if (!data.name || !data.id) throw new Error('must provide name and id to register for consul service discovery');
 
     if (this.registerParams.id) return;
 
-    const options = {
+    const retryOptions = {
       ...this.registerRetryOptions,
-      ...retryOptions,
+      ...options,
     };
 
-    const list = await retry(async () => this.consulInstance.agent.service.list(), options);
+    const list = await retry(async () => this.consulInstance.agent.service.list(), retryOptions);
 
     const isRegistered = Object.entries(list).some(([id, { Service }]) => id === data.id && Service === data.name);
 
     if (!isRegistered) {
-      await retry(async () => this.consulInstance.agent.service.register(data), options);
+      await retry(async () => this.consulInstance.agent.service.register(data), retryOptions);
 
       this.registerParams.id = data.id;
     }
   }
 
-  async registerInterval({ data, interval, onError, retryOptions }) {
-    const options = {
+  async registerInterval({ data, interval, onError, options }) {
+    const retryOptions = {
       ...this.registerRetryOptions,
       ...retryOptions,
     };
 
     const startInterval = async () => {
       try {
-        await this.register({ data, retryOptions: options });
+        await this.register({ data, options });
       } catch (err) {
         onError(err);
       }
@@ -159,15 +159,15 @@ export class Consul {
     startInterval();
   }
 
-  async close(registerRetryOptions = {}) {
+  async close(options = {}) {
     if (this.registerParams.id) {
       if (this.registerParams.timeoutId) clearTimeout(this.registerParams.timeoutId);
 
-      const options = {
+      const registerRetryOptions = {
         ...this.registerRetryOptions,
-        ...registerRetryOptions,
+        ...options,
       };
-      await retry(async () => this.consulInstance.agent.service.deregister(this.registerParams.id), options);
+      await retry(async () => this.consulInstance.agent.service.deregister(this.registerParams.id), registerRetryOptions);
     }
     this.openWatchersToClose.forEach(watcher => watcher.end());
   }

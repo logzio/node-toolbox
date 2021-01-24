@@ -1,11 +1,11 @@
 import LogLevel from '../LogLevels.js';
-
+const { INFO } = LogLevel;
 export class Transport {
-  constructor({ name = 'transport', logLevel = LogLevel.INFO, formatters = [] }) {
+  constructor({ name = 'transport', logLevel = INFO, formatters = [] }) {
     this.name = name;
     this.isOpen = true;
     this.formatters = formatters;
-    this._logLevel = LogLevel[logLevel] ? logLevel : LogLevel.INFO;
+    this._logLevel = LogLevel[logLevel] ? logLevel : INFO;
   }
 
   format(data) {

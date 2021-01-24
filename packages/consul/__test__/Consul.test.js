@@ -70,7 +70,7 @@ describe('Consul', () => {
       expect(data).toEqual({ key: 'yablolo', value: { name: 'new name' } });
     };
 
-    consul.watch({ key: 'randomKey', onChange, watchOptions: { backoffFactor: 8200, backoffMax: 8220 } });
+    consul.watch({ key: 'randomKey', onChange, options: { backoffFactor: 8200, backoffMax: 8220 } });
 
     expect(consul.openWatchersToClose.length).toEqual(1);
 
