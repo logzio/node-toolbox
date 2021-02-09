@@ -12,6 +12,7 @@
   },
   "scripts": {
     "clean": "lerna clean && rm -rf node_modules",
+    "postinstall": "husky install",
     "test": "jest --config jest.config.cjs",
     "compile": "rollup -c --ignore @logzio-node-toolbox/test",
     "test:watch": "jest --watch --config jest.config.cjs",
