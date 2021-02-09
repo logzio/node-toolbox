@@ -28,7 +28,7 @@
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
   },
   "dependencies": {
-    "joi": "17.3.0",
+    "joi": "17.4.0",
     "deepmerge": "4.2.2",
     "lodash": "4.17.20"
   }
