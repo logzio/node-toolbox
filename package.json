@@ -58,11 +58,6 @@
     "rollup-plugin-copy": "^3.3.0",
     "typescript": "4.1.3"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn lint && yarn test && yarn compile && yarn ncu && yarn checkLicense"
-    }
-  },
   "engines": {
     "node": "<=15.3.0"
   },
