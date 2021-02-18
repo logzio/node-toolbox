@@ -87,6 +87,10 @@ export class Consul {
     return this.consulInstance.kv.set(this.buildKey(key), JSON.stringify(value));
   }
 
+  async setString({ key, value }) {
+    return this.consulInstance.kv.set(this.buildKey(key), value);
+  }
+
   async keys(key) {
     return this.consulInstance.kv.keys(this.buildKey(key));
   }

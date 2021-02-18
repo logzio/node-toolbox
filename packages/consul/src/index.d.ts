@@ -13,7 +13,7 @@ export interface ConsulOptions {
 
 export interface KeyValueOptions {
   key?: string;
-  value: AnyObject;
+  value: AnyObject | string;
 }
 
 export interface ValidateOptions {
@@ -70,6 +70,7 @@ export declare class Consul {
   private buildKey(key: string): { key: string; value: AnyObject };
   public get(key?: string): AnyObject;
   public set(options: KeyValueOptions): void;
+  public setString(options: KeyValueOptions): void;
   public keys(key?: string): AnyObject;
   public merge(options: KeyValueOptions): AnyObject;
   public watch(options?: WatchOptions): void;
