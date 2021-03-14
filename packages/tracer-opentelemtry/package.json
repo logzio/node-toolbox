@@ -26,10 +26,10 @@
     "compile": "rollup src/index.js --format cjs --file src/index.cjs"
   },
   "dependencies": {
-    "@opentelemetry/api": "^0.16.0",
-    "@opentelemetry/core": "^0.16.0",
-    "@opentelemetry/exporter-jaeger": "^0.16.0",
-    "@opentelemetry/propagator-jaeger": "0.13.0",
-    "@opentelemetry/tracing": "^0.16.0"
+    "@opentelemetry/api": "^0.18.1",
+    "@opentelemetry/core": "^0.18.0",
+    "@opentelemetry/exporter-jaeger": "^0.18.0",
+    "@opentelemetry/propagator-jaeger": "0.14.0",
+    "@opentelemetry/tracing": "^0.18.0"
   }
 }

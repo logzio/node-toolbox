@@ -30,6 +30,6 @@
   "dependencies": {
     "joi": "17.4.0",
     "deepmerge": "4.2.2",
-    "lodash": "4.17.20"
+    "lodash": "4.17.21"
   }
 }
