@@ -90,7 +90,9 @@ describe('Consul', () => {
     expect(change).toEqual('change');
 
     invokeOnChange({ Key: 'yablolo', Value: JSON.stringify({ name: 'new name' }) });
-    expect(onChangedCalled).toBeTruthy();
+    expect(onChangedCalled).toEqual(false);
+    invokeOnChange({ Key: 'yablolo', Value: JSON.stringify({ name: 'new name' }) });
+    expect(onChangedCalled).toEqual(true);
   });
 
   it('register should not register if service exist but retry on list', async () => {

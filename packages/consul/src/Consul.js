@@ -3,7 +3,7 @@ import ConsulLibrary from 'consul';
 import deepMerge from 'deepmerge';
 
 const defaultValidateOptions = { fail: true, timeout: 5000, retries: 6, factor: 2, onRetry: null };
-const defaultWatchOptions = { backoffFactor: 100, backoffMax: 30000, maxAttempts: 10000 };
+const defaultWatchOptions = { backoffFactor: 100, backoffMax: 30000, maxAttempts: 10000, ignoreFirst: true };
 const defaultRegisterRetryOptions = { factor: 2, retries: 6, onRetry: null };
 function parseValue({ Value = null, Key = null } = {}) {
   if (!Key || !Value) return undefined;
@@ -36,6 +36,7 @@ export class Consul {
     this.consulInstance = new ConsulLibrary({ host, port, promisify: true });
 
     this.keyPrefix = baseUrl ? `${baseUrl.replace(/\/*$/, '')}/` : '';
+    this.didIgnoreFisrt = false;
 
     this.connectionParams = {
       host,
@@ -110,7 +111,7 @@ export class Consul {
   watch({ key, onChange, onError, options = {} } = {}) {
     if (!key || !onChange) return;
 
-    const watchOptions = {
+    const { ignoreFirst, ...watchOptions } = {
       method: this.consulInstance.kv.get,
       options: { key: this.buildKey(key) },
       ...this.watchOptions,
@@ -118,9 +119,37 @@ export class Consul {
     };
 
     const watcher = this.consulInstance.watch(watchOptions);
+    if (!ignoreFirst) this.didIgnoreFisrt = true;
 
-    watcher.on('change', data => data && onChange(parseValue(data)));
-    watcher.on('error', error => error && onError({ error, key }));
+    this.get(key)
+      .then(data => (!data ? (this.didIgnoreFisrt = true) : ''))
+      .catch(() => (this.didIgnoreFisrt = true));
+
+    watcher.on('change', data => {
+      if (this.didIgnoreFisrt && data) {
+        onChange(parseValue(data));
+      } else if (data) {
+        this.didIgnoreFisrt = true;
+      }
+    });
+    watcher.on('error', error => {
+      if (error && error.message === 'not found') return;
+
+      const returnError = {
+        ...error,
+        host: this.connectionParams.host,
+        port: this.connectionParams.port,
+      };
+      if (error && error.code === 'ECONNREFUSED') {
+        returnError.message = `unable to reconnect to ${this.connectionParams.host}:${this.connectionParams.port}, not watching ${key}`;
+      } else if (error && error.code === 'ECONNRESET') {
+        returnError.message = `connection to ${this.connectionParams.host}:${this.connectionParams.port} lost, stop watching ${key}`;
+      } else {
+        returnError.message = `error on watch ${key}`;
+      }
+
+      onError({ error: returnError, key });
+    });
     this.openWatchersToClose.push(watcher);
   }
 

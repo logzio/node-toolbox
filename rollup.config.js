@@ -1,7 +1,7 @@
 import path from 'path';
 import minimist from 'minimist';
 import { getPackages } from '@lerna/project';
-import filterPackages from '@lerna/filter-packages';
+import { filterPackages } from '@lerna/filter-packages';
 import batchPackages from '@lerna/batch-packages';
 import copy from 'rollup-plugin-copy';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
