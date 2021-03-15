@@ -14,12 +14,10 @@ export class Logger {
   #_log;
 
   constructor({ transports = [], metaData = {}, formatters = [], datePattern = 'dd/mm/yyyy hh:mm:ss.l', logLevel = INFO } = {}) {
+    if (!Array.isArray(transports)) transports = [transports];
+    if (!Array.isArray(formatters)) formatters = [formatters];
     if (transports.length === 0) console.warn('LOGGER: HAVE NO TRANSPORTS');
     this.#transports = transports;
-    this.transports = transports.reduce((acc, transport) => {
-      acc[transport.name] = transport;
-      return acc;
-    }, {});
 
     this.#logLevel = logLevel;
     this.#metaData = metaData;
@@ -54,10 +52,11 @@ export class Logger {
         let currentLevel = transport.logLevel || this.#logLevel;
         let shouldLog = levelsMetaData[formattedData.logLevel].weight <= levelsMetaData[currentLevel].weight;
 
-        if (transport.isOpen && shouldLog) transport.log(transport.format(formattedData));
+        if (transport.isOpen && shouldLog) transport.log(transport.format({ ...formattedData }));
       });
     };
   }
+
   debug() {
     this.#_log(LogLevel.DEBUG, arguments);
   }
@@ -79,28 +78,29 @@ export class Logger {
   }
 
   beautify() {
-    const [message = null, data = {}] = arguments;
+    const [message = null, log = {}] = arguments;
 
-    data.__makeLogPrettyJSON__ = true;
+    const data = { ...log, __makeLogPrettyJSON__: true };
 
     this.#_log(INFO, [message, data]);
   }
+
   addTransport(transport) {
-    this.#transports.push(transport);
-    this.transports[transport.name] = transport;
+    if (Array.isArray(transport)) transport.forEach(t => this.#transports.push(t));
+    else this.#transports.push(transport);
   }
 
   async removeTransport(name) {
-    if (this.transports[name]) {
-      await this.transports[name].close();
-      _.unset(this.transports, name);
-      this.#transports = this.#transports.filter(t => t.name !== name);
-    }
+    const transport = this.#transports.find(t => t.name === name);
+    if (transport) await transport.close();
+    this.#transports = this.#transports.filter(t => t.name !== name);
   }
 
   addFormatter(formatter) {
-    this.#formatters.push(formatter);
+    if (Array.isArray(formatter)) formatter.forEach(f => this.#formatters.push(f));
+    else this.#formatters.push(formatter);
   }
+
   removeFormatter(formatter) {
     this.#formatters = this.#formatters.filter(f => f !== formatter);
   }

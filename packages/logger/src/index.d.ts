@@ -79,8 +79,8 @@ export declare class Logger {
   public beautify(...args: any[]): void;
   public close(): void;
   public logLevel(logLevel: LogLevel): void;
-  public addTransport(transport: Transport): void;
-  public addFormatter(formatter: formatter[]): void;
+  public addTransport(transport: Transport | Transport[]): void;
+  public addFormatter(formatter: formatter | formatter[]): void;
   public removeTransport(name: string): void;
   public removeFormatter(name: string): void;
 }

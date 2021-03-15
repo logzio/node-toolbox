@@ -1,5 +1,5 @@
 import { Transport } from '../../src/transports/Transport.js';
-import { Logger } from '../../src/Logger';
+import { Logger } from '../../src/logger';
 
 describe('transports - Transport - create default transport', () => {
   it('should remove fields', () => {
