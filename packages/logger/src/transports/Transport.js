@@ -12,6 +12,15 @@ export class Transport {
     return this.formatters.reduce((newData, formatter) => formatter(newData), data);
   }
 
+  addFormatter(formatter) {
+    if (Array.isArray(formatter)) formatter.forEach(f => this.formatters.push(f));
+    else this.formatters.push(formatter);
+  }
+
+  removeFormatter(formatter) {
+    this.formatters = this.formatters.filter(f => f !== formatter);
+  }
+
   set logLevel(level) {
     if (LogLevel[level]) this._logLevel = level;
   }

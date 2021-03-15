@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/consul",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "Consul easy use for json configs and service discovery",
   "main": "dist/index.cjs",
   "exports": {

@@ -36,7 +36,7 @@ export class Consul {
     this.consulInstance = new ConsulLibrary({ host, port, promisify: true });
 
     this.keyPrefix = baseUrl ? `${baseUrl.replace(/\/*$/, '')}/` : '';
-    this.didIgnoreFisrt = false;
+    this.didIgnorePaths = {};
 
     this.connectionParams = {
       host,
@@ -118,18 +118,21 @@ export class Consul {
       ...options,
     };
 
+    this.didIgnorePaths[key] = false;
+
     const watcher = this.consulInstance.watch(watchOptions);
-    if (!ignoreFirst) this.didIgnoreFisrt = true;
+
+    if (!ignoreFirst) this.didIgnorePaths[key] = true;
 
     this.get(key)
-      .then(data => (!data ? (this.didIgnoreFisrt = true) : ''))
-      .catch(() => (this.didIgnoreFisrt = true));
+      .then(data => (!data ? (this.didIgnorePaths[key] = true) : ''))
+      .catch(() => (this.didIgnorePaths[key] = true));
 
     watcher.on('change', data => {
-      if (this.didIgnoreFisrt && data) {
+      if (this.didIgnorePaths[key] && data) {
         onChange(parseValue(data));
       } else if (data) {
-        this.didIgnoreFisrt = true;
+        this.didIgnorePaths[key] = true;
       }
     });
     watcher.on('error', error => {
