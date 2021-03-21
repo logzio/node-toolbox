@@ -1,5 +1,3 @@
-import opentracing from 'opentracing';
-
 export function middlewareTracer({ tracer, tags = {}, shouldIgnore, onStartSpan, onFinishSpan, onError } = {}) {
   if (!tracer)
     return function (req, res, next) {
@@ -30,13 +28,7 @@ export function middlewareTracer({ tracer, tags = {}, shouldIgnore, onStartSpan,
     try {
       if (shouldIgnore && shouldIgnore(originalUrl)) return;
 
-      const _tags = {
-        [opentracing.Tags.HTTP_URL]: originalUrl,
-        [opentracing.Tags.HTTP_METHOD]: method,
-        ...tags,
-      };
-
-      span = tracer.startSpan({ operation: originalUrl, tags: _tags, carrier: headers });
+      span = tracer.startSpan({ operation: originalUrl, url: originalUrl, method, carrier: headers, tags });
       onStartSpan?.({ span, req, res });
     } catch (err) {
       onError?.({ message: `failed to create span ${err.message}`, error: err });
@@ -45,14 +37,9 @@ export function middlewareTracer({ tracer, tags = {}, shouldIgnore, onStartSpan,
     const handlerError = error => {
       try {
         setOperationName(req, span);
-        span.log({ event: 'error', message: error?.message, stack: error?.stack, type: error?.type });
-        const _tags = {
-          [opentracing.Tags.ERROR]: true,
-          [opentracing.Tags.HTTP_STATUS_CODE]: res.statusCode || 500,
-        };
 
         onFinishSpan?.(span, error);
-        tracer.finishSpan({ span, tags: _tags });
+        tracer.finishSpan({ span, statusCode: res.statusCode || 500, error });
       } catch (err) {
         onError?.({ message: `failed to finish span ${err.message}`, error: err });
       }
@@ -63,12 +50,9 @@ export function middlewareTracer({ tracer, tags = {}, shouldIgnore, onStartSpan,
 
     req.on('close', () => {
       try {
-        const _tags = {
-          [opentracing.Tags.HTTP_STATUS_CODE]: res.statusCode,
-        };
         setOperationName(req, span);
         onFinishSpan?.(span, req, res);
-        tracer.finishSpan({ span, tags: _tags });
+        tracer.finishSpan({ span, statusCode: res.statusCode });
       } catch (err) {
         onError?.({ message: `failed to finish span ${err.message}`, error: err });
       }
