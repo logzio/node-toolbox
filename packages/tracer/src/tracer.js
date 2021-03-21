@@ -25,7 +25,7 @@ export class Tracer {
     this.#carrierType = carrierType;
 
     let sampler = {
-      type: exporterOptions.type ?? 'const',
+      type: exporterOptions.type ?? 'probabilistic',
       param: exporterOptions.probability ?? 1,
     };
 
@@ -33,12 +33,6 @@ export class Tracer {
       agentHost: exporterOptions.host ?? 'localhost',
       agentPort: exporterOptions.port ?? 6832,
       flushIntervalMs: exporterOptions.interval ?? 2000,
-    };
-
-    const config = {
-      serviceName,
-      sampler,
-      reporter,
     };
 
     const options = {
@@ -54,19 +48,27 @@ export class Tracer {
       options.logger = console;
     }
 
+    const config = {
+      serviceName,
+      sampler,
+      reporter,
+    };
+
     this.#tracer = initTracer(config, options);
   }
 
-  startSpan({ operation, tags = {}, carrier } = {}) {
+  startSpan({ operation, url, method, tags = {}, carrier, kind = opentracing.Tags.SPAN_KIND_RPC_SERVER } = {}) {
     if (this.#shouldIgnore?.(operation)) return;
     const rootSpan = this.#tracer.extract(this.#carrierType, carrier);
 
+    tags[opentracing.Tags.SPAN_KIND] = kind;
+
+    if (url) tags[opentracing.Tags.HTTP_URL] = url;
+    if (url) tags[opentracing.Tags.HTTP_METHOD] = method;
+
     const span = this.#tracer.startSpan(operation, {
       childOf: rootSpan,
-      tags: {
-        [opentracing.Tags.SPAN_KIND]: opentracing.Tags.SPAN_KIND_RPC_SERVER,
-        ...tags,
-      },
+      tags,
     });
 
     this.onStartSpan?.(span);
@@ -76,9 +78,16 @@ export class Tracer {
     return span;
   }
 
-  finishSpan({ span, tags = {} } = {}) {
+  finishSpan({ span, tags = {}, error, statusCode } = {}) {
     if (!span) return;
-    if (tags) span.addTags(tags);
+    if (error) {
+      span.log({ event: 'error', message: error.message, stack: error.stack, type: error.type });
+      tags[opentracing.Tags.ERROR] = true;
+    }
+
+    if (statusCode) tags[opentracing.Tags.HTTP_STATUS_CODE] = statusCode;
+
+    span.addTags(tags);
 
     if (this.#onFinishSpan) this.#onFinishSpan(span);
 

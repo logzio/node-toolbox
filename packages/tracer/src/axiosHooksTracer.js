@@ -1,6 +1,4 @@
-import opentracing from 'opentracing';
-
-export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onFinishSpan, onError, tags } = {}) {
+export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onFinishSpan, onError, tags, kind = 'client' } = {}) {
   if (!axios || !tracer) return;
 
   axios.interceptors.request.use(
@@ -9,11 +7,12 @@ export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onF
         if (!shouldIgnore || !shouldIgnore(config.url)) {
           const span = tracer.startSpan({
             operation: config.url,
-            carrier: config.headers,
+            carrier: config?.headers,
+            url: config.url,
+            method: config.method,
+            kind: config?.meta?.kind || kind,
             tags: {
               ...config?.meta?.tags,
-              [opentracing.Tags.HTTP_URL]: config.url,
-              [opentracing.Tags.HTTP_METHOD]: config.method,
               ...tags,
             },
           });
@@ -35,14 +34,8 @@ export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onF
         if (error?.config?.meta?.span) {
           const { span, ...meta } = error.config.meta;
 
-          span.log({ event: 'error', message: error?.message, stack: error?.stack, type: error?.type || error?.code });
-          const tags = {
-            [opentracing.Tags.ERROR]: true,
-            [opentracing.Tags.HTTP_STATUS_CODE]: error?.response?.status || 500,
-          };
-
           onFinishSpan?.(span, error);
-          tracer.finishSpan({ span, tags });
+          tracer.finishSpan({ span, tags, error, statusCode: error?.response?.status || 500 });
           error.config.meta = meta;
         }
       } catch (err) {
@@ -60,11 +53,7 @@ export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onF
           const { span, ...meta } = response.config.meta;
           onFinishSpan?.(span, response);
 
-          const tags = {
-            [opentracing.Tags.HTTP_STATUS_CODE]: response.status,
-          };
-
-          tracer.finishSpan({ span, tags });
+          tracer.finishSpan({ span, tags, statusCode: response.status });
           response.config.meta = meta;
         }
       } catch (err) {
@@ -78,16 +67,8 @@ export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onF
         if (error?.config?.meta?.span) {
           const { span, ...meta } = error.config.meta;
 
-          const status = error?.response?.status || 500;
-          span.log({ event: 'error', message: error?.message, stack: error?.stack, type: error?.type || error?.code });
-
-          const tags = {
-            [opentracing.Tags.ERROR]: true,
-            [opentracing.Tags.HTTP_STATUS_CODE]: status,
-          };
-
           onFinishSpan?.(span, error);
-          tracer.finishSpan({ span, tags });
+          tracer.finishSpan({ span, tags, statusCode: error?.response?.status || 500, error });
           error.config.meta = meta;
         }
       } catch (err) {

@@ -1,5 +1,3 @@
-import opentracing from 'opentracing';
-
 export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onError, tags }) => {
   server.ext({
     type: 'onRequest',
@@ -11,11 +9,9 @@ export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onError, tags }) 
           const span = tracer.startSpan({
             operation: path,
             carrier: headers,
-            tags: {
-              [opentracing.Tags.HTTP_URL]: raw.req.url,
-              [opentracing.Tags.HTTP_METHOD]: method,
-              ...tags,
-            },
+            url: raw.req.url,
+            method,
+            tags,
           });
 
           request.app.span = span;
@@ -36,11 +32,6 @@ export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onError, tags }) 
         if (request.route && request.route.path)
           span.setOperationName(`${request.route.method.toUpperCase()}: ${request.route.path}`);
 
-        const { statusCode } = request.response;
-
-        tags = {
-          [opentracing.Tags.HTTP_STATUS_CODE]: statusCode,
-        };
         let error = null;
 
         if (request.response.source && request.response.source.error) {
@@ -50,12 +41,7 @@ export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onError, tags }) 
             stack: {},
           };
         }
-        if (error) {
-          span.log({ event: 'error', message: error?.message, stack: error?.stack, type: error?.type });
-          tags[opentracing.Tags.ERROR] = true;
-        }
-
-        tracer.finishSpan({ span, tags });
+        tracer.finishSpan({ span, tags, error, statusCode: request.response.statusCode });
       }
     } catch (err) {
       onError?.({ message: 'failed to finish span', error: err });

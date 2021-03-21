@@ -1,5 +1,3 @@
-import opentracing from 'opentracing';
-
 export function nodeHttpTracer({ server, tracer, tags = {}, shouldIgnore, onStartSpan, onFinishSpan, onError } = {}) {
   if (!server || !tracer) return;
 
@@ -14,13 +12,7 @@ export function nodeHttpTracer({ server, tracer, tags = {}, shouldIgnore, onStar
       if (route.path && route.path !== '*') operation += route.path;
       else operation += _parsedUrl.pathname;
 
-      const _tags = {
-        [opentracing.Tags.HTTP_URL]: originalUrl,
-        [opentracing.Tags.HTTP_METHOD]: method,
-        ...tags,
-      };
-
-      span = tracer.startSpan({ operation, tags: _tags, carrier: headers });
+      span = tracer.startSpan({ operation, tags, carrier: headers, url: originalUrl, method });
       onStartSpan?.({ span, req, res });
     } catch (err) {
       onError?.({ message: `failed to create span ${err.message}`, error: err });
@@ -28,14 +20,8 @@ export function nodeHttpTracer({ server, tracer, tags = {}, shouldIgnore, onStar
 
     const handlerError = error => {
       try {
-        span.log({ event: 'error', message: error?.message, stack: error?.stack, type: error?.type });
-        const _tags = {
-          [opentracing.Tags.ERROR]: true,
-          [opentracing.Tags.HTTP_STATUS_CODE]: res.statusCode || 500,
-        };
-
         onFinishSpan?.(span, error);
-        tracer.finishSpan({ span, tags: _tags });
+        tracer.finishSpan({ span, statusCode: res.statusCode, error });
       } catch (err) {
         onError?.({ message: `failed to finish span ${err.message}`, error: err });
       }
@@ -44,13 +30,18 @@ export function nodeHttpTracer({ server, tracer, tags = {}, shouldIgnore, onStar
     res.on('error', handlerError);
     req.on('error', handlerError);
 
+    res.on('finish', () => {
+      try {
+        tracer.finishSpan({ span, status: res.statusCode });
+      } catch (err) {
+        onError?.({ message: `failed to finish span ${err.message}`, error: err });
+      }
+    });
+
     req.on('close', () => {
       try {
-        const _tags = {
-          [opentracing.Tags.HTTP_STATUS_CODE]: res.statusCode,
-        };
         onFinishSpan?.(span, req, res);
-        tracer.finishSpan({ span, tags: _tags });
+        tracer.finishSpan({ span, statusCode: res.statusCode });
       } catch (err) {
         onError?.({ message: `failed to finish span ${err.message}`, error: err });
       }
