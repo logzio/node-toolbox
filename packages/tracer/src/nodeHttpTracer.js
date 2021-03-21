@@ -19,7 +19,6 @@ export function nodeHttpTracer({ server, tracer, tags = {}, shouldIgnore, onStar
     }
 
     const handlerError = error => {
-      console.log('on error');
       try {
         onFinishSpan?.(span, error);
         tracer.finishSpan({ span, statusCode: res.statusCode, error });
