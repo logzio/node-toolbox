@@ -25,7 +25,6 @@ export function middlewareTracer({ tracer, tags = {}, shouldIgnore, onStartSpan,
     let span = null;
 
     const { originalUrl, method, headers } = req;
-    console.log('originalUrl: ', originalUrl);
     try {
       if (shouldIgnore && shouldIgnore(originalUrl)) return;
 
