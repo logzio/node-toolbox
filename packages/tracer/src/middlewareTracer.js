@@ -38,7 +38,7 @@ export function middlewareTracer({ tracer, tags = {}, shouldIgnore, onStartSpan,
       try {
         setOperationName(req, span);
 
-        onFinishSpan?.(span, error);
+        onFinishSpan?.({ span, res, req });
         tracer.finishSpan({ span, statusCode: res.statusCode || 500, error });
       } catch (err) {
         onError?.({ message: `failed to finish span ${err.message}`, error: err });
@@ -51,8 +51,8 @@ export function middlewareTracer({ tracer, tags = {}, shouldIgnore, onStartSpan,
     req.on('close', () => {
       try {
         setOperationName(req, span);
-        onFinishSpan?.(span, req, res);
-        tracer.finishSpan({ span, statusCode: res.statusCode });
+        onFinishSpan?.({ span, res, req });
+        tracer.finishSpan({ span, statusCode: res.statusCode, req });
       } catch (err) {
         onError?.({ message: `failed to finish span ${err.message}`, error: err });
       }

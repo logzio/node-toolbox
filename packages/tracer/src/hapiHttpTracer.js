@@ -1,4 +1,4 @@
-export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onError, tags }) => {
+export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onStartSpan, onFinishSpan, onError, tags }) => {
   server.ext({
     type: 'onRequest',
     method: (request, h) => {
@@ -13,7 +13,7 @@ export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onError, tags }) 
             method,
             tags,
           });
-
+          onStartSpan?.({ span, req: request, res: h });
           request.app.span = span;
         }
       } catch (err) {
@@ -41,12 +41,11 @@ export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onError, tags }) 
             stack: {},
           };
         }
+        onFinishSpan?.({ span, req: request, res: request.response });
         tracer.finishSpan({ span, tags, error, statusCode: request.response.statusCode });
       }
     } catch (err) {
       onError?.({ message: 'failed to finish span', error: err });
     }
   });
-
-  return tracer;
 };

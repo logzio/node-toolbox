@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/tracer",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "multi-functional trace",
   "main": "dist/index.cjs",
   "exports": {

@@ -17,7 +17,7 @@ export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onF
             },
           });
 
-          onStartSpan?.(span, config);
+          onStartSpan?.({ span, req: config });
 
           if (!config.meta) config.meta = {};
 
@@ -34,7 +34,7 @@ export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onF
         if (error?.config?.meta?.span) {
           const { span, ...meta } = error.config.meta;
 
-          onFinishSpan?.(span, error);
+          onFinishSpan?.({ span, res: error });
           tracer.finishSpan({ span, tags, error, statusCode: error?.response?.status || 500 });
           error.config.meta = meta;
         }
@@ -51,7 +51,7 @@ export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onF
       try {
         if (response.config && response.config.meta && response.config.meta.span) {
           const { span, ...meta } = response.config.meta;
-          onFinishSpan?.(span, response);
+          onFinishSpan?.({ span, res: response });
 
           tracer.finishSpan({ span, tags, statusCode: response.status });
           response.config.meta = meta;
@@ -67,7 +67,7 @@ export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onF
         if (error?.config?.meta?.span) {
           const { span, ...meta } = error.config.meta;
 
-          onFinishSpan?.(span, error);
+          onFinishSpan?.({ span, res: error });
           tracer.finishSpan({ span, tags, statusCode: error?.response?.status || 500, error });
           error.config.meta = meta;
         }
