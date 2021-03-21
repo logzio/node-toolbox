@@ -1,4 +1,4 @@
-export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onFinishSpan, onError, tags } = {}) {
+export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onFinishSpan, onError, tags, kind = 'client' } = {}) {
   if (!axios || !tracer) return;
 
   axios.interceptors.request.use(
@@ -7,9 +7,10 @@ export function axiosHooksTracer({ axios, tracer, shouldIgnore, onStartSpan, onF
         if (!shouldIgnore || !shouldIgnore(config.url)) {
           const span = tracer.startSpan({
             operation: config.url,
-            carrier: config.headers,
+            carrier: config?.headers,
             url: config.url,
             method: config.method,
+            kind: config?.meta?.kind || kind,
             tags: {
               ...config?.meta?.tags,
               ...tags,

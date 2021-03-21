@@ -35,12 +35,6 @@ export class Tracer {
       flushIntervalMs: exporterOptions.interval ?? 2000,
     };
 
-    const config = {
-      serviceName,
-      sampler,
-      reporter,
-    };
-
     const options = {
       tags,
     };
@@ -53,6 +47,12 @@ export class Tracer {
       reporter.logSpans = true;
       options.logger = console;
     }
+
+    const config = {
+      serviceName,
+      sampler,
+      reporter,
+    };
 
     this.#tracer = initTracer(config, options);
   }

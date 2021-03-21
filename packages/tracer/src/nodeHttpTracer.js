@@ -19,6 +19,7 @@ export function nodeHttpTracer({ server, tracer, tags = {}, shouldIgnore, onStar
     }
 
     const handlerError = error => {
+      console.log('on error');
       try {
         onFinishSpan?.(span, error);
         tracer.finishSpan({ span, statusCode: res.statusCode, error });
@@ -29,6 +30,14 @@ export function nodeHttpTracer({ server, tracer, tags = {}, shouldIgnore, onStar
 
     res.on('error', handlerError);
     req.on('error', handlerError);
+
+    res.on('finish', () => {
+      try {
+        tracer.finishSpan({ span, status: res.statusCode });
+      } catch (err) {
+        onError?.({ message: `failed to finish span ${err.message}`, error: err });
+      }
+    });
 
     req.on('close', () => {
       try {
