@@ -5,7 +5,7 @@ export function nodeHttpTracer({ server, tracer, tags = {}, shouldIgnore, onStar
     let span = null;
     const { originalUrl, baseUrl, _parsedUrl = {}, route = {}, method, headers } = req;
     try {
-      if (shouldIgnore && shouldIgnore(originalUrl)) return;
+      if (shouldIgnore && shouldIgnore(req.url)) return;
 
       let operation = `${method.toUpperCase()}: ${baseUrl}`;
 
