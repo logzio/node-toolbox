@@ -29,11 +29,12 @@ export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onStartSpan, onFi
       const { span } = request.app;
 
       if (span) {
-        if (request?.route?.path) span._operationName = `${request.route.method.toUpperCase()}: ${request.route.path}`;
+        if (request?.route?.path)
+          span.setOperationName(`${request.route.method.toUpperCase()}: ${request.route.path}`);
 
         const { response } = request;
 
-        if (!response) throw new Error(`${request?.route} request didn't get response`);
+        if (!response) throw new Error(`${request?.route?.path || request?.path} request didn't get response`);
 
         let error = null;
 
@@ -45,7 +46,6 @@ export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onStartSpan, onFi
           };
         }
         onFinishSpan?.({ span, req: request, res: response });
-
         tracer.finishSpan({ span, tags, error, statusCode: response.statusCode });
       }
     } catch (err) {
