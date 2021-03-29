@@ -34,8 +34,6 @@ export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onStartSpan, onFi
 
         const { response } = request;
 
-        if (!response) throw new Error(`${request?.route?.path || request?.path} request didn't get response`);
-
         let error = null;
 
         if (response?.source?.error) {
