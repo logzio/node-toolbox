@@ -29,20 +29,22 @@ export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onStartSpan, onFi
       const { span } = request.app;
 
       if (span) {
-        if (request.route && request.route.path)
+        if (request?.route?.path)
           span.setOperationName(`${request.route.method.toUpperCase()}: ${request.route.path}`);
+
+        const { response } = request;
 
         let error = null;
 
-        if (request.response.source && request.response.source.error) {
+        if (response?.source?.error) {
           error = {
-            message: request.response.source.message,
-            type: request.response.source.error,
+            message: response.source.message,
+            type: response.source.error,
             stack: {},
           };
         }
-        onFinishSpan?.({ span, req: request, res: request.response });
-        tracer.finishSpan({ span, tags, error, statusCode: request.response.statusCode });
+        onFinishSpan?.({ span, req: request, res: response });
+        tracer.finishSpan({ span, tags, error, statusCode: response.statusCode });
       }
     } catch (err) {
       onError?.({ message: 'failed to finish span', error: err });
