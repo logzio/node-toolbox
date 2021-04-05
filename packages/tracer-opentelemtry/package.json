@@ -27,9 +27,9 @@
   },
   "dependencies": {
     "@opentelemetry/api": "^0.18.1",
-    "@opentelemetry/core": "^0.18.0",
-    "@opentelemetry/exporter-jaeger": "^0.18.0",
-    "@opentelemetry/propagator-jaeger": "0.14.0",
-    "@opentelemetry/tracing": "^0.18.0"
+    "@opentelemetry/core": "^0.18.2",
+    "@opentelemetry/exporter-jaeger": "^0.18.2",
+    "@opentelemetry/propagator-jaeger": "0.18.2",
+    "@opentelemetry/tracing": "^0.18.2"
   }
 }
