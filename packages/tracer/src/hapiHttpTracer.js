@@ -29,8 +29,7 @@ export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onStartSpan, onFi
       const { span } = request.app;
 
       if (span) {
-        if (request?.route?.path)
-          span.setOperationName(`${request.route.method.toUpperCase()}: ${request.route.path}`);
+        if (request?.route?.path) span.setOperationName(`${request.route.method.toUpperCase()}: ${request.route.path}`);
 
         const { response } = request;
 
