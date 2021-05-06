@@ -11,11 +11,11 @@ export interface SubscribeOptions {
 export interface SetOptions {
   value: AnyObject;
   key?: string;
-  onError: VoidFunction;
+  onError?: VoidFunction;
 }
 
 export declare class Config {
-  public constructor(schema: AnyObject, config: AnyObject);
+  public constructor(schema: AnyObject, config?: AnyObject);
   public subscribe(subscribeOptions: SubscribeOptions): Unsubscriber;
   public set(setOptions: SetOptions): void;
   public get(key?: string): any;

@@ -156,7 +156,7 @@ export class Consul {
     this.openWatchersToClose.push(watcher);
   }
 
-  async register({ data, options } = {}) {
+  async register({ data, options = {} } = {}) {
     if (!data.name || !data.id) throw new Error('must provide name and id to register for consul service discovery');
 
     if (this.registerParams.id) return;
