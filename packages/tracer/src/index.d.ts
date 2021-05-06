@@ -22,15 +22,18 @@ export interface TracerOptions {
 }
 
 export type StartSpanParams = {
+  url: string;
   operation: string;
+  method: string;
   tags?: AnyObject;
   carrier?: string;
 };
 
 export type FinishSpanParams = {
-  span: AnyObject;
+  span: Span;
   tags?: AnyObject;
-  carrier?: string;
+  statusCode?: number;
+  error?: void;
 };
 
 export declare class Tracer {
@@ -40,14 +43,33 @@ export declare class Tracer {
   public close(): void;
 }
 
+export function shouldIgnore(url: string): boolean;
+
+export type OnStartSpanParams = {
+  span?: AnyObject;
+  req?: AnyObject;
+  res?: AnyObject;
+};
+
+export function onStartSpan(onStartSpanParams: OnStartSpanParams): void;
+
+export function onFinishSpan(span: AnyObject): void;
+
+export type OnErrorParams = {
+  err?: AnyObject;
+  message?: string;
+};
+
+export function onError(onErrorParams: OnErrorParams): void;
+
 export type TracerParams = {
   server: AnyObject;
   tracer: Tracer;
   tags?: AnyObject;
-  shouldIgnore?: void;
-  onStartSpan?: void;
-  onFinishSpan?: void;
-  onError?: void;
+  shouldIgnore?: shouldIgnore;
+  onStartSpan?: onStartSpan;
+  onFinishSpan?: onFinishSpan;
+  onError?: onError;
 };
 
 export function nodeHttpTracer(tracerParams: TracerParams): void;
@@ -58,10 +80,10 @@ export type AxiosHooksTracerParams = {
   axios: AnyObject;
   tracer: Tracer;
   tags?: AnyObject;
-  shouldIgnore?: void;
-  onStartSpan?: void;
-  onFinishSpan?: void;
-  onError?: void;
+  shouldIgnore?: shouldIgnore;
+  onStartSpan?: onStartSpan;
+  onFinishSpan?: onFinishSpan;
+  onError?: onError;
   kind?: string;
 };
 
