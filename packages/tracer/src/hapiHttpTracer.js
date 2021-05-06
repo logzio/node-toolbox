@@ -43,7 +43,7 @@ export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onStartSpan, onFi
           };
         }
         onFinishSpan?.({ span, req: request, res: response });
-        tracer.finishSpan({ span, tags, error, statusCode: response.statusCode });
+        tracer.finishSpan({ span, tags, error, statusCode: response?.statusCode || 520 });
       }
     } catch (err) {
       onError?.({ message: 'failed to finish span', error: err });

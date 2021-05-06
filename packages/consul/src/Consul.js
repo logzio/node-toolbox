@@ -5,7 +5,7 @@ import deepMerge from 'deepmerge';
 const defaultValidateOptions = { fail: true, timeout: 5000, retries: 6, factor: 2, onRetry: null };
 const defaultWatchOptions = { backoffFactor: 100, backoffMax: 30000, maxAttempts: 10000, ignoreFirst: true };
 const defaultRegisterRetryOptions = { factor: 2, retries: 6, onRetry: null };
-function parseValue({ Value = null, Key = null } = {}) {
+function parseValue({ Value = null, Key = null, ...rest } = {}) {
   if (!Key || !Value) return undefined;
 
   let value;
@@ -17,6 +17,7 @@ function parseValue({ Value = null, Key = null } = {}) {
   }
 
   return {
+    ...rest,
     key: Key,
     value,
   };
