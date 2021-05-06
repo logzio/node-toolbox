@@ -38,12 +38,13 @@ export type TracerParams = {
   onError?: onErrorFunction;
 };
 
-export interface TracerConstructiorOtions {
+export interface TracerConstructorParams {
   serviceName: string;
   carrierType?: string;
   debug?: boolean;
   tags?: AnyObject;
   debug?: boolean;
+  exporterOptions: ExporterOptions;
   shouldIgnore?: shouldIgnoreFunction;
   onStartSpan?: onStartSpanFunction;
   onFinishSpan?: onFinishSpanFunction;
@@ -66,7 +67,7 @@ export type FinishSpanParams = {
 };
 
 export declare class Tracer {
-  public constructor(tracerConstructiorOtions: TracerConstructiorOtions);
+  public constructor(tracerConstructorParams: TracerConstructorParams);
   public startSpan(startSpanParams: StartSpanParams): Span;
   public finishSpan(finishSpanParams: FinishSpanParams): void;
   public close(): void;
