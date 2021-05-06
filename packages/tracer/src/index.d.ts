@@ -2,6 +2,8 @@ interface AnyObject {
   [key: string]: any;
 }
 
+export const Span = AnyObject;
+
 export type ExporterOptions = {
   type?: string;
   probability?: number;
