@@ -12,7 +12,7 @@ export type ExporterOptions = {
 
 export interface TracerOptions {
   serviceName: string;
-  carrierType: string;
+  carrierType?: string;
   debug?: boolean;
   tags?: AnyObject;
   shouldIgnore?: void;
@@ -39,3 +39,30 @@ export declare class Tracer {
   public finishSpan(finishSpanParams: FinishSpanParams): void;
   public close(): void;
 }
+
+export type TracerParams = {
+  server: AnyObject;
+  tracer: Tracer;
+  tags?: AnyObject;
+  shouldIgnore?: void;
+  onStartSpan?: void;
+  onFinishSpan?: void;
+  onError?: void;
+};
+
+export function nodeHttpTracer(tracerParams: TracerParams): void;
+export function hapiHttpTracer(tracerParams: TracerParams): void;
+export function middlewareTracer(tracerParams: TracerParams): void;
+
+export type AxiosHooksTracerParams = {
+  axios: AnyObject;
+  tracer: Tracer;
+  tags?: AnyObject;
+  shouldIgnore?: void;
+  onStartSpan?: void;
+  onFinishSpan?: void;
+  onError?: void;
+  kind?: string;
+};
+
+export function axiosHooksTracer(axiosHooksTracerParams: AxiosHooksTracerParams): void;

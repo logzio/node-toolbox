@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/tracer",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "multi-functional trace",
   "main": "dist/index.cjs",
   "exports": {
@@ -9,7 +9,9 @@
   },
   "types": "dist/index.d.ts",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "license": "MIT",
   "author": "Nir winkler <madvinking@gmail.com>",
   "repository": {
