@@ -1,4 +1,12 @@
-export function nodeHttpTracer({ server, tracer, tags = {}, shouldIgnore, onStartSpan, onFinishSpan, onError } = {}) {
+export function nodeHttpTracer({
+  server,
+  tracer,
+  tags = {},
+  shouldIgnore = null,
+  onStartSpan = null,
+  onFinishSpan = null,
+  onError = null,
+} = {}) {
   if (!server || !tracer) return;
 
   server.on('request', (req, res) => {

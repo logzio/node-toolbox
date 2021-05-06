@@ -48,7 +48,7 @@ export class Config {
     return this.#observables[key].subscribe(onChange);
   }
 
-  set({ value = null, key = null, onError }) {
+  set({ value = null, key = null, onError = null }) {
     if (value === null) return;
     if (key) value = _.set({}, key, value);
     this._merge(value, onError);

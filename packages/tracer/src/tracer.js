@@ -2,6 +2,8 @@ import opentracing from 'opentracing';
 import { default as jaegerClient } from 'jaeger-client';
 const { initTracer } = jaegerClient;
 const { FORMAT_HTTP_HEADERS } = opentracing;
+
+const defaultExporterOptions = { type: 'probabilistic', probability: 1, host: 'localhost', port: 6832, interval: 2000 };
 export class Tracer {
   #tracer;
   #shouldIgnore;
@@ -24,15 +26,19 @@ export class Tracer {
     this.#onFinishSpan = onFinishSpan;
     this.#carrierType = carrierType;
 
+    const finalExportOptions = {
+      ...defaultExporterOptions,
+      ...exporterOptions,
+    };
     let sampler = {
-      type: exporterOptions.type ?? 'probabilistic',
-      param: exporterOptions.probability ?? 1,
+      type: finalExportOptions.type ?? 'probabilistic',
+      param: finalExportOptions.probability ?? 1,
     };
 
     const reporter = {
-      agentHost: exporterOptions.host ?? 'localhost',
-      agentPort: exporterOptions.port ?? 6832,
-      flushIntervalMs: exporterOptions.interval ?? 2000,
+      agentHost: finalExportOptions.host ?? 'localhost',
+      agentPort: finalExportOptions.port ?? 6832,
+      flushIntervalMs: finalExportOptions.interval ?? 2000,
     };
 
     const options = {
@@ -71,7 +77,7 @@ export class Tracer {
       tags,
     });
 
-    this.onStartSpan?.(span);
+    this.#onStartSpan?.(span);
 
     this.#tracer.inject(span, this.#carrierType, carrier);
 
@@ -95,6 +101,6 @@ export class Tracer {
   }
 
   close() {
-    return new Promise(resolve => this.#tracer.close(resolve));
+    return new Promise(resolve => this.#tracer.close(() => resolve()));
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/config",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "config manager based on Joi schema with subscription capabilities",
   "main": "dist/index.cjs",
   "exports": {
@@ -9,7 +9,9 @@
   },
   "types": "dist/index.d.ts",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "license": "MIT",
   "author": "Nir winkler <madvinking@gmail.com>",
   "repository": {

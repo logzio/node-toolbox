@@ -46,8 +46,8 @@ export interface RegisterData {
   meta?: AnyObject;
   checks?: AnyObject;
   address?: string;
-  id?: string;
-  name?: string;
+  id: string;
+  name: string;
   port?: number;
 }
 export interface RegisterOptions {
@@ -66,7 +66,7 @@ export interface WatchAllOptions {
 }
 export declare class Consul {
   public constructor(options: ConsulOptions);
-  public validateConnected(options: ValidateOptions): void;
+  public validateConnected(options?: ValidateOptions): void;
   private buildKey(key: string): { key: string; value: AnyObject };
   public get(key?: string): AnyObject;
   public set(options: KeyValueOptions): void;
