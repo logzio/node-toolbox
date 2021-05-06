@@ -2,6 +2,8 @@ interface AnyObject {
   [key: string]: any;
 }
 
+export type Span = AnyObject;
+
 export type ExporterOptions = {
   type?: string;
   probability?: number;
@@ -10,15 +12,43 @@ export type ExporterOptions = {
   interval?: number;
 };
 
-export interface TracerOptions {
+export type OnStartSpanParams = {
+  span?: AnyObject;
+  req?: AnyObject;
+  res?: AnyObject;
+};
+
+export type OnErrorParams = {
+  err?: AnyObject;
+  message?: string;
+};
+
+export type shouldIgnoreFunction = (url: string) => boolean;
+export type onStartSpanFunction = (onStartSpanParams: OnStartSpanParams) => void;
+export type onFinishSpanFunction = (span: Span) => void;
+export type onErrorFunction = (onErrorParams: OnErrorParams) => void;
+
+export type TracerParams = {
+  server: AnyObject;
+  tracer: Tracer;
+  tags?: AnyObject;
+  shouldIgnore?: shouldIgnoreFunction;
+  onStartSpan?: onStartSpanFunction;
+  onFinishSpan?: onFinishSpanFunction;
+  onError?: onErrorFunction;
+};
+
+export interface TracerConstructorParams {
   serviceName: string;
   carrierType?: string;
   debug?: boolean;
   tags?: AnyObject;
-  shouldIgnore?: void;
-  onStartSpan?: void;
-  onFinishSpan?: void;
-  exporterOptions?: ExporterOptions;
+  debug?: boolean;
+  exporterOptions: ExporterOptions;
+  shouldIgnore?: shouldIgnoreFunction;
+  onStartSpan?: onStartSpanFunction;
+  onFinishSpan?: onFinishSpanFunction;
+  onError?: onErrorFunction;
 }
 
 export type StartSpanParams = {
@@ -37,40 +67,11 @@ export type FinishSpanParams = {
 };
 
 export declare class Tracer {
-  public constructor(tracerOptions: TracerOptions);
+  public constructor(tracerConstructorParams: TracerConstructorParams);
   public startSpan(startSpanParams: StartSpanParams): Span;
   public finishSpan(finishSpanParams: FinishSpanParams): void;
   public close(): void;
 }
-
-export function shouldIgnore(url: string): boolean;
-
-export type OnStartSpanParams = {
-  span?: AnyObject;
-  req?: AnyObject;
-  res?: AnyObject;
-};
-
-export function onStartSpan(onStartSpanParams: OnStartSpanParams): void;
-
-export function onFinishSpan(span: AnyObject): void;
-
-export type OnErrorParams = {
-  err?: AnyObject;
-  message?: string;
-};
-
-export function onError(onErrorParams: OnErrorParams): void;
-
-export type TracerParams = {
-  server: AnyObject;
-  tracer: Tracer;
-  tags?: AnyObject;
-  shouldIgnore?: shouldIgnore;
-  onStartSpan?: onStartSpan;
-  onFinishSpan?: onFinishSpan;
-  onError?: onError;
-};
 
 export function nodeHttpTracer(tracerParams: TracerParams): void;
 export function hapiHttpTracer(tracerParams: TracerParams): void;
@@ -80,10 +81,10 @@ export type AxiosHooksTracerParams = {
   axios: AnyObject;
   tracer: Tracer;
   tags?: AnyObject;
-  shouldIgnore?: shouldIgnore;
-  onStartSpan?: onStartSpan;
-  onFinishSpan?: onFinishSpan;
-  onError?: onError;
+  shouldIgnore?: shouldIgnoreFunction;
+  onStartSpan?: onStartSpanFunction;
+  onFinishSpan?: onFinishSpanFunction;
+  onError?: onErrorFunction;
   kind?: string;
 };
 
