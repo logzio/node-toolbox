@@ -20,12 +20,12 @@ type formatter = (...args: any[]) => void;
 
 export interface TransportOptions {
   name?: string;
-  LogLevel?: LogLevel;
+  logLevel?: LogLevel;
   formatters?: formatter[];
 }
 
 export interface ConsoleTransportOptions extends TransportOptions {
-  colorizeLog?: boolean;
+  color?: boolean;
 }
 
 export interface LogzioTransportOptions extends TransportOptions {
@@ -37,7 +37,7 @@ export interface LogzioTransportOptions extends TransportOptions {
 
 export class Transport implements TransportOptions {
   name?: string;
-  LogLevel?: LogLevel;
+  logLevel?: LogLevel;
   formatters?: formatter[];
   public constructor(transportOptions: TransportOptions);
   public close(): void;
@@ -57,7 +57,7 @@ export class LogzioTransport extends Transport implements LogzioTransportOptions
   token: string;
   metaData?: AnyObject;
   name?: string;
-  LogLevel?: LogLevel;
+  logLevel?: LogLevel;
   formatters?: formatter[];
 }
 
@@ -70,7 +70,7 @@ export interface LoggerOptions {
 }
 
 export declare class Logger {
-  public constructor(loggerOptions: LoggerOptions);
+  public constructor(loggerOptions?: LoggerOptions);
   public debug(...args: any[]): void;
   public log(...args: any[]): void;
   public info(...args: any[]): void;
@@ -97,11 +97,11 @@ interface StringValueObject {
 }
 export declare namespace formatters {
   function handleError(): ReceiveLog;
-  function logSize(maxLogSizeBytes: number): ReceiveLog;
+  function logSize(maxLogSizeBytes?: number): ReceiveLog;
   function maskFields(fields: MaskField[]): ReceiveLog;
   function omitFields(fields: string[]): ReceiveLog;
   function pickFields(name: string, list: string[], shouldFlat?: boolean): ReceiveLog;
   function removeCircularFields(): ReceiveLog;
   function renameFields(fields: StringValueObject): ReceiveLog;
-  function sliceFields(fields: string[], maxFieldByteSize: number): ReceiveLog;
+  function sliceFields(fields: string[], maxFieldByteSize?: number): ReceiveLog;
 }
