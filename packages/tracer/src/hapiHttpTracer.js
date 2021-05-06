@@ -3,7 +3,7 @@ export const hapiHttpTracer = ({ server, tracer, shouldIgnore, onStartSpan, onFi
     type: 'onRequest',
     method: (request, h) => {
       try {
-        if (!shouldIgnore(request.path)) {
+        if (!shouldIgnore || !shouldIgnore(request.path)) {
           const { path, raw, method, headers } = request;
 
           const span = tracer.startSpan({

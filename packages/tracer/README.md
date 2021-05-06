@@ -4,11 +4,8 @@
   </a>
 </p>
 
-# Logger
-easy setup for node.js instrumentation with jaeger client. auto normalized paths
-
-
 ## TRACER
+
 create a tracer by passing configuration with build-in defaults.
 params:
   serviceName - string (node-js)
@@ -38,8 +35,8 @@ const config = {
     region: 'us',
 
   },
-  shouldIgnore: (operation) => {
-    if operation.includes('ignorepath') return true;
+  shouldIgnore: (url) => {
+    if url.includes('ignore path') return true;
     return false;
   },
   onStartSpan: (span) => {
@@ -52,5 +49,3 @@ const span = tracer.startSpan({operation: 'operationName', tags: { default: 'tag
 
 tracer.finishSpan({ span: span, tags: { default: 'tags for finish span' }});
 ```
-
-

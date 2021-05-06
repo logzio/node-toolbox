@@ -64,7 +64,7 @@ export class Tracer {
   }
 
   startSpan({ operation, url, method, tags = {}, carrier, kind = opentracing.Tags.SPAN_KIND_RPC_SERVER } = {}) {
-    if (this.#shouldIgnore?.(operation)) return;
+    if (this.#shouldIgnore?.(url)) return;
     const rootSpan = this.#tracer.extract(this.#carrierType, carrier);
 
     tags[opentracing.Tags.SPAN_KIND] = kind;
