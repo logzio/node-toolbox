@@ -1,6 +1,6 @@
 {
   "name": "@logzio-node-toolbox/logger",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "multi-functional logger",
   "main": "dist/index.cjs",
   "exports": {
@@ -9,7 +9,9 @@
   },
   "types": "dist/index.d.ts",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "license": "MIT",
   "author": "Nir winkler <madvinking@gmail.com>",
   "repository": {

@@ -1,4 +1,5 @@
-export { Logger } from './Logger.js';
-export { default as LogLevel, setLogLevelColor } from './LogLevels.js';
+export { Logger } from './logger.js';
+export { LogLevel, setLogLevelColor } from './LogLevels.js';
+export { addLogLevel, Color } from './addLogLevel.js';
 export * as formatters from './formatters/index.js';
 export * from './transports/index.js';

@@ -1,4 +1,4 @@
-import LogLevel from '../LogLevels.js';
+import { LogLevel } from '../LogLevels.js';
 const { INFO } = LogLevel;
 export class Transport {
   constructor({ name = 'transport', logLevel = INFO, formatters = [] }) {

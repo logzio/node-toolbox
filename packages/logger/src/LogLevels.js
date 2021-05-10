@@ -18,15 +18,28 @@ export const levelsMetaData = {
     weight: 2,
     color: red,
   },
+  SILENT: {
+    weight: 0,
+    color: white,
+  },
 };
 
-export default {
+export const LogLevel = {
   DEBUG: 'DEBUG',
   INFO: 'INFO',
   WARN: 'WARN',
   ERROR: 'ERROR',
+  SILENT: 'SILENT',
 };
 
 export function setLogLevelColor({ logLevel, color }) {
   if (levelsMetaData[logLevel] && /^#.{6}$/.test(color)) levelsMetaData[logLevel] = color;
+}
+
+export function addLogLevel({ name, color, weight }) {
+  LogLevel[name.toUpperCase()] = name.toUpperCase();
+  levelsMetaData[name.toUpperCase()] = {
+    color,
+    weight,
+  };
 }
