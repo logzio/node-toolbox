@@ -7,6 +7,7 @@ export enum LogLevel {
   INFO = 'INFO',
   WARN = 'WARN',
   ERROR = 'ERROR',
+  SILENT = 'SILENT',
 }
 
 export interface SetLogLevelColorColorOptions {
@@ -14,7 +15,16 @@ export interface SetLogLevelColorColorOptions {
   color: string;
 }
 
+export const Color: AnyObject;
 export declare function setLogLevelColor(setLogLevelColorColorOptions: SetLogLevelColorColorOptions): void;
+
+export interface AddLogLevelOptions {
+  name: string;
+  color: string;
+  weight: number;
+}
+
+export declare function addLogLevel(addLogLevelOptions: AddLogLevelOptions): void;
 
 type formatter = (...args: any[]) => void;
 
@@ -47,11 +57,11 @@ export class Transport implements TransportOptions {
 }
 
 export class ConsoleTransport extends Transport implements ConsoleTransportOptions {
-  public constructor(consoleTransportOptions: ConsoleTransportOptions);
+  public constructor(consoleTransportOptions?: ConsoleTransportOptions);
 }
 
 export class LogzioTransport extends Transport implements LogzioTransportOptions {
-  public constructor(logzioTransportOptions: LogzioTransportOptions);
+  public constructor(logzioTransportOptions?: LogzioTransportOptions);
   host?: string;
   type?: string;
   token: string;
@@ -66,7 +76,6 @@ export interface LoggerOptions {
   metaData?: AnyObject;
   formatters?: formatter[];
   datePattern?: string;
-  logLevel?: LogLevel;
 }
 
 export declare class Logger {
@@ -78,7 +87,6 @@ export declare class Logger {
   public error(...args: any[]): void;
   public beautify(...args: any[]): void;
   public close(): void;
-  public logLevel(logLevel: LogLevel): void;
   public addTransport(transport: Transport | Transport[]): void;
   public addFormatter(formatter: formatter | formatter[]): void;
   public removeTransport(name: string): void;

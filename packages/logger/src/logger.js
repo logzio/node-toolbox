@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import LogLevel, { levelsMetaData } from './LogLevels.js';
+import { LogLevel, levelsMetaData } from './LogLevels.js';
 import dateFormat from 'dateformat';
 
 const { INFO } = LogLevel;
@@ -13,13 +13,12 @@ export class Logger {
   #logLevel;
   #_log;
 
-  constructor({ transports = [], metaData = {}, formatters = [], datePattern = 'dd/mm/yyyy hh:mm:ss.l', logLevel = INFO } = {}) {
+  constructor({ transports = [], metaData = {}, formatters = [], datePattern = 'dd/mm/yyyy hh:mm:ss.l' } = {}) {
     if (!Array.isArray(transports)) transports = [transports];
     if (!Array.isArray(formatters)) formatters = [formatters];
     if (transports.length === 0) console.warn('LOGGER: HAVE NO TRANSPORTS');
     this.#transports = transports;
 
-    this.#logLevel = logLevel;
     this.#metaData = metaData;
     this.#formatters = formatters;
     this.#datePattern = datePattern;
@@ -49,9 +48,8 @@ export class Logger {
       });
 
       this.#transports.forEach(transport => {
-        let currentLevel = transport.logLevel || this.#logLevel;
+        let currentLevel = transport.logLevel;
         let shouldLog = levelsMetaData[formattedData.logLevel].weight <= levelsMetaData[currentLevel].weight;
-
         if (transport.isOpen && shouldLog) transport.log(transport.format({ ...formattedData }));
       });
     };
@@ -75,6 +73,10 @@ export class Logger {
 
   error() {
     this.#_log(LogLevel.ERROR, arguments);
+  }
+
+  logWithLevel(level, ...rest) {
+    this.#_log(level, ...rest);
   }
 
   beautify() {
@@ -107,9 +109,5 @@ export class Logger {
 
   close() {
     return Promise.all(this.#transports.map(transporter => transporter.close()));
-  }
-
-  logLevel(level) {
-    if (LogLevel[level]) this.#logLevel = level;
   }
 }
