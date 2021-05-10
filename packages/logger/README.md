@@ -16,7 +16,7 @@ lightweight logger base on the concept of transports and formatters.
 
 | method | weight | color | enum |
 | --- | --- | --- | --- |
-| silent | 1 | - | SILENT |
+| silent | 0 | - | SILENT |
 | error | 2 | red | ERROR |
 | warn | 4 | yellow | WARN |
 | info/log/beatify | 6 | white | INFO | (beatify - will print parsed colorful json )
@@ -30,7 +30,7 @@ each log will pass through.
 each transporter can receive many formatter that will be invoke after all the logger formatters ended.
 
 ```javascript
-import { Logger, ConsoleTransport, formatters, LogLevel, addLogLevel } from '@logzio-node-toolbox/logger';
+import { Logger, ConsoleTransport, formatters, LogLevel, addLogLevel, Color } from '@logzio-node-toolbox/logger';
 
 const logFormatter = formatters.logSize();
 
@@ -65,7 +65,7 @@ logger.info({ name: 'from', last: 'last' }); // first value can also be object
 
 logger.logLevel(LogLevel.DEBUG) // will start log debug as well
 
-addLogLevel({name: 'RANDOM', color: '#421cda', weight})
+addLogLevel({name: 'RANDOM', color: Color.black, weight})
 
 await logger.close() // will wait for all transports to close
 
