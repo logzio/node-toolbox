@@ -1,9 +1,9 @@
-import { levelsMetaData } from '../LogLevels.js';
 import { Transport } from './Transport.js';
-import stringify from 'json-stringify-safe';
-import colorize from 'json-colorizer';
-import chalk from 'chalk';
 import _ from 'lodash';
+import chalk from 'chalk';
+import colorize from 'json-colorizer';
+import { levelsMetaData } from '../LogLevels.js';
+import stringify from 'json-stringify-safe';
 
 function printJSON(color = false) {
   return function printJSONLog({ message, logLevel, timestamp, __makeLogPrettyJSON__, ...rest }) {
