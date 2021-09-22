@@ -12,8 +12,9 @@ function printJSON(color = false) {
     if (keys) rest = stringify(rest, null, __makeLogPrettyJSON__ ? 4 : 0);
 
     if (color)
-      return `${levelsMetaData[logLevel].color(logLevel)}: ${chalk.blue(timestamp)} ${message ? message : ''}${keys ? ` ${colorize(rest)}` : ''
-        }`;
+      return `${levelsMetaData[logLevel].color(logLevel)}: ${chalk.blue(timestamp)} ${message ? message : ''}${
+        keys ? ` ${colorize(rest)}` : ''
+      }`;
 
     return `${logLevel}: [${timestamp}] ${message ? message : ''}${keys ? ` ${rest}` : ''}`;
   };

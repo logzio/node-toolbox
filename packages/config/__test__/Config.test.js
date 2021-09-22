@@ -1,10 +1,8 @@
-import Joi from 'joi';
 import { Config } from '../src/Config.js';
+import Joi from 'joi';
 
 describe('Config - create config with schema', () => {
   it('should throw an error if no schema', () => {
-    expect(() => new Config()).toThrow('must pass Joi type schema');
-
     expect(() => new Config({ nope: 'nope' })).toThrow('must pass Joi type schema');
   });
 
@@ -75,6 +73,29 @@ describe('Config - create config with schema', () => {
       },
     };
     expect(() => new Config(schema, configs)).toThrow('"teams.name" must be a string');
+  });
+
+  it('should throw error if setSchmea is not Joi', () => {
+    const schema = Joi.object({
+      teams: Joi.object({
+        name: Joi.string().default('first name'),
+        last: Joi.string().default('last name'),
+      }).default(),
+    });
+
+    const config = new Config(schema);
+    const newSchema = Joi.object({
+      teams: Joi.object({
+        name1: Joi.string().default('first name1'),
+        last1: Joi.string().default('last name1'),
+      }).default(),
+    });
+
+    expect(() => config.setSchema(newSchema)).toThrow(`"teams.name" is not allowed. "teams.last" is not allowed`);
+    config.setSchema(newSchema, { teams: { last1: 'last name1 overide' } });
+
+    expect(config.get('teams.name1')).toEqual('first name1');
+    expect(config.get('teams.last1')).toEqual('last name1 overide');
   });
 
   it('should set value by string or object if valid', () => {
