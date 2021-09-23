@@ -10,15 +10,19 @@ export class Config {
   #observables;
 
   constructor(schema = null, config = {}) {
-    if (schema && !Joi.isSchema(schema)) {
-      throw new Error('must pass Joi type schema');
-    }
+    if (schema) this._validateJoi(schema);
 
     this.#config = {};
     this.#schema = schema;
     this._merge(config);
     this.#observables = {};
     this.#observable = new Observable(this.#config);
+  }
+
+  _validateJoi(schema) {
+    if (schema && !Joi.isSchema(schema)) {
+      throw new Error('must pass Joi type schema');
+    }
   }
 
   _merge(newValue, onError = false) {
@@ -42,7 +46,7 @@ export class Config {
   }
 
   setSchema(newSchema, config = this.#config) {
-    if (!Joi.isSchema(newSchema)) throw new Error('must pass Joi type schema');
+    this._validateJoi(newSchema);
 
     const { error } = newSchema.validate(config, { abortEarly: false });
     if (error) throw error;

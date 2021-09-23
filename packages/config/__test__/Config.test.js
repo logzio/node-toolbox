@@ -2,7 +2,7 @@ import { Config } from '../src/Config.js';
 import Joi from 'joi';
 
 describe('Config - create config with schema', () => {
-  it('should throw an error if no schema', () => {
+  it('should throw if schema is not Joi type', () => {
     expect(() => new Config({ nope: 'nope' })).toThrow('must pass Joi type schema');
   });
 
