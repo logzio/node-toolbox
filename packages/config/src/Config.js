@@ -1,6 +1,6 @@
-import _ from 'lodash';
 import Joi from 'joi';
 import { Observable } from './Observable';
+import _ from 'lodash';
 import deepMerge from 'deepmerge';
 
 export class Config {
@@ -10,12 +10,19 @@ export class Config {
   #observables;
 
   constructor(schema = null, config = {}) {
-    if (!schema || !Joi.isSchema(schema)) throw new Error('must pass Joi type schema');
+    if (schema) this._validateJoi(schema);
+
     this.#config = {};
     this.#schema = schema;
     this._merge(config);
     this.#observables = {};
     this.#observable = new Observable(this.#config);
+  }
+
+  _validateJoi(schema) {
+    if (schema && !Joi.isSchema(schema)) {
+      throw new Error('must pass Joi type schema');
+    }
   }
 
   _merge(newValue, onError = false) {
@@ -36,6 +43,16 @@ export class Config {
     } else {
       throw error;
     }
+  }
+
+  setSchema(newSchema, config = this.#config) {
+    this._validateJoi(newSchema);
+
+    const { error } = newSchema.validate(config, { abortEarly: false });
+    if (error) throw error;
+    this.#config = {};
+    this.#schema = newSchema;
+    this._merge(config);
   }
 
   subscribe({ onChange, key = null }) {

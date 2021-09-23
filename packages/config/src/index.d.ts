@@ -17,6 +17,7 @@ export interface SetOptions {
 export declare class Config {
   public constructor(schema: AnyObject, config?: AnyObject);
   public subscribe(subscribeOptions: SubscribeOptions): Unsubscriber;
+  public setSchema(schema: AnyObject, config?: AnyObject): void;
   public set(setOptions: SetOptions): void;
   public get(key?: string): any;
 }

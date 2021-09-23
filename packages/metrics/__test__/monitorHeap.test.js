@@ -1,5 +1,5 @@
-import heapdump from 'heapdump';
 import { Heap } from '../src/Heap.js';
+import heapdump from 'heapdump';
 jest.mock('heapdump');
 describe.skip('metrics - Heap', () => {
   beforeEach(() => {
