@@ -26,7 +26,8 @@ export class Config {
   }
 
   _merge(newValue, onError = false) {
-    const curVales = deepMerge.all([this.#config, newValue]);
+    const overwriteMerge = (destinationArray, sourceArray) => sourceArray;
+    const curVales = deepMerge.all([this.#config, newValue], { arrayMerge: overwriteMerge });
 
     const { error, value } = this.#schema.validate(curVales, { abortEarly: false });
 
