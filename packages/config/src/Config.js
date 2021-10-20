@@ -14,7 +14,7 @@ export class Config {
 
     this.#config = {};
     this.#schema = schema;
-    this._merge(config);
+    this._merge({ newValue: config });
     this.#observables = {};
     this.#observable = new Observable(this.#config);
   }
@@ -25,9 +25,8 @@ export class Config {
     }
   }
 
-  _merge(newValue, onError = false) {
-    const overwriteMerge = (destinationArray, sourceArray) => sourceArray;
-    const curVales = deepMerge.all([this.#config, newValue], { arrayMerge: overwriteMerge });
+  _merge({ defaultValue = null, newValue, onError = false }) {
+    const curVales = deepMerge.all([defaultValue || this.#config, newValue]);
 
     const { error, value } = this.#schema.validate(curVales, { abortEarly: false });
 
@@ -53,7 +52,7 @@ export class Config {
     if (error) throw error;
     this.#config = {};
     this.#schema = newSchema;
-    this._merge(config);
+    this._merge({ newValue: config });
   }
 
   subscribe({ onChange, key = null }) {
@@ -66,10 +65,10 @@ export class Config {
     return this.#observables[key].subscribe(onChange);
   }
 
-  set({ value = null, key = null, onError = null }) {
+  set({ defaultValue = null, value = null, key = null, onError = null }) {
     if (value === null) return;
     if (key) value = _.set({}, key, value);
-    this._merge(value, onError);
+    this._merge({ defaultValue, newValue: value, onError });
     if (key && this.#observables[key]) this.#observables[key].set(this.get(key));
     this.#observable.set(this.#config);
   }
