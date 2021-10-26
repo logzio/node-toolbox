@@ -12,9 +12,13 @@ export class Config {
   constructor(schema = null, config = {}) {
     if (schema) this._validateJoi(schema);
 
-    this.#config = {};
     this.#schema = schema;
-    this._merge({ newValue: config });
+    this._initializeConfig(config);
+  }
+
+  _initializeConfig(config = {}) {
+    this.#config = {};
+    this._merge(config);
     this.#observables = {};
     this.#observable = new Observable(this.#config);
   }
@@ -25,8 +29,8 @@ export class Config {
     }
   }
 
-  _merge({ defaultValue = null, newValue, onError = false }) {
-    const curVales = deepMerge.all([defaultValue || this.#config, newValue]);
+  _merge(newValue, onError = false) {
+    const curVales = deepMerge.all([this.#config, newValue]);
 
     const { error, value } = this.#schema.validate(curVales, { abortEarly: false });
 
@@ -52,7 +56,7 @@ export class Config {
     if (error) throw error;
     this.#config = {};
     this.#schema = newSchema;
-    this._merge({ newValue: config });
+    this._merge(config);
   }
 
   subscribe({ onChange, key = null }) {
@@ -65,10 +69,11 @@ export class Config {
     return this.#observables[key].subscribe(onChange);
   }
 
-  set({ defaultValue = null, value = null, key = null, onError = null }) {
+  set({ cleanMerge = false, value = null, key = null, onError = null }) {
     if (value === null) return;
+    if (cleanMerge) this._initializeConfig();
     if (key) value = _.set({}, key, value);
-    this._merge({ defaultValue, newValue: value, onError });
+    this._merge(value, onError);
     if (key && this.#observables[key]) this.#observables[key].set(this.get(key));
     this.#observable.set(this.#config);
   }

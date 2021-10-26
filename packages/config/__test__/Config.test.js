@@ -114,6 +114,24 @@ describe('Config - create config with schema', () => {
     expect(config.get('teams.name')).toEqual('override name2');
   });
 
+  it('should deepMerge initial scheme default array with new array', () => {
+    const schema = Joi.object({
+      defaultIdArr: Joi.array().items(Joi.number()).default([20]),
+    });
+
+    const config = new Config(schema);
+
+    expect(config.get('defaultIdArr')).toEqual([20]);
+    config.set({ value: { defaultIdArr: [22] } });
+    expect(config.get('defaultIdArr')).toEqual([20, 22]);
+    config.set({ cleanMerge: true, value: { defaultIdArr: [22, 23] } });
+    expect(config.get('defaultIdArr')).toEqual([20, 22, 23]);
+    config.set({ cleanMerge: true, value: { defaultIdArr: [24] } });
+    expect(config.get('defaultIdArr')).toEqual([20, 24]);
+    config.set({ cleanMerge: true, value: { defaultIdArr: [] } });
+    expect(config.get('defaultIdArr')).toEqual([20]);
+  });
+
   it('should not merge not valid if onError return false', () => {
     const schema = Joi.object({
       teams: Joi.object({
@@ -192,20 +210,20 @@ describe('Config - create config with schema', () => {
       }
     };
 
-    const unSubName = config.subscribe({ onChange: onChangeName, key: 'teams.name' });
-    const unSubGlobal = config.subscribe({ onChange: onChangeGlobal });
+    const unSubscribeName = config.subscribe({ onChange: onChangeName, key: 'teams.name' });
+    const unSubscribeGlobal = config.subscribe({ onChange: onChangeGlobal });
 
     config.set({ value: 'name2', key: 'teams.name' });
     config.set({ value: 'last2', key: 'teams.last' });
 
     expect(config.get()).toEqual({ teams: { name: 'name2', last: 'last2' } });
-    unSubName();
-    unSubGlobal();
+
+    unSubscribeName();
+    unSubscribeGlobal();
 
     config.set({ value: { teams: { name: 'name3' } } });
 
     expect(config.get()).toEqual({ teams: { name: 'name3', last: 'last2' } });
-
     expect(amountCalledOnChangeName).toEqual(1);
     expect(amountCalledOnChangeGlobal).toEqual(2);
   });
