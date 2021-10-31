@@ -12,8 +12,12 @@ export class Config {
   constructor(schema = null, config = {}) {
     if (schema) this._validateJoi(schema);
 
-    this.#config = {};
     this.#schema = schema;
+    this._initializeConfig(config);
+  }
+
+  _initializeConfig(config = {}) {
+    this.#config = {};
     this._merge(config);
     this.#observables = {};
     this.#observable = new Observable(this.#config);
@@ -65,8 +69,9 @@ export class Config {
     return this.#observables[key].subscribe(onChange);
   }
 
-  set({ value = null, key = null, onError = null }) {
+  set({ override = false, value = null, key = null, onError = null }) {
     if (value === null) return;
+    if (override) this._initializeConfig();
     if (key) value = _.set({}, key, value);
     this._merge(value, onError);
     if (key && this.#observables[key]) this.#observables[key].set(this.get(key));
