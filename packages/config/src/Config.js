@@ -69,9 +69,9 @@ export class Config {
     return this.#observables[key].subscribe(onChange);
   }
 
-  set({ cleanMerge = false, value = null, key = null, onError = null }) {
+  set({ override = false, value = null, key = null, onError = null }) {
     if (value === null) return;
-    if (cleanMerge) this._initializeConfig();
+    if (override) this._initializeConfig();
     if (key) value = _.set({}, key, value);
     this._merge(value, onError);
     if (key && this.#observables[key]) this.#observables[key].set(this.get(key));

@@ -116,20 +116,20 @@ describe('Config - create config with schema', () => {
 
   it('should deepMerge initial scheme default array with new array', () => {
     const schema = Joi.object({
-      defaultIdArr: Joi.array().items(Joi.number()).default([20]),
+      ids: Joi.array().items(Joi.number()).default([20]),
     });
 
     const config = new Config(schema);
 
-    expect(config.get('defaultIdArr')).toEqual([20]);
-    config.set({ value: { defaultIdArr: [22] } });
-    expect(config.get('defaultIdArr')).toEqual([20, 22]);
-    config.set({ cleanMerge: true, value: { defaultIdArr: [22, 23] } });
-    expect(config.get('defaultIdArr')).toEqual([20, 22, 23]);
-    config.set({ cleanMerge: true, value: { defaultIdArr: [24] } });
-    expect(config.get('defaultIdArr')).toEqual([20, 24]);
-    config.set({ cleanMerge: true, value: { defaultIdArr: [] } });
-    expect(config.get('defaultIdArr')).toEqual([20]);
+    expect(config.get('ids')).toEqual([20]);
+    config.set({ value: { ids: [22] } });
+    expect(config.get('ids')).toEqual([20, 22]);
+    config.set({ override: true, value: { ids: [22, 23] } });
+    expect(config.get('ids')).toEqual([20, 22, 23]);
+    config.set({ override: true, value: { ids: [24] } });
+    expect(config.get('ids')).toEqual([20, 24]);
+    config.set({ override: true, value: { ids: [] } });
+    expect(config.get('ids')).toEqual([20]);
   });
 
   it('should not merge not valid if onError return false', () => {
