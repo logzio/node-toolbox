@@ -13,7 +13,7 @@ export class Logger {
   #logLevel;
   #_log;
 
-  constructor({ transports = [], metaData = {}, formatters = [], datePattern = 'dd/mm/yyyy hh:mm:ss.l' } = {}) {
+  constructor({ transports = [], metaData = {}, formatters = [], datePattern = 'dd/mm/yyyy HH:MM:ss.l' } = {}) {
     if (!Array.isArray(transports)) transports = [transports];
     if (!Array.isArray(formatters)) formatters = [formatters];
     if (transports.length === 0) console.warn('LOGGER: HAVE NO TRANSPORTS');
