@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 interface AnyObject {
   [key: string]: any;
 }
@@ -51,7 +52,6 @@ export class Transport implements TransportOptions {
   formatters?: formatter[];
   public constructor(transportOptions: TransportOptions);
   public close(): void;
-  public logLevel(logLevel: LogLevel): void;
   public addFormatter(): void;
   public removeFormatter(): void;
 }
