@@ -43,7 +43,6 @@ export interface TracerConstructorParams {
   carrierType?: string;
   debug?: boolean;
   tags?: AnyObject;
-  debug?: boolean;
   exporterOptions: ExporterOptions;
   shouldIgnore?: shouldIgnoreFunction;
   onStartSpan?: onStartSpanFunction;
