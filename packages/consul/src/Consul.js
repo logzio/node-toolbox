@@ -158,9 +158,7 @@ export class Consul {
   }
 
   async register({ data, options = {} } = {}) {
-    if (options.onBeforeRegister) {
-      options.onBeforeRegister(data);
-    }
+    options.onBeforeRegister?.(data);
 
     if (!data.name || !data.id) throw new Error('must provide name and id to register for consul service discovery');
 
@@ -179,9 +177,7 @@ export class Consul {
       this.registerParams.id = data.id;
     }
 
-    if (options.onAfterRegister) {
-      options.onAfterRegister(isAlreadyRegistered);
-    }
+    options.onAfterRegister?.(isAlreadyRegistered);
   }
 
   async registerInterval({ data, interval, onError, options }) {
