@@ -158,9 +158,9 @@ export class Consul {
   }
 
   async register({ data, options = {} } = {}) {
-    if (!data.name || !data.id) throw new Error('must provide name and id to register for consul service discovery');
+    options.onBeforeRegister?.(data);
 
-    if (this.registerParams.id) return;
+    if (!data.name || !data.id) throw new Error('must provide name and id to register for consul service discovery');
 
     const retryOptions = {
       ...this.registerRetryOptions,
@@ -169,13 +169,15 @@ export class Consul {
 
     const list = await retry(async () => this.consulInstance.agent.service.list(), retryOptions);
 
-    const isRegistered = Object.entries(list).some(([id, { Service }]) => id === data.id && Service === data.name);
+    const isAlreadyRegistered = Object.entries(list).some(([id, { Service }]) => id === data.id && Service === data.name);
 
-    if (!isRegistered) {
+    if (!isAlreadyRegistered) {
       await retry(async () => this.consulInstance.agent.service.register(data), retryOptions);
 
       this.registerParams.id = data.id;
     }
+
+    options.onAfterRegister?.(isAlreadyRegistered);
   }
 
   async registerInterval({ data, interval, onError, options }) {
