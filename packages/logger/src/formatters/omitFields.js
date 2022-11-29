@@ -1,7 +1,11 @@
 import _ from 'lodash';
 
-export function omitFields(fieldsToOmit = []) {
+export function omitFields(fieldsToOmit = [], omitFieldsPathRoots = []) {
   return function omitFieldsLog(log) {
-    return _.omit(log, fieldsToOmit);
+    const result = _.omit(log, fieldsToOmit);
+    return omitFieldsPathRoots.reduce(
+      (acc, pathRoot) => (acc[pathRoot] ? { ...acc, [pathRoot]: _.omit(acc[pathRoot], fieldsToOmit) } : acc),
+      result,
+    );
   };
 }
